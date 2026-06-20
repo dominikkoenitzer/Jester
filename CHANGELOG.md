@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-20
+
+### Added
+- **Tabbed documents** — open and edit many files at once, each with its own undo
+  history, encoding, and scroll position. Close with the tab's ✕, middle-click, or
+  `Ctrl+W`; switch with `Ctrl+Tab` / `Ctrl+Shift+Tab`.
+- **Line-number gutter** with the current line highlighted, plus a current-line
+  highlight in the editor. Toggle via **View → Line Numbers**.
+- **Find in Files** (`Ctrl+Shift+F`) — search a whole folder (with optional
+  subfolders and file filters); results show in a panel, double-click to jump.
+- **Open Recent** menu — the last 10 opened files, persisted between sessions.
+- **Session restore** — reopens the previous window size/position, open tabs, and
+  preferences on launch.
+- **Auto-indent** — new lines inherit the previous line's leading whitespace
+  (**Format → Auto Indent**).
+- **Line-ending** conversion (Windows/Unix/Macintosh) and **encoding** selection
+  (UTF-8, UTF-8 BOM, UTF-16 LE/BE) under the **Format** menu.
+- **Save All** (`Ctrl+Alt+S`) and **Open** now accepts multiple files at once.
+- Crash guard: an unexpected error is logged and reported instead of closing the app.
+
+### Changed
+- `Ctrl+W` now closes the current tab; **Exit** moved to `Ctrl+Q`.
+
 ## [1.0.0] - 2026-06-20
 
 ### Added
@@ -24,5 +47,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Atomic saves (write-to-temp then swap) so an interrupted write can't corrupt the file.
 - BOM-aware encoding detection that preserves the original encoding and line endings.
 
-[Unreleased]: https://github.com/dominikkoenitzer/Jester/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/dominikkoenitzer/Jester/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/dominikkoenitzer/Jester/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dominikkoenitzer/Jester/releases/tag/v1.0.0
