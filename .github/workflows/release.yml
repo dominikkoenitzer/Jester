@@ -17,10 +17,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '9.0.x'
 
@@ -42,7 +42,7 @@ jobs:
           Copy-Item $publish "Jester-${{ github.ref_name }}-win-x64.exe"
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Jester ${{ github.ref_name }}
           files: Jester-${{ github.ref_name }}-win-x64.exe
