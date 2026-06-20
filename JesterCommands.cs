@@ -75,9 +75,6 @@ public static class JesterCommands
         Gestures(new KeyGesture(Key.D0, ModifierKeys.Control),
                  new KeyGesture(Key.NumPad0, ModifierKeys.Control)));
 
-    public static readonly RoutedUICommand About = new(
-        "_About Jester", nameof(About), typeof(JesterCommands));
-
     private static InputGestureCollection Gestures(params KeyGesture[] gestures)
     {
         var collection = new InputGestureCollection();

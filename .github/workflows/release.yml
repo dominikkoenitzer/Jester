@@ -1,18 +1,24 @@
 name: Release
 
-# Build and publish a portable single-file Windows build whenever a
-# version tag (e.g. v1.0.0) is pushed.
+# There are no version numbers — there is just Jester, and it is always the latest.
+# Every push to main (or a manual run) rebuilds the portable single-file Windows
+# build and refreshes the one rolling "latest" release.
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
+# Never let two release runs race on the shared "latest" tag.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
-    name: Publish win-x64
+    name: Publish latest
     runs-on: windows-latest
 
     steps:
@@ -41,13 +47,15 @@ jobs:
           if (-not (Test-Path $publish)) { throw "Expected build output not found: $publish" }
           Copy-Item $publish "Jester.exe"
 
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v3
-        with:
-          name: Jester ${{ github.ref_name }}
-          files: Jester.exe
-          generate_release_notes: true
-          draft: false
-          prerelease: false
+      - name: Refresh the "latest" release
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Replace the single rolling release so its tag points at this commit
+          # and Jester.exe is the current build.
+          gh release delete latest --yes --cleanup-tag || true
+          gh release create latest Jester.exe \
+            --title "Jester" \
+            --notes "The latest build of Jester — a lightweight, themed notepad for Windows. Download **Jester.exe** below and run it; no installer, no .NET required." \
+            --latest
