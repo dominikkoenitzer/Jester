@@ -5,7 +5,7 @@
         Style="{StaticResource JesterWindowStyle}"
         Title="Untitled — Jester"
         Width="950" Height="640"
-        MinWidth="420" MinHeight="280"
+        MinWidth="480" MinHeight="320"
         WindowStartupLocation="CenterScreen"
         Closing="Window_Closing"
         UseLayoutRounding="True">
@@ -13,47 +13,58 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_New" Command="ApplicationCommands.New" />
-                <MenuItem Header="_Open..." Command="ApplicationCommands.Open" />
+                <MenuItem Header="_New Tab" Command="ApplicationCommands.New" InputGestureText="Ctrl+N" />
+                <MenuItem Header="_Open..." Command="ApplicationCommands.Open" InputGestureText="Ctrl+O" />
+                <MenuItem x:Name="RecentFilesMenu" Header="Open _Recent" />
                 <Separator />
-                <MenuItem Header="_Save" Command="ApplicationCommands.Save" />
+                <MenuItem Header="_Save" Command="ApplicationCommands.Save" InputGestureText="Ctrl+S" />
                 <MenuItem Header="Save _As..." Command="{x:Static local:JesterCommands.SaveAs}" />
+                <MenuItem Header="Save A_ll" Command="{x:Static local:JesterCommands.SaveAll}" />
                 <Separator />
                 <MenuItem Header="Export to _PDF..." Command="{x:Static local:JesterCommands.ExportPdf}" />
                 <Separator />
+                <MenuItem Header="_Close Tab" Command="{x:Static local:JesterCommands.CloseTab}" />
                 <MenuItem Header="E_xit" Command="{x:Static local:JesterCommands.Exit}" />
             </MenuItem>
 
             <MenuItem Header="_Edit">
-                <MenuItem Header="_Undo" Command="ApplicationCommands.Undo"
-                          CommandTarget="{Binding ElementName=Editor}" />
-                <MenuItem Header="_Redo" Command="ApplicationCommands.Redo"
-                          CommandTarget="{Binding ElementName=Editor}" />
+                <MenuItem Header="_Undo" Command="ApplicationCommands.Undo" />
+                <MenuItem Header="_Redo" Command="ApplicationCommands.Redo" />
                 <Separator />
-                <MenuItem Header="Cu_t" Command="ApplicationCommands.Cut"
-                          CommandTarget="{Binding ElementName=Editor}" />
-                <MenuItem Header="_Copy" Command="ApplicationCommands.Copy"
-                          CommandTarget="{Binding ElementName=Editor}" />
-                <MenuItem Header="_Paste" Command="ApplicationCommands.Paste"
-                          CommandTarget="{Binding ElementName=Editor}" />
-                <MenuItem Header="De_lete" Command="ApplicationCommands.Delete"
-                          CommandTarget="{Binding ElementName=Editor}" />
+                <MenuItem Header="Cu_t" Command="ApplicationCommands.Cut" />
+                <MenuItem Header="_Copy" Command="ApplicationCommands.Copy" />
+                <MenuItem Header="_Paste" Command="ApplicationCommands.Paste" />
+                <MenuItem Header="De_lete" Command="ApplicationCommands.Delete" />
                 <Separator />
                 <MenuItem Header="_Find..." Command="ApplicationCommands.Find" />
                 <MenuItem Header="Find _Next" Command="{x:Static local:JesterCommands.FindNext}" />
                 <MenuItem Header="Find _Previous" Command="{x:Static local:JesterCommands.FindPrevious}" />
                 <MenuItem Header="_Replace..." Command="ApplicationCommands.Replace" />
+                <MenuItem Header="Find in F_iles..." Command="{x:Static local:JesterCommands.FindInFiles}" />
                 <MenuItem Header="_Go To..." Command="{x:Static local:JesterCommands.GoTo}" />
                 <Separator />
-                <MenuItem Header="Select _All" Command="ApplicationCommands.SelectAll"
-                          CommandTarget="{Binding ElementName=Editor}" />
+                <MenuItem Header="Select _All" Command="ApplicationCommands.SelectAll" />
                 <MenuItem Header="Time/_Date" Command="{x:Static local:JesterCommands.InsertDateTime}" />
             </MenuItem>
 
             <MenuItem Header="F_ormat">
                 <MenuItem x:Name="WordWrapMenuItem" Header="_Word Wrap"
                           IsCheckable="True" Click="WordWrap_Click" />
+                <MenuItem x:Name="AutoIndentMenuItem" Header="_Auto Indent"
+                          IsCheckable="True" IsChecked="True" Click="AutoIndent_Click" />
                 <MenuItem Header="_Font..." Command="{x:Static local:JesterCommands.ChooseFont}" />
+                <Separator />
+                <MenuItem Header="_Line Endings">
+                    <MenuItem x:Name="CrlfMenuItem" Header="Windows (_CRLF)" IsCheckable="True" Click="LineEnding_Click" Tag="CRLF" />
+                    <MenuItem x:Name="LfMenuItem" Header="Unix (_LF)" IsCheckable="True" Click="LineEnding_Click" Tag="LF" />
+                    <MenuItem x:Name="CrMenuItem" Header="Macintosh (C_R)" IsCheckable="True" Click="LineEnding_Click" Tag="CR" />
+                </MenuItem>
+                <MenuItem Header="_Encoding">
+                    <MenuItem x:Name="Utf8MenuItem" Header="UTF-8" IsCheckable="True" Click="Encoding_Click" Tag="utf-8" />
+                    <MenuItem x:Name="Utf8BomMenuItem" Header="UTF-8 with BOM" IsCheckable="True" Click="Encoding_Click" Tag="utf-8-bom" />
+                    <MenuItem x:Name="Utf16LeMenuItem" Header="UTF-16 LE" IsCheckable="True" Click="Encoding_Click" Tag="utf-16le" />
+                    <MenuItem x:Name="Utf16BeMenuItem" Header="UTF-16 BE" IsCheckable="True" Click="Encoding_Click" Tag="utf-16be" />
+                </MenuItem>
             </MenuItem>
 
             <MenuItem Header="_View">
@@ -62,6 +73,8 @@
                     <MenuItem Header="Zoom _Out" Command="{x:Static local:JesterCommands.ZoomOut}" />
                     <MenuItem Header="_Restore Default Zoom" Command="{x:Static local:JesterCommands.RestoreZoom}" />
                 </MenuItem>
+                <MenuItem x:Name="LineNumbersMenuItem" Header="Line _Numbers"
+                          IsCheckable="True" IsChecked="True" Click="LineNumbers_Click" />
                 <MenuItem x:Name="StatusBarMenuItem" Header="_Status Bar"
                           IsCheckable="True" IsChecked="True" Click="StatusBar_Click" />
             </MenuItem>
@@ -86,33 +99,56 @@
             </Grid>
         </Border>
 
-        <TextBox x:Name="Editor"
-                 AcceptsReturn="True" AcceptsTab="True"
-                 TextWrapping="NoWrap"
-                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                 FontFamily="Consolas"
-                 Background="{DynamicResource EditorBackgroundBrush}"
-                 Foreground="{DynamicResource EditorForegroundBrush}"
-                 BorderThickness="0" Padding="10,8"
-                 AllowDrop="True"
-                 UndoLimit="-1"
-                 IsInactiveSelectionHighlightEnabled="True"
-                 SpellCheck.IsEnabled="False"
-                 TextChanged="Editor_TextChanged"
-                 SelectionChanged="Editor_SelectionChanged"
-                 PreviewDragOver="Editor_PreviewDragOver"
-                 PreviewDrop="Editor_PreviewDrop"
-                 PreviewMouseWheel="Editor_PreviewMouseWheel">
-            <TextBox.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Cu_t" Command="ApplicationCommands.Cut" />
-                    <MenuItem Header="_Copy" Command="ApplicationCommands.Copy" />
-                    <MenuItem Header="_Paste" Command="ApplicationCommands.Paste" />
-                    <MenuItem Header="De_lete" Command="ApplicationCommands.Delete" />
-                    <Separator />
-                    <MenuItem Header="Select _All" Command="ApplicationCommands.SelectAll" />
-                </ContextMenu>
-            </TextBox.ContextMenu>
-        </TextBox>
+        <!-- Find in Files results, shown above the status bar on demand -->
+        <Border x:Name="FindResultsPanel" DockPanel.Dock="Bottom" Visibility="Collapsed"
+                Height="190" Background="{DynamicResource EditorBackgroundBrush}"
+                BorderBrush="{DynamicResource GoldBrush}" BorderThickness="0,2,0,0">
+            <DockPanel>
+                <Grid DockPanel.Dock="Top" Background="{DynamicResource PurpleDarkBrush}" Height="28">
+                    <TextBlock x:Name="FindResultsHeader" Margin="12,0,0,0" VerticalAlignment="Center"
+                               Foreground="{DynamicResource TitleBarTextBrush}" FontSize="12" Text="Find results" />
+                    <Button HorizontalAlignment="Right" Width="40" Style="{StaticResource TabCloseButton}"
+                            FontFamily="Segoe MDL2 Assets" FontSize="10" Content="&#xE8BB;"
+                            Foreground="{DynamicResource TitleBarTextBrush}" Click="CloseFindResults_Click" />
+                </Grid>
+                <ListBox x:Name="FindResultsList" BorderThickness="0" Background="Transparent"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         MouseDoubleClick="FindResults_DoubleClick" KeyDown="FindResults_KeyDown">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Location}" FontFamily="Consolas" FontSize="12"
+                                           Foreground="{DynamicResource PurpleBrush}" Width="240" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Preview}" FontFamily="Consolas" FontSize="12"
+                                           Foreground="{DynamicResource EditorForegroundBrush}" TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <TabControl x:Name="Tabs" Style="{StaticResource JesterTabControl}"
+                    ItemContainerStyle="{StaticResource JesterTabItem}"
+                    SelectionChanged="Tabs_SelectionChanged"
+                    PreviewMouseDown="Tabs_PreviewMouseDown">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Header}" VerticalAlignment="Center"
+                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" />
+                        <Button Content="&#xE8BB;" FontFamily="Segoe MDL2 Assets" FontSize="8"
+                                Margin="9,0,0,0" Style="{StaticResource TabCloseButton}"
+                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}"
+                                Click="CloseTabButton_Click" ToolTip="Close tab" />
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentPresenter Content="{Binding View}" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
     </DockPanel>
 </local:ThemedWindow>
