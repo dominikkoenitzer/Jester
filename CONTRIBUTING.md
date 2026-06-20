@@ -33,8 +33,7 @@ See the [Project structure](README.md#-project-structure) table in the README. I
 1. **Fork** the repo and create a branch: `git checkout -b feature/short-description`.
 2. Make your change, keeping commits focused. Write clear commit messages.
 3. Verify it builds and runs: `dotnet build -c Release` and a quick manual smoke test.
-4. Update [`CHANGELOG.md`](CHANGELOG.md) under **Unreleased** if it's user-facing.
-5. Open a **pull request** against `main` and fill in the template.
+4. Open a **pull request** against `main` and fill in the template.
 
 ## Reporting bugs & ideas
 
