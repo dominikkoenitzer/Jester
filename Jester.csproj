@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\jester.ico</ApplicationIcon>
+    <AssemblyName>Jester</AssemblyName>
+    <RootNamespace>Jester</RootNamespace>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>Jester</Product>
+    <Authors>Dominik Könitzer</Authors>
+    <Company>Dominik Könitzer</Company>
+    <Copyright>Copyright © 2026 Dominik Könitzer</Copyright>
+    <Description>Jester — a lightweight notepad for Windows, built with C# and WPF.</Description>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="QuestPDF" Version="2026.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\jester.ico" />
+  </ItemGroup>
+
+  <!-- QuestPDF copies its bundled Lato fonts as loose files into the output
+       directory. Jester renders PDFs with system fonts (Consolas, or the user's
+       chosen font), so Lato is never loaded — verified by isolated test. Strip
+       them from the published build so the release stays a single, self-contained
+       portable .exe rather than an .exe plus a LatoFont folder. -->
+  <Target Name="RemoveQuestPdfLatoFonts" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <ResolvedFileToPublish
+        Remove="@(ResolvedFileToPublish)"
+        Condition="$([System.String]::new('%(ResolvedFileToPublish.RelativePath)').StartsWith('LatoFont'))" />
+    </ItemGroup>
+  </Target>
+
+</Project>

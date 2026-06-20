@@ -1,0 +1,10 @@
+# Jester is a Windows-only app and its .editorconfig mandates CRLF line endings.
+# Normalize text in the repo and always check out CRLF so the `dotnet format`
+# CI gate stays deterministic regardless of a contributor's git configuration.
+* text=auto eol=crlf
+
+# Binary assets — Git must never apply line-ending or text filters to these.
+*.png binary
+*.ico binary
+*.pdf binary
+*.snk binary
