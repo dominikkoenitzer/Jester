@@ -39,13 +39,13 @@ jobs:
         run: |
           $publish = "bin/Release/net9.0-windows/win-x64/publish/Jester.exe"
           if (-not (Test-Path $publish)) { throw "Expected build output not found: $publish" }
-          Copy-Item $publish "Jester-${{ github.ref_name }}-win-x64.exe"
+          Copy-Item $publish "Jester.exe"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
         with:
           name: Jester ${{ github.ref_name }}
-          files: Jester-${{ github.ref_name }}-win-x64.exe
+          files: Jester.exe
           generate_release_notes: true
           draft: false
           prerelease: false
