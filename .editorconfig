@@ -1,0 +1,83 @@
+# EditorConfig — https://editorconfig.org
+# Top-most EditorConfig file
+root = true
+
+############################
+# All files
+############################
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+# Markup, project, and data files use 2-space indentation
+[*.{xml,csproj,props,targets,config,xaml,yml,yaml,json}]
+indent_size = 2
+
+# Markdown: trailing whitespace can be a hard line break
+[*.md]
+trim_trailing_whitespace = false
+
+############################
+# C# conventions
+############################
+[*.cs]
+
+# --- using directives ---
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+csharp_using_directive_placement = outside_namespace:suggestion
+
+# --- namespaces ---
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# --- this. qualification (prefer unqualified) ---
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+dotnet_style_qualification_for_event = false:suggestion
+
+# --- var usage ---
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+# --- modern language features ---
+csharp_prefer_braces = true:suggestion
+csharp_style_expression_bodied_methods = false:suggestion
+csharp_style_expression_bodied_properties = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_coalesce_expression = true:suggestion
+csharp_style_throw_expression = true:suggestion
+
+# --- 'new' indentation ---
+csharp_indent_labels = one_less_than_current
+csharp_new_line_before_open_brace = all
+
+############################
+# Naming: private fields => _camelCase
+############################
+dotnet_naming_rule.private_fields_underscore.severity = suggestion
+dotnet_naming_rule.private_fields_underscore.symbols  = private_fields
+dotnet_naming_rule.private_fields_underscore.style    = underscore_camel_case
+
+dotnet_naming_symbols.private_fields.applicable_kinds           = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization  = camel_case
+
+############################
+# Naming: types & members => PascalCase
+############################
+dotnet_naming_rule.members_pascal_case.severity = suggestion
+dotnet_naming_rule.members_pascal_case.symbols  = type_and_members
+dotnet_naming_rule.members_pascal_case.style    = pascal_case
+
+dotnet_naming_symbols.type_and_members.applicable_kinds = class, struct, enum, interface, delegate, property, method, event
+
+dotnet_naming_style.pascal_case.capitalization = pascal_case
