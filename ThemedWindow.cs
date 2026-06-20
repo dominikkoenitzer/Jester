@@ -2,28 +2,85 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace Jester;
 
 /// <summary>
 /// Base window that hosts the custom Jester chrome (purple title bar + caption
 /// buttons defined in Theme.xaml). It wires the standard window commands to the
-/// templated caption buttons and constrains "maximize" to the monitor work area
-/// so a borderless window never covers the taskbar or clips its own content.
+/// templated caption buttons and, because a borderless WindowChrome window overhangs
+/// the monitor when maximized, insets its content by the measured overhang so the
+/// chrome lines up cleanly with the screen and never clips its own title bar.
 /// </summary>
 public class ThemedWindow : Window
 {
+    /// <summary>Content inset applied while maximized to absorb the window's overhang.</summary>
+    public static readonly DependencyProperty ChromeMarginProperty =
+        DependencyProperty.Register(nameof(ChromeMargin), typeof(Thickness), typeof(ThemedWindow),
+            new PropertyMetadata(new Thickness(0)));
+
+    public Thickness ChromeMargin
+    {
+        get => (Thickness)GetValue(ChromeMarginProperty);
+        private set => SetValue(ChromeMarginProperty, value);
+    }
+
     public ThemedWindow()
     {
         CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, (_, _) => SystemCommands.MinimizeWindow(this)));
         CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, (_, _) => SystemCommands.MaximizeWindow(this)));
         CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, (_, _) => SystemCommands.RestoreWindow(this)));
         CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, (_, _) => SystemCommands.CloseWindow(this)));
-        SourceInitialized += (_, _) =>
+    }
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        var handle = new WindowInteropHelper(this).Handle;
+        HwndSource.FromHwnd(handle)?.AddHook(WindowProc);
+        UpdateChromeMargin();
+    }
+
+    protected override void OnStateChanged(EventArgs e)
+    {
+        base.OnStateChanged(e);
+        // The maximized window rect is final by the time WPF raises this, but re-measure
+        // once more after layout settles to be safe on multi-monitor / DPI changes.
+        UpdateChromeMargin();
+        Dispatcher.BeginInvoke(UpdateChromeMargin, System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    /// <summary>
+    /// Measures how far the (maximized) window extends past the monitor's work area and
+    /// converts that physical-pixel overhang into a device-independent content inset.
+    /// When the window is not maximized the inset is zero. If the work-area constraint in
+    /// <see cref="ConstrainMaximizeToWorkArea"/> succeeds there is no overhang and the
+    /// inset is zero too, so the two mechanisms never fight.
+    /// </summary>
+    private void UpdateChromeMargin()
+    {
+        if (WindowState != WindowState.Maximized)
         {
-            var handle = new WindowInteropHelper(this).Handle;
-            HwndSource.FromHwnd(handle)?.AddHook(WindowProc);
-        };
+            ChromeMargin = new Thickness(0);
+            return;
+        }
+
+        var handle = new WindowInteropHelper(this).Handle;
+        if (handle == IntPtr.Zero || !GetWindowRect(handle, out RECT win))
+            return;
+
+        IntPtr monitor = MonitorFromWindow(handle, MONITOR_DEFAULTTONEAREST);
+        var info = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+        if (monitor == IntPtr.Zero || !GetMonitorInfo(monitor, ref info))
+            return;
+
+        RECT work = info.rcWork;
+        Matrix toDip = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformFromDevice ?? Matrix.Identity;
+        Point topLeft = toDip.Transform(new Point(Math.Max(0, work.Left - win.Left), Math.Max(0, work.Top - win.Top)));
+        Point bottomRight = toDip.Transform(new Point(Math.Max(0, win.Right - work.Right), Math.Max(0, win.Bottom - work.Bottom)));
+
+        ChromeMargin = new Thickness(topLeft.X, topLeft.Y, bottomRight.X, bottomRight.Y);
     }
 
     private const int WM_GETMINMAXINFO = 0x0024;
@@ -91,4 +148,7 @@ public class ThemedWindow : Window
 
     [DllImport("user32.dll")]
     private static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
+    [DllImport("user32.dll")]
+    private static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
 }
