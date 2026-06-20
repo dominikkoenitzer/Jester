@@ -6,6 +6,14 @@ name: Release
 on:
   push:
     branches: [ main ]
+    # Only rebuild the release when something that affects the binary changes.
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.gitattributes'
+      - '.editorconfig'
   workflow_dispatch:
 
 permissions:
