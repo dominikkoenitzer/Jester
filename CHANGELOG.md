@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-06-20
+
+### Fixed
+- Maximizing the window no longer overhangs the monitor and clips the title bar and
+  content edges. The chrome now lines up exactly with the screen — and stays clear of
+  the taskbar — by insetting content by the measured overhang, so it works on high-DPI
+  and multi-monitor setups.
+
 ## [1.1.0] - 2026-06-20
 
 ### Added
@@ -47,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Atomic saves (write-to-temp then swap) so an interrupted write can't corrupt the file.
 - BOM-aware encoding detection that preserves the original encoding and line endings.
 
-[Unreleased]: https://github.com/dominikkoenitzer/Jester/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/dominikkoenitzer/Jester/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/dominikkoenitzer/Jester/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/dominikkoenitzer/Jester/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/dominikkoenitzer/Jester/releases/tag/v1.0.0
