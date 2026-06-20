@@ -13,9 +13,25 @@ public static class JesterCommands
         "Save _As...", nameof(SaveAs), typeof(JesterCommands),
         Gestures(new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Shift)));
 
+    public static readonly RoutedUICommand SaveAll = new(
+        "Save A_ll", nameof(SaveAll), typeof(JesterCommands),
+        Gestures(new KeyGesture(Key.S, ModifierKeys.Control | ModifierKeys.Alt)));
+
+    public static readonly RoutedUICommand CloseTab = new(
+        "_Close Tab", nameof(CloseTab), typeof(JesterCommands),
+        Gestures(new KeyGesture(Key.W, ModifierKeys.Control)));
+
     public static readonly RoutedUICommand Exit = new(
         "E_xit", nameof(Exit), typeof(JesterCommands),
-        Gestures(new KeyGesture(Key.W, ModifierKeys.Control)));
+        Gestures(new KeyGesture(Key.Q, ModifierKeys.Control)));
+
+    public static readonly RoutedUICommand NextTab = new(
+        "_Next Tab", nameof(NextTab), typeof(JesterCommands),
+        Gestures(new KeyGesture(Key.Tab, ModifierKeys.Control)));
+
+    public static readonly RoutedUICommand PreviousTab = new(
+        "_Previous Tab", nameof(PreviousTab), typeof(JesterCommands),
+        Gestures(new KeyGesture(Key.Tab, ModifierKeys.Control | ModifierKeys.Shift)));
 
     public static readonly RoutedUICommand FindNext = new(
         "Find _Next", nameof(FindNext), typeof(JesterCommands),
@@ -28,6 +44,10 @@ public static class JesterCommands
     public static readonly RoutedUICommand GoTo = new(
         "_Go To...", nameof(GoTo), typeof(JesterCommands),
         Gestures(new KeyGesture(Key.G, ModifierKeys.Control)));
+
+    public static readonly RoutedUICommand FindInFiles = new(
+        "Find in _Files...", nameof(FindInFiles), typeof(JesterCommands),
+        Gestures(new KeyGesture(Key.F, ModifierKeys.Control | ModifierKeys.Shift)));
 
     public static readonly RoutedUICommand InsertDateTime = new(
         "Time/_Date", nameof(InsertDateTime), typeof(JesterCommands),
