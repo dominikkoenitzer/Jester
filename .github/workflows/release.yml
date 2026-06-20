@@ -42,7 +42,7 @@ jobs:
           Copy-Item $publish "Jester-${{ github.ref_name }}-win-x64.exe"
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Jester ${{ github.ref_name }}
           files: Jester-${{ github.ref_name }}-win-x64.exe
