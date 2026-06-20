@@ -93,8 +93,6 @@ public partial class MainWindow : ThemedWindow
         Bind(JesterCommands.ZoomOut, (_, e) => { e.Handled = true; StepZoom(-0.1); });
         Bind(JesterCommands.RestoreZoom, (_, e) => { e.Handled = true; ApplyZoom(1.0); });
 
-        Bind(JesterCommands.About, (_, e) => { e.Handled = true; ShowAbout(); });
-
         // Editing commands are routed to the active tab's editor, so they work both
         // from the menu (which steals focus) and via keyboard while editing.
         Bind(ApplicationCommands.Undo, (_, e) => { e.Handled = true; ActiveEditor?.Undo(); },
@@ -1000,11 +998,6 @@ public partial class MainWindow : ThemedWindow
             e.Handled = true;
         }
     }
-
-    private void ShowAbout() =>
-        MessageBox.Show(this,
-            "Jester\nA lightweight notepad for Windows.\n\nVersion 1.1.1\nBuilt with C# and WPF on .NET 9.",
-            "About Jester", MessageBoxButton.OK, MessageBoxImage.Information);
 
     // ------------------------------------------------------ Drag & drop support
 

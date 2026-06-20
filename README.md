@@ -7,7 +7,7 @@
 **A lightweight, beautiful notepad for Windows — purple & gold.**
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/dominikkoenitzer/Jester?display_name=tag&sort=semver)](../../releases/latest)
+[![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)
@@ -21,7 +21,7 @@
 ## ⬇ Download
 
 1. Head to the [**latest release**](../../releases/latest).
-2. Download **`Jester-<version>-win-x64.exe`**.
+2. Download **`Jester.exe`**.
 3. Double-click to run. That's it.
 
 It's a single, **portable** file — no installer, and **no .NET install required** (the runtime is bundled). Works on **Windows 10 and 11 (64-bit)**.
