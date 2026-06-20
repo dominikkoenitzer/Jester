@@ -30,11 +30,19 @@ It's a single, **portable** file — no installer, and **no .NET install require
 
 ## ✨ Features
 
-- **Files** — New, Open, Save, Save As, drag-and-drop, and "Open with Jester" from Explorer.
+- **Tabbed editing** — work on many files at once, each with its own undo history and
+  encoding. Close with `Ctrl+W` or middle-click; switch with `Ctrl+Tab`.
+- **Line numbers** — a gutter with the current line highlighted, plus a current-line
+  highlight in the editor (toggle in **View**).
+- **Find in Files** — search a whole folder (`Ctrl+Shift+F`) with filters and subfolders;
+  double-click a result to jump straight to it.
+- **Files** — New, Open (multiple at once), Save, Save As, Save All, **Open Recent**,
+  drag-and-drop, and "Open with Jester" from Explorer.
+- **Session restore** — reopens your window, tabs, and preferences next launch.
 - **Export to PDF** — turn any note into a clean, paginated A4 PDF (`Ctrl+Shift+E`).
 - **Find & Replace** — find, replace, replace all, match case, wrap-around, and direction.
-- **Go To Line**, **insert time/date**, unlimited **undo/redo**.
-- **Format** — word wrap and a font picker (family, size, bold, italic).
+- **Go To Line**, **insert time/date**, **auto-indent**, unlimited **undo/redo**.
+- **Format** — word wrap, a font picker, and line-ending / encoding conversion.
 - **View** — zoom (menu or `Ctrl` + mouse wheel) and a toggleable status bar.
 - **Status bar** — characters, lines, caret position, zoom, line ending, and encoding.
 - **Safe by default** — prompts before discarding unsaved work (including on sign-out/shutdown) and saves atomically so a crash can't corrupt your file.
@@ -44,13 +52,15 @@ It's a single, **portable** file — no installer, and **no .NET install require
 
 | Action | Shortcut | Action | Shortcut |
 | --- | --- | --- | --- |
-| New | `Ctrl+N` | Find | `Ctrl+F` |
+| New Tab | `Ctrl+N` | Find | `Ctrl+F` |
 | Open | `Ctrl+O` | Find Next / Previous | `F3` / `Shift+F3` |
 | Save | `Ctrl+S` | Replace | `Ctrl+H` |
-| Save As | `Ctrl+Shift+S` | Go To Line | `Ctrl+G` |
-| Export to PDF | `Ctrl+Shift+E` | Time/Date | `F5` |
-| Exit | `Ctrl+W` | Zoom In / Out | `Ctrl++` / `Ctrl+-` |
-| Undo / Redo | `Ctrl+Z` / `Ctrl+Y` | Restore Zoom | `Ctrl+0` |
+| Save As | `Ctrl+Shift+S` | Find in Files | `Ctrl+Shift+F` |
+| Save All | `Ctrl+Alt+S` | Go To Line | `Ctrl+G` |
+| Close Tab | `Ctrl+W` | Time/Date | `F5` |
+| Next / Prev Tab | `Ctrl+Tab` / `Ctrl+Shift+Tab` | Zoom In / Out | `Ctrl++` / `Ctrl+-` |
+| Export to PDF | `Ctrl+Shift+E` | Restore Zoom | `Ctrl+0` |
+| Exit | `Ctrl+Q` | Undo / Redo | `Ctrl+Z` / `Ctrl+Y` |
 | Select All | `Ctrl+A` | | |
 
 ## 🛠 Build from source
@@ -77,13 +87,17 @@ The executable lands in `bin/Release/net9.0-windows/win-x64/publish/Jester.exe`.
 
 | Path | Purpose |
 | --- | --- |
-| `App.xaml(.cs)` | Application entry point; opens a command-line file if given. |
-| `MainWindow.xaml(.cs)` | Main window: menus, editor, status bar, and command logic. |
+| `App.xaml(.cs)` | Application entry point, session-end and crash handling. |
+| `MainWindow.xaml(.cs)` | Main window: menus, tabs, status bar, and command logic. |
+| `EditorView.cs` | One document's editor surface (text box + gutter + current-line highlight). |
+| `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
+| `DocumentTab.cs` | Per-tab document state (path, encoding, dirty flag). |
+| `AppSettings.cs` | Loads/saves preferences and the last session as JSON. |
 | `ThemedWindow.cs` | Base window with the custom title bar / chrome. |
 | `Theme.xaml` | The purple & gold theme — palette and control styles. |
 | `JesterCommands.cs` | Custom routed commands and key gestures. |
 | `PdfExporter.cs` | Renders the document to PDF (QuestPDF). |
-| `FindReplaceWindow`, `GoToWindow`, `FontWindow` | Dialogs. |
+| `FindReplaceWindow`, `FindInFilesWindow`, `GoToWindow`, `FontWindow` | Dialogs. |
 | `Assets/jester.ico` | Application icon. |
 
 ## 🤝 Contributing
