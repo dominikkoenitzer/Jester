@@ -1003,7 +1003,7 @@ public partial class MainWindow : ThemedWindow
 
     private void ShowAbout() =>
         MessageBox.Show(this,
-            "Jester\nA lightweight notepad for Windows.\n\nVersion 1.1\nBuilt with C# and WPF on .NET 9.",
+            "Jester\nA lightweight notepad for Windows.\n\nVersion 1.1.1\nBuilt with C# and WPF on .NET 9.",
             "About Jester", MessageBoxButton.OK, MessageBoxImage.Information);
 
     // ------------------------------------------------------ Drag & drop support
