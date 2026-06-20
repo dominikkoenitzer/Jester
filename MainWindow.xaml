@@ -78,10 +78,6 @@
                 <MenuItem x:Name="StatusBarMenuItem" Header="_Status Bar"
                           IsCheckable="True" IsChecked="True" Click="StatusBar_Click" />
             </MenuItem>
-
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About Jester" Command="{x:Static local:JesterCommands.About}" />
-            </MenuItem>
         </Menu>
 
         <Border x:Name="StatusBarControl" DockPanel.Dock="Bottom"
