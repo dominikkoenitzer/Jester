@@ -9,9 +9,6 @@
     <ApplicationIcon>Assets\jester.ico</ApplicationIcon>
     <AssemblyName>Jester</AssemblyName>
     <RootNamespace>Jester</RootNamespace>
-    <Version>1.1.1</Version>
-    <AssemblyVersion>1.1.1.0</AssemblyVersion>
-    <FileVersion>1.1.1.0</FileVersion>
     <Product>Jester</Product>
     <Authors>Dominik Könitzer</Authors>
     <Company>Dominik Könitzer</Company>
