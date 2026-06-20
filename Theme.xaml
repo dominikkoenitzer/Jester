@@ -503,7 +503,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:ThemedWindow}">
                     <Border x:Name="windowBorder" Background="{DynamicResource EditorBackgroundBrush}"
-                            BorderBrush="{DynamicResource PurpleDarkBrush}" BorderThickness="1">
+                            BorderBrush="{DynamicResource PurpleDarkBrush}" BorderThickness="1"
+                            Padding="{TemplateBinding ChromeMargin}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="38" />
