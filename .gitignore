@@ -1,0 +1,18 @@
+# Build output
+bin/
+obj/
+
+# Publish / packaging artifacts
+publish/
+Jester-*-win-x64.exe
+*.nupkg
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# OS files
+.DS_Store
+Thumbs.db

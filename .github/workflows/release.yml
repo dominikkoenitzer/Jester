@@ -1,0 +1,53 @@
+name: Release
+
+# Build and publish a portable single-file Windows build whenever a
+# version tag (e.g. v1.0.0) is pushed.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Publish win-x64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Publish single-file (win-x64)
+        run: >
+          dotnet publish Jester.csproj
+          -c Release
+          -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true
+
+      - name: Stage artifact
+        shell: pwsh
+        run: |
+          $publish = "bin/Release/net9.0-windows/win-x64/publish/Jester.exe"
+          if (-not (Test-Path $publish)) { throw "Expected build output not found: $publish" }
+          Copy-Item $publish "Jester-${{ github.ref_name }}-win-x64.exe"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Jester ${{ github.ref_name }}
+          files: Jester-${{ github.ref_name }}-win-x64.exe
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
