@@ -182,16 +182,31 @@ public partial class MainWindow : ThemedWindow
 
     private void CloseTab(DocumentTab tab)
     {
+        // Remember what the user was actually working on; ConfirmClose may briefly
+        // select `tab` to show its save prompt.
+        var previouslyActive = Active;
+
         if (!ConfirmClose(tab))
             return;
 
         int index = _docs.IndexOf(tab);
+        if (ReferenceEquals(_lastActive, tab))
+            _lastActive = null;
         _docs.Remove(tab);
 
         if (_docs.Count == 0)
+        {
             CreateEmptyTab(select: true);
+        }
+        else if (previouslyActive is not null && !ReferenceEquals(previouslyActive, tab) && _docs.Contains(previouslyActive))
+        {
+            // Closing a background tab must not move the user off their active document.
+            Tabs.SelectedItem = previouslyActive;
+        }
         else
+        {
             Tabs.SelectedIndex = Math.Min(index, _docs.Count - 1);
+        }
     }
 
     private void CloseTabButton_Click(object sender, RoutedEventArgs e)
