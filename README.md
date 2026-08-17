@@ -110,3 +110,9 @@ Jester is free software licensed under the **[GNU GPL v3.0](LICENSE)**.
 Copyright © 2026 dominikkoenitzer.
 
 <div align="center"><sub>Built with C# and WPF on .NET 9.</sub></div>
+
+## Author
+
+**dominikkoenitzer** — software engineer in Zürich, Switzerland.
+
+[dk.punds.ch](https://dk.punds.ch) · [@dominikkoenitzer](https://github.com/dominikkoenitzer) · [dominikkoenitzer@users.noreply.github.com](mailto:dominikkoenitzer@users.noreply.github.com)
