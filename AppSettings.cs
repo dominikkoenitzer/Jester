@@ -35,11 +35,19 @@ internal sealed class AppSettings
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
         "Jester", "settings.json");
 
-    public static AppSettings Load()
+    public static AppSettings Load() => LoadFrom(SettingsPath);
+
+    public void Save() => SaveTo(SettingsPath);
+
+    /// <summary>
+    /// Reads settings from an explicit path. Split out from <see cref="Load"/> so
+    /// tests can exercise the fallback behaviour without touching the real
+    /// <c>%AppData%</c> file.
+    /// </summary>
+    internal static AppSettings LoadFrom(string path)
     {
         try
         {
-            string path = SettingsPath;
             if (File.Exists(path))
             {
                 var loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path));
@@ -54,11 +62,11 @@ internal sealed class AppSettings
         return new AppSettings();
     }
 
-    public void Save()
+    /// <summary>Writes settings to an explicit path. See <see cref="LoadFrom"/>.</summary>
+    internal void SaveTo(string path)
     {
         try
         {
-            string path = SettingsPath;
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
             File.WriteAllText(path, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
         }

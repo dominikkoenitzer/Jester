@@ -25,11 +25,18 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      # The repository has both Jester.csproj and Jester.sln at its root, so every
+      # command names the solution explicitly rather than relying on discovery.
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore Jester.sln
 
       - name: Build (Release)
-        run: dotnet build -c Release --no-restore
+        run: dotnet build Jester.sln -c Release --no-restore
+
+      # Covers the logic that does not need a window: find/replace, settings
+      # persistence, and the command table. The WPF views are still manual.
+      - name: Test
+        run: dotnet test Jester.sln -c Release --no-build --verbosity normal
 
       - name: Verify formatting
-        run: dotnet format --verify-no-changes --no-restore
+        run: dotnet format Jester.sln --verify-no-changes --no-restore
