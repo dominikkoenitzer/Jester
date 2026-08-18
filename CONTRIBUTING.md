@@ -21,9 +21,21 @@ See the [Project structure](README.md#-project-structure) table in the README. I
 - The look is centralized in **`Theme.xaml`** — change colors/styles there, not per-control.
 - Custom window chrome is in **`ThemedWindow.cs`**; commands in **`JesterCommands.cs`**.
 
+## Tests
+
+```sh
+dotnet test Jester.sln
+```
+
+xunit tests live in [`tests/Jester.Tests`](tests/Jester.Tests) and cover the
+logic that runs without a window: `TextSearch` (find/replace, including wrap and
+self-matching replacements), `AppSettings` (JSON round-trip and the fallbacks
+that keep a corrupt file from blocking startup), and `JesterCommands` (every
+shortcut, and that no two commands share a gesture). CI runs the same command.
+
 ## Coding style
 
-- Formatting is enforced by [`.editorconfig`](.editorconfig). Run `dotnet format` before committing.
+- Formatting is enforced by [`.editorconfig`](.editorconfig). Run `dotnet format Jester.sln` before committing.
 - Match the surrounding code: 4-space indentation, `PascalCase` for members, `_camelCase` for private fields.
 - Keep methods small and intention-revealing; prefer clarity over cleverness.
 - The build is warning-clean — please keep it that way.
@@ -32,8 +44,9 @@ See the [Project structure](README.md#-project-structure) table in the README. I
 
 1. **Fork** the repo and create a branch: `git checkout -b feature/short-description`.
 2. Make your change, keeping commits focused. Write clear commit messages.
-3. Verify it builds and runs: `dotnet build -c Release` and a quick manual smoke test.
-4. Open a **pull request** against `main` and fill in the template.
+3. Verify it builds and passes: `dotnet build Jester.sln -c Release` and `dotnet test Jester.sln`.
+4. Logic that does not need a window — search, settings, commands — should come with a test. The WPF views have no automated coverage, so give those a quick manual smoke test in the running app.
+5. Open a **pull request** against `main` and fill in the template.
 
 ## Reporting bugs & ideas
 

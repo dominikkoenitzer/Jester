@@ -8,6 +8,7 @@
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
 [![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
+[![tests](https://img.shields.io/badge/tests-57%20passing-512BD4)](tests/Jester.Tests)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)
@@ -83,6 +84,16 @@ dotnet publish Jester.csproj -c Release -r win-x64 --self-contained true ^
 
 The executable lands in `bin/Release/net9.0-windows/win-x64/publish/Jester.exe`.
 
+### Tests
+
+```sh
+dotnet test Jester.sln
+```
+
+57 xunit tests cover the parts that work without a window: find/replace,
+settings persistence, and the command table. The WPF views are verified by
+running the app. CI runs the same command.
+
 ## 🧱 Project structure
 
 | Path | Purpose |
@@ -95,6 +106,8 @@ The executable lands in `bin/Release/net9.0-windows/win-x64/publish/Jester.exe`.
 | `MainWindow.View.cs` | Word wrap, line numbers, font, encoding, line endings, zoom. |
 | `MainWindow.Editing.cs` | Auto-indent, ctrl-wheel zoom, drag and drop. |
 | `MainWindow.Status.cs` | Title bar and status bar updates. |
+| `TextSearch.cs` | Find/replace arithmetic, with no editor attached. |
+| `tests/Jester.Tests/` | xunit suite. |
 | `EditorView.cs` | One document's editor surface (text box + gutter + current-line highlight). |
 | `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
 | `DocumentTab.cs` | Per-tab document state (path, encoding, dirty flag). |

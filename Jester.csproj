@@ -25,6 +25,21 @@
     <Resource Include="Assets\jester.ico" />
   </ItemGroup>
 
+  <!-- Jester.csproj sits at the repository root, so the SDK's default glob would
+       otherwise pull the test project's sources into the app assembly. -->
+  <ItemGroup>
+    <Compile Remove="tests/**" />
+    <None Remove="tests/**" />
+    <Page Remove="tests/**" />
+    <Resource Remove="tests/**" />
+  </ItemGroup>
+
+  <!-- AppSettings and TextSearch are internal: the app is a single assembly and
+       they are not public API. The test project needs to see them. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Jester.Tests" />
+  </ItemGroup>
+
   <!-- QuestPDF copies its bundled Lato fonts as loose files into the output
        directory. Jester renders PDFs with system fonts (Consolas, or the user's
        chosen font), so Lato is never loaded — verified by isolated test. Strip
