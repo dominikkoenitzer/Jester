@@ -88,7 +88,13 @@ The executable lands in `bin/Release/net9.0-windows/win-x64/publish/Jester.exe`.
 | Path | Purpose |
 | --- | --- |
 | `App.xaml(.cs)` | Application entry point, session-end and crash handling. |
-| `MainWindow.xaml(.cs)` | Main window: menus, tabs, status bar, and command logic. |
+| `MainWindow.xaml(.cs)` | The main window: fields, command bindings, settings/session, shutdown. |
+| `MainWindow.Tabs.cs` | Creating, switching and closing document tabs. |
+| `MainWindow.Files.cs` | Open, save, PDF export and the recent-files list. |
+| `MainWindow.Search.cs` | Find, replace, find-in-files and go-to-line. |
+| `MainWindow.View.cs` | Word wrap, line numbers, font, encoding, line endings, zoom. |
+| `MainWindow.Editing.cs` | Auto-indent, ctrl-wheel zoom, drag and drop. |
+| `MainWindow.Status.cs` | Title bar and status bar updates. |
 | `EditorView.cs` | One document's editor surface (text box + gutter + current-line highlight). |
 | `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
 | `DocumentTab.cs` | Per-tab document state (path, encoding, dirty flag). |
