@@ -44,30 +44,12 @@ public partial class MainWindow
         if (string.IsNullOrEmpty(search) || ActiveEditor is not { } ed)
             return 0;
 
-        var comparison = matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-        string text = ed.Text;
-        var builder = new StringBuilder(text.Length);
-        int index = 0, count = 0;
-
-        while (true)
-        {
-            int found = text.IndexOf(search, index, comparison);
-            if (found < 0)
-            {
-                builder.Append(text, index, text.Length - index);
-                break;
-            }
-
-            builder.Append(text, index, found - index);
-            builder.Append(replace);
-            index = found + search.Length;
-            count++;
-        }
+        var (replaced, count) = TextSearch.ReplaceAll(ed.Text, search, replace, matchCase);
 
         if (count > 0)
         {
             int caret = ed.CaretIndex;
-            ed.Text = builder.ToString();
+            ed.Text = replaced;
             ed.CaretIndex = Math.Min(caret, ed.Text.Length);
         }
 
@@ -80,26 +62,11 @@ public partial class MainWindow
             return false;
 
         string text = ed.Text;
-        if (text.Length == 0)
-            return false;
 
-        var comparison = _matchCase ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
-        int index;
-
-        if (searchDown)
-        {
-            int start = Math.Min(ed.SelectionStart + ed.SelectionLength, text.Length);
-            index = text.IndexOf(_searchText, start, comparison);
-            if (index < 0 && _wrapAround)
-                index = text.IndexOf(_searchText, 0, comparison);
-        }
-        else
-        {
-            int start = ed.SelectionStart - 1;
-            index = start >= 0 ? text.LastIndexOf(_searchText, start, comparison) : -1;
-            if (index < 0 && _wrapAround)
-                index = text.LastIndexOf(_searchText, text.Length - 1, comparison);
-        }
+        // Searching down resumes after the current selection so repeated F3
+        // advances; searching up starts just before it, for the same reason.
+        int from = searchDown ? ed.SelectionStart + ed.SelectionLength : ed.SelectionStart - 1;
+        int index = TextSearch.FindNext(text, _searchText, from, searchDown, _matchCase, _wrapAround);
 
         if (index < 0)
             return false;
