@@ -5,11 +5,11 @@ namespace Jester;
 /// <summary>
 /// The find/replace text arithmetic, with no editor attached.
 ///
-/// The tricky parts of searching — where a backwards scan starts, when a wrap
-/// is allowed, how far to advance so a replacement containing the search term
-/// cannot match itself — are the same whether the text came from an open tab or
-/// a file on disk. Keeping them here means one implementation, covered by tests,
-/// rather than one buried in each caller.
+/// The tricky parts of searching are the same whether the text came from an
+/// open tab or a file on disk: where a backwards scan starts, when a wrap is
+/// allowed, and how far to advance so a replacement containing the search term
+/// cannot match itself. Keeping them here means one implementation with tests
+/// over it, instead of a copy buried in each caller.
 /// </summary>
 internal static class TextSearch
 {

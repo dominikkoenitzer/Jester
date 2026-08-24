@@ -3,7 +3,7 @@
 # CI gate stays deterministic regardless of a contributor's git configuration.
 * text=auto eol=crlf
 
-# Binary assets — Git must never apply line-ending or text filters to these.
+# Binary assets: Git must never apply line-ending or text filters to these.
 *.png binary
 *.ico binary
 *.pdf binary
