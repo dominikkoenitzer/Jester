@@ -13,7 +13,7 @@
     <Authors>Dominik Könitzer</Authors>
     <Company>Dominik Könitzer</Company>
     <Copyright>Copyright © 2026 Dominik Könitzer</Copyright>
-    <Description>Jester — a lightweight notepad for Windows, built with C# and WPF.</Description>
+    <Description>Jester, a lightweight notepad for Windows, built with C# and WPF.</Description>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
@@ -42,9 +42,9 @@
 
   <!-- QuestPDF copies its bundled Lato fonts as loose files into the output
        directory. Jester renders PDFs with system fonts (Consolas, or the user's
-       chosen font), so Lato is never loaded — verified by isolated test. Strip
-       them from the published build so the release stays a single, self-contained
-       portable .exe rather than an .exe plus a LatoFont folder. -->
+       chosen font), so Lato is never loaded, which an isolated test confirms.
+       Strip them from the published build so the release stays a single
+       self-contained portable .exe and not an .exe plus a LatoFont folder. -->
   <Target Name="RemoveQuestPdfLatoFonts" AfterTargets="ComputeFilesToPublish">
     <ItemGroup>
       <ResolvedFileToPublish

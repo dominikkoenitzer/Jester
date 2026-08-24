@@ -15,10 +15,10 @@ Please make sure you're on the newest version before reporting.
 
 Instead, use one of these private channels:
 
-- **GitHub** — open a private report from the repository's
+- **GitHub:** open a private report from the repository's
   **Security → Report a vulnerability** tab. See
   [Privately reporting a security vulnerability](https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability).
-- **Email** — dominik.koenitzer@gmail.com
+- **Email:** dominik.koenitzer@gmail.com
 
 Please include:
 

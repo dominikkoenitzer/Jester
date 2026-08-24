@@ -4,7 +4,7 @@
 
 # Jester
 
-**A lightweight, beautiful notepad for Windows — purple & gold.**
+**A lightweight, beautiful notepad for Windows, in purple and gold.**
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
 [![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
@@ -13,43 +13,43 @@
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)
 
-[**⬇ Download**](#-download) · [Features](#-features) · [Shortcuts](#-keyboard-shortcuts) · [Build](#-build-from-source) · [Contributing](#-contributing)
+[**Download**](#download) · [Features](#features) · [Shortcuts](#keyboard-shortcuts) · [Build](#build-from-source) · [Contributing](#contributing)
 
 <img src="screenshot.png" width="760" alt="Jester screenshot" />
 
 </div>
 
-## ⬇ Download
+## Download
 
 1. Head to the [**latest release**](../../releases/latest).
 2. Download **`Jester.exe`**.
 3. Double-click to run. That's it.
 
-It's a single, **portable** file — no installer, and **no .NET install required** (the runtime is bundled). Works on **Windows 10 and 11 (64-bit)**.
+It's a single **portable** file. No installer, and no .NET install required, since the runtime is bundled. Works on **Windows 10 and 11 (64-bit)**.
 
-> First launch may show a SmartScreen prompt because the build is unsigned — choose *More info → Run anyway*.
+> First launch may show a SmartScreen prompt because the build is unsigned. Choose *More info*, then *Run anyway*.
 
-## ✨ Features
+## Features
 
-- **Tabbed editing** — work on many files at once, each with its own undo history and
-  encoding. Close with `Ctrl+W` or middle-click; switch with `Ctrl+Tab`.
-- **Line numbers** — a gutter with the current line highlighted, plus a current-line
+- **Tabbed editing.** Work on many files at once, each with its own undo history and
+  encoding. Close with `Ctrl+W` or middle-click, switch with `Ctrl+Tab`.
+- **Line numbers.** A gutter with the current line highlighted, plus a current-line
   highlight in the editor (toggle in **View**).
-- **Find in Files** — search a whole folder (`Ctrl+Shift+F`) with filters and subfolders;
-  double-click a result to jump straight to it.
-- **Files** — New, Open (multiple at once), Save, Save As, Save All, **Open Recent**,
+- **Find in Files.** Search a whole folder (`Ctrl+Shift+F`) with filters and subfolders,
+  then double-click a result to jump straight to it.
+- **Files.** New, Open (multiple at once), Save, Save As, Save All, **Open Recent**,
   drag-and-drop, and "Open with Jester" from Explorer.
-- **Session restore** — reopens your window, tabs, and preferences next launch.
-- **Export to PDF** — turn any note into a clean, paginated A4 PDF (`Ctrl+Shift+E`).
-- **Find & Replace** — find, replace, replace all, match case, wrap-around, and direction.
+- **Session restore.** Reopens your window, tabs and preferences next launch.
+- **Export to PDF.** Turn any note into a clean, paginated A4 PDF (`Ctrl+Shift+E`).
+- **Find and replace,** with replace all, match case, wrap-around and direction.
 - **Go To Line**, **insert time/date**, **auto-indent**, unlimited **undo/redo**.
-- **Format** — word wrap, a font picker, and line-ending / encoding conversion.
-- **View** — zoom (menu or `Ctrl` + mouse wheel) and a toggleable status bar.
-- **Status bar** — characters, lines, caret position, zoom, line ending, and encoding.
-- **Safe by default** — prompts before discarding unsaved work (including on sign-out/shutdown) and saves atomically so a crash can't corrupt your file.
-- **Encoding aware** — detects UTF-8/UTF-16 BOMs and preserves the file's original encoding and line endings.
+- **Format.** Word wrap, a font picker, and line-ending or encoding conversion.
+- **View.** Zoom, from the menu or `Ctrl` and the mouse wheel, and a toggleable status bar.
+- **Status bar.** Characters, lines, caret position, zoom, line ending and encoding.
+- **Safe by default.** Prompts before discarding unsaved work, including on sign-out or shutdown, and saves atomically so a crash can't corrupt your file.
+- **Encoding aware.** Detects UTF-8 and UTF-16 BOMs and preserves the file's original encoding and line endings.
 
-## ⌨ Keyboard shortcuts
+## Keyboard shortcuts
 
 | Action | Shortcut | Action | Shortcut |
 | --- | --- | --- | --- |
@@ -64,7 +64,7 @@ It's a single, **portable** file — no installer, and **no .NET install require
 | Exit | `Ctrl+Q` | Undo / Redo | `Ctrl+Z` / `Ctrl+Y` |
 | Select All | `Ctrl+A` | | |
 
-## 🛠 Build from source
+## Build from source
 
 **Prerequisites:** [.NET 9 SDK](https://dotnet.microsoft.com/download) on Windows.
 
@@ -94,7 +94,7 @@ dotnet test Jester.sln
 settings persistence, and the command table. The WPF views are verified by
 running the app. CI runs the same command.
 
-## 🧱 Project structure
+## Project structure
 
 | Path | Purpose |
 | --- | --- |
@@ -113,25 +113,24 @@ running the app. CI runs the same command.
 | `DocumentTab.cs` | Per-tab document state (path, encoding, dirty flag). |
 | `AppSettings.cs` | Loads/saves preferences and the last session as JSON. |
 | `ThemedWindow.cs` | Base window with the custom title bar / chrome. |
-| `Theme.xaml` | The purple & gold theme — palette and control styles. |
+| `Theme.xaml` | The purple and gold theme: palette and control styles. |
 | `JesterCommands.cs` | Custom routed commands and key gestures. |
 | `PdfExporter.cs` | Renders the document to PDF (QuestPDF). |
 | `FindReplaceWindow`, `FindInFilesWindow`, `GoToWindow`, `FontWindow` | Dialogs. |
 | `Assets/jester.ico` | Application icon. |
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md). Found a bug or have an idea? [Open an issue](../../issues/new/choose).
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md), and open an issue if you find a bug or have an idea.
 
-## 📄 License
+## License
 
 Jester is free software licensed under the **[GNU GPL v3.0](LICENSE)**.
 Copyright © 2026 Dominik Könitzer.
 
-<div align="center"><sub>Built with C# and WPF on .NET 9.</sub></div>
 
 ## Author
 
-**Dominik Könitzer** — software engineer in Zürich, Switzerland.
+**Dominik Könitzer**, software engineer in Zürich, Switzerland.
 
 [dk.punds.ch](https://dk.punds.ch) · [CV](https://dk.punds.ch/cv) · [@dominikkoenitzer](https://github.com/dominikkoenitzer) · [dominik.koenitzer@gmail.com](mailto:dominik.koenitzer@gmail.com)

@@ -5,9 +5,9 @@ using Xunit;
 namespace Jester.Tests;
 
 /// <summary>
-/// The custom command table. Two commands sharing a key gesture is a silent
-/// failure — WPF binds whichever it reaches first and the other shortcut simply
-/// stops working, with no build error and nothing visible in the menus.
+/// The custom command table. Two commands sharing a key gesture fail silently:
+/// WPF binds whichever it reaches first and the other shortcut stops working,
+/// with no build error and nothing visible in the menus.
 /// </summary>
 public class JesterCommandsTests
 {

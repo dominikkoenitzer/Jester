@@ -3,7 +3,7 @@ using Xunit;
 namespace Jester.Tests;
 
 /// <summary>
-/// Find and replace. The cases that matter are the boundaries — where a scan
+/// Find and replace. The cases that matter are the boundaries: where a scan
 /// starts, whether it wraps, and whether a replacement can match itself.
 /// </summary>
 public class TextSearchTests
