@@ -18,7 +18,7 @@ dotnet run            # launch the app
 See the [Project structure](README.md#-project-structure) table in the README. In short:
 
 - UI lives in the `*.xaml` files; logic in their `*.xaml.cs` partners.
-- The look is centralized in **`Theme.xaml`** — change colors/styles there, not per-control.
+- The look is centralized in **`Theme.xaml`**, so change colors and styles there, not per-control.
 - Custom window chrome is in **`ThemedWindow.cs`**; commands in **`JesterCommands.cs`**.
 
 ## Tests
@@ -38,14 +38,14 @@ shortcut, and that no two commands share a gesture). CI runs the same command.
 - Formatting is enforced by [`.editorconfig`](.editorconfig). Run `dotnet format Jester.sln` before committing.
 - Match the surrounding code: 4-space indentation, `PascalCase` for members, `_camelCase` for private fields.
 - Keep methods small and intention-revealing; prefer clarity over cleverness.
-- The build is warning-clean — please keep it that way.
+- The build is warning-clean. Please keep it that way.
 
 ## Making a change
 
 1. **Fork** the repo and create a branch: `git checkout -b feature/short-description`.
 2. Make your change, keeping commits focused. Write clear commit messages.
 3. Verify it builds and passes: `dotnet build Jester.sln -c Release` and `dotnet test Jester.sln`.
-4. Logic that does not need a window — search, settings, commands — should come with a test. The WPF views have no automated coverage, so give those a quick manual smoke test in the running app.
+4. Logic that does not need a window (search, settings, commands) should come with a test. The WPF views have no automated coverage, so give those a quick manual smoke test in the running app.
 5. Open a **pull request** against `main` and fill in the template.
 
 ## Reporting bugs & ideas
@@ -55,7 +55,7 @@ steps to reproduce, and what you expected versus what happened.
 
 ## Be respectful
 
-Please keep all interactions — issues, pull requests, and discussions — kind, respectful, and constructive. Be welcoming to newcomers and assume good faith.
+Please keep issues, pull requests and discussions kind, respectful and constructive. Be welcoming to newcomers and assume good faith.
 
 ## License
 

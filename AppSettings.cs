@@ -5,8 +5,8 @@ namespace Jester;
 
 /// <summary>
 /// User preferences and last session, persisted as JSON under
-/// <c>%AppData%\Jester\settings.json</c>. Loading and saving never throw — a missing
-/// or corrupt file simply falls back to defaults so the app always starts.
+/// <c>%AppData%\Jester\settings.json</c>. Loading and saving never throw; a missing
+/// or corrupt file falls back to defaults so the app always starts.
 /// </summary>
 internal sealed class AppSettings
 {

@@ -9,7 +9,7 @@ internal static class PdfExporter
 {
     static PdfExporter()
     {
-        // QuestPDF Community licence — free for individuals and small businesses.
+        // QuestPDF Community licence: free for individuals and small businesses.
         QuestPDF.Settings.License = LicenseType.Community;
     }
 
