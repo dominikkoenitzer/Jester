@@ -177,7 +177,7 @@ public partial class MainWindow
             FindResultsHeader.Text = results.Count == 0
                 ? $"No matches for \"{search}\""
                 : $"{results.Count:N0} match(es) in {files:N0} file(s) for \"{search}\""
-                  + (results.Count >= MaxFindResults ? "  —  showing first " + MaxFindResults.ToString("N0") : "");
+                  + (results.Count >= MaxFindResults ? " (showing first " + MaxFindResults.ToString("N0") + ")" : "");
         }
         catch (Exception ex)
         {

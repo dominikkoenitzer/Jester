@@ -36,7 +36,7 @@ public partial class MainWindow
     {
         var tab = Active;
         string name = tab?.Name ?? "Untitled";
-        Title = $"{(tab?.IsDirty == true ? "*" : "")}{name} — {AppName}";
+        Title = $"{(tab?.IsDirty == true ? "*" : "")}{name} - {AppName}";
     }
 
     private void UpdateDocumentInfo()
