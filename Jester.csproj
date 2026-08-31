@@ -10,9 +10,9 @@
     <AssemblyName>Jester</AssemblyName>
     <RootNamespace>Jester</RootNamespace>
     <Product>Jester</Product>
-    <Authors>dominikkoenitzer</Authors>
-    <Company>dominikkoenitzer</Company>
-    <Copyright>Copyright © 2026 dominikkoenitzer</Copyright>
+    <Authors>Jester</Authors>
+    <Company>Jester</Company>
+    <Copyright>Copyright © 2026 Jester</Copyright>
     <Description>Jester, a lightweight notepad for Windows, built with C# and WPF.</Description>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
