@@ -126,11 +126,10 @@ Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md), and o
 ## License
 
 Jester is free software licensed under the **[GNU GPL v3.0](LICENSE)**.
-Copyright © 2026 dominikkoenitzer.
+Copyright © 2026 Jester.
 
 
 ## Author
 
-**dominikkoenitzer**, software engineer in Zürich, Switzerland.
+Built and written by [@dominikkoenitzer](https://github.com/dominikkoenitzer).
 
-[dk.punds.ch](https://dk.punds.ch) · [CV](https://dk.punds.ch/cv) · [@dominikkoenitzer](https://github.com/dominikkoenitzer) · [dominikkoenitzer@users.noreply.github.com](mailto:dominikkoenitzer@users.noreply.github.com)
