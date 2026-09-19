@@ -6,10 +6,11 @@ on:
   pull_request:
     branches: [ main ]
 
-# Allow only one concurrent run per ref; cancel stale runs.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # A second push to the default branch used to cancel the run for the first one, so that commit was never
+  # checked by anything. Only a superseded pull request push is safe to drop.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
