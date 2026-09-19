@@ -269,7 +269,12 @@ public partial class MainWindow
     private void OpenSearchResult(FindResult result)
     {
         OpenFile(result.FilePath);
-        if (ActiveEditor is not { } ed)
+
+        // OpenFile reports a failure and returns, leaving an unrelated document
+        // active; moving the caret there would scroll the user off their place.
+        if (Active is not { } tab || !string.Equals(tab.FilePath, result.FilePath, StringComparison.OrdinalIgnoreCase))
+            return;
+        if (tab.Editor is not { } ed)
             return;
 
         int index = CharIndexOf(ed.Text, result.Line, result.Column);

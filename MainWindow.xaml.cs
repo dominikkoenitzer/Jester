@@ -131,7 +131,7 @@ public partial class MainWindow : ThemedWindow
         try { _fontFamily = new FontFamily(_settings.FontFamily); }
         catch { _fontFamily = new FontFamily("Consolas"); }
 
-        _baseFontSizePoints = _settings.FontSize;
+        _baseFontSizePoints = Math.Clamp(_settings.FontSize, 1, 512);
         _bold = _settings.Bold;
         _italic = _settings.Italic;
         _zoom = Math.Clamp(_settings.Zoom, 0.2, 5.0);
