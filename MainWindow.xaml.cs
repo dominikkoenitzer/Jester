@@ -119,9 +119,22 @@ public partial class MainWindow : ThemedWindow
         else if (ed.CaretIndex < ed.Text.Length)
         {
             int caret = ed.CaretIndex;
-            ed.Text = ed.Text.Remove(caret, 1);
+            ed.Text = ed.Text.Remove(caret, DeleteLengthAt(ed.Text, caret));
             ed.CaretIndex = caret;
         }
+    }
+
+    // A CRLF pair and a surrogate pair are each one character to the reader, and
+    // removing half of either leaves a stray newline or an unpaired code unit.
+    private static int DeleteLengthAt(string text, int index)
+    {
+        if (index + 1 >= text.Length)
+            return 1;
+
+        if (text[index] == '\r' && text[index + 1] == '\n')
+            return 2;
+
+        return char.IsHighSurrogate(text[index]) && char.IsLowSurrogate(text[index + 1]) ? 2 : 1;
     }
 
     // ----------------------------------------------------- Settings / session
