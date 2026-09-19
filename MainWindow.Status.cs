@@ -131,12 +131,18 @@ public partial class MainWindow
         _ => encoding.WebName.ToUpperInvariant(),
     };
 
+    // A line break is a newline, or a carriage return that is not part of a CRLF
+    // pair. Counting only newlines reported a Macintosh (CR) file as one line while
+    // the status bar described it as CR in the same breath.
+    private static bool IsLineBreak(string text, int index) =>
+        text[index] == '\n' || (text[index] == '\r' && (index + 1 == text.Length || text[index + 1] != '\n'));
+
     private static int GetLogicalLine(int charIndex, string text)
     {
         int line = 1;
         int limit = Math.Min(charIndex, text.Length);
         for (int i = 0; i < limit; i++)
-            if (text[i] == '\n')
+            if (IsLineBreak(text, i))
                 line++;
         return line;
     }
@@ -144,8 +150,8 @@ public partial class MainWindow
     private static int GetLogicalLineCount(string text)
     {
         int lines = 1;
-        foreach (char c in text)
-            if (c == '\n')
+        for (int i = 0; i < text.Length; i++)
+            if (IsLineBreak(text, i))
                 lines++;
         return lines;
     }

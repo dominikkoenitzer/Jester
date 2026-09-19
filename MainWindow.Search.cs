@@ -287,7 +287,7 @@ public partial class MainWindow
     {
         int current = 1, index = 0;
         while (current < line && index < text.Length)
-            if (text[index++] == '\n')
+            if (IsLineBreak(text, index++))
                 current++;
         return Math.Min(index + (column - 1), text.Length);
     }
