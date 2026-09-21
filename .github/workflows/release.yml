@@ -38,6 +38,18 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
+      # This fires on the same push as CI rather than after it, so a red CI
+      # cannot stop the rolling release from shipping. Everything CI would
+      # have said has to be said here too, before anything is published.
+      - name: Restore
+        run: dotnet restore Jester.sln
+
+      - name: Test
+        run: dotnet test Jester.sln -c Release --verbosity normal
+
+      - name: Verify formatting
+        run: dotnet format Jester.sln --verify-no-changes --no-restore
+
       - name: Publish single-file (win-x64)
         run: >
           dotnet publish Jester.csproj
