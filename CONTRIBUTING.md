@@ -15,7 +15,7 @@ dotnet run            # launch the app
 
 ## Project layout
 
-See the [Project structure](README.md#-project-structure) table in the README. In short:
+See the [Project structure](README.md#project-structure) table in the README. In short:
 
 - UI lives in the `*.xaml` files; logic in their `*.xaml.cs` partners.
 - The look is centralized in **`Theme.xaml`**, so change colors and styles there, not per-control.
