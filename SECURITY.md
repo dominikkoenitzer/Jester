@@ -7,7 +7,7 @@ Please make sure you're on the newest version before reporting.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
+| The rolling `latest` release | :white_check_mark: |
 
 ## Reporting a vulnerability
 
