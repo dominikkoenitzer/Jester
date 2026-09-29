@@ -196,8 +196,7 @@ public partial class MainWindow : ThemedWindow
             .Where(a => !a.StartsWith('-') && !a.StartsWith('/'))
             .ToList();
 
-        var toOpen = commandLineFiles.Count > 0 ? commandLineFiles : _settings.OpenFiles;
-        foreach (string path in toOpen)
+        foreach (string path in StartupFiles(_settings.OpenFiles, commandLineFiles))
         {
             if (!File.Exists(path))
                 continue;
@@ -216,10 +215,38 @@ public partial class MainWindow : ThemedWindow
         if (_docs.Count == 0)
             CreateEmptyTab(select: false);
 
-        int index = commandLineFiles.Count > 0
-            ? _docs.Count - 1
+        // A command-line file is what the user just asked for, so it gets the focus. Look
+        // it up by path: it may have been in the session already, or failed to open.
+        string? requestedPath = null;
+        if (commandLineFiles.Count > 0)
+        {
+            try { requestedPath = Path.GetFullPath(commandLineFiles[^1]); }
+            catch { /* an invalid path was skipped above as well */ }
+        }
+        var requested = requestedPath is null ? null : _docs.FirstOrDefault(d =>
+            string.Equals(d.FilePath, requestedPath, StringComparison.OrdinalIgnoreCase));
+
+        Tabs.SelectedIndex = requested is not null
+            ? _docs.IndexOf(requested)
             : Math.Clamp(_settings.ActiveTab, 0, _docs.Count - 1);
-        Tabs.SelectedIndex = index;
+    }
+
+    /// <summary>The files to open at startup: the previous session, then any command-line
+    /// files that are not already part of it. Opening only the command-line files would
+    /// drop the session tabs, and closing would then save that smaller list over it.</summary>
+    internal static List<string> StartupFiles(IReadOnlyList<string> session, IReadOnlyList<string> commandLine)
+    {
+        var files = new List<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (string path in session.Concat(commandLine))
+        {
+            string full;
+            try { full = Path.GetFullPath(path); }
+            catch { continue; }
+            if (seen.Add(full))
+                files.Add(full);
+        }
+        return files;
     }
 
     private void SaveSettings()
