@@ -100,6 +100,7 @@ public partial class MainWindow
         {
             SafeWrite(path, tab.Editor.Text, tab.Encoding);
             tab.FilePath = path;
+            tab.Disk = DiskStamp.Of(path);
             tab.IsDirty = false;
             AddRecentFile(path);
             if (ReferenceEquals(tab, Active))

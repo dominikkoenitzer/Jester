@@ -42,6 +42,7 @@ public partial class MainWindow
 
         tab.FilePath = path;
         tab.Encoding = encoding;
+        tab.Disk = path is null ? null : DiskStamp.Of(path);
         tab.IsDirty = false;
         tab.View.SetTotalLines(GetLogicalLineCount(text));
     }
