@@ -52,24 +52,27 @@ public partial class MainWindow
         if (ActiveEditor is not { } ed)
             return;
 
-        string text = ed.Text;
-        int caret = ed.SelectionStart;
+        var (line, column) = LineAndColumnAt(ed.Text, ed.SelectionStart);
+        int selection = ed.SelectionLength;
+        PositionInfo.Text = selection > 0
+            ? $"Ln {line}, Col {column}   ({selection:N0} selected)"
+            : $"Ln {line}, Col {column}";
+    }
+
+    /// <summary>The 1-based line and column of a caret position, as the status bar shows them.</summary>
+    internal static (int Line, int Column) LineAndColumnAt(string text, int caret)
+    {
         int line = 1, lineStart = 0;
         int limit = Math.Min(caret, text.Length);
         for (int i = 0; i < limit; i++)
         {
-            if (text[i] == '\n')
+            if (IsLineBreak(text, i))
             {
                 line++;
                 lineStart = i + 1;
             }
         }
-
-        int column = caret - lineStart + 1;
-        int selection = ed.SelectionLength;
-        PositionInfo.Text = selection > 0
-            ? $"Ln {line}, Col {column}   ({selection:N0} selected)"
-            : $"Ln {line}, Col {column}";
+        return (line, caret - lineStart + 1);
     }
 
     private void UpdateEncodingInfo() =>
