@@ -1,3 +1,5 @@
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Threading;
 
 namespace Jester;
@@ -61,5 +63,53 @@ public partial class MainWindow
         var snapshot = CaptureSession();
         long sequence = _session.NextSequence();
         Task.Run(() => _session.Write(snapshot, sequence));
+    }
+
+    /// <summary>Opens the tabs of every stored session that no running window owns, in
+    /// their order, unsaved edits included; returns the tab to select.</summary>
+    private int RestoreStoredTabs()
+    {
+        var session = SessionState.Merge(_session.ClaimOrphans());
+        var opened = session.Tabs.Select(RestoreTab).ToList();
+        return SessionState.RestoredActive(opened, session.ActiveTab);
+    }
+
+    private bool RestoreTab(SessionTab stored)
+    {
+        if (!stored.IsDirty)
+        {
+            var saved = stored.Path is null ? null : OpenStartupFile(stored.Path);
+            if (saved is not null)
+                RestoreCaret(saved.Editor, stored.Caret);
+            return saved is not null;
+        }
+
+        var tab = CreateEmptyTab(select: false);
+        LoadInto(tab, stored.Text!, stored.Path, SessionState.ToEncoding(stored.CodePage, stored.Bom));
+        // The edits were made against this version of the file, not the one on disk now.
+        tab.Disk = stored.Disk;
+        tab.IsDirty = true;
+        RestoreCaret(tab.Editor, stored.Caret);
+        return true;
+    }
+
+    private static void RestoreCaret(TextBox editor, int caret)
+    {
+        editor.CaretIndex = Math.Clamp(caret, 0, editor.Text.Length);
+        if (editor.CaretIndex == 0)
+            return;
+
+        // The editor has no layout until its tab is first shown, so scroll it then.
+        void ScrollToCaret(object sender, RoutedEventArgs e)
+        {
+            editor.Loaded -= ScrollToCaret;
+            editor.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+            {
+                int line = editor.GetLineIndexFromCharacterIndex(editor.CaretIndex);
+                if (line >= 0)
+                    editor.ScrollToLine(line);
+            });
+        }
+        editor.Loaded += ScrollToCaret;
     }
 }
