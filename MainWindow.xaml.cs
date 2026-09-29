@@ -50,6 +50,8 @@ public partial class MainWindow : ThemedWindow
         ApplySettingsToGlobals();
         RestoreWindowBounds();
         RestoreSession();
+        _docs.CollectionChanged += (_, _) => ScheduleSessionSave();
+        Closed += (_, _) => _session.Dispose();
 
         Loaded += (_, _) => Active?.Editor.Focus();
     }
@@ -325,6 +327,7 @@ public partial class MainWindow : ThemedWindow
             }
         }
 
+        SaveSession();
         SaveSettings();
         _findWindow?.Close();
         _findInFilesWindow?.Close();

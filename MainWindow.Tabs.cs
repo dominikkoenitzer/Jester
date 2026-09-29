@@ -16,6 +16,7 @@ public partial class MainWindow
     {
         var tab = new DocumentTab();
         ApplyFormattingTo(tab);
+        tab.PropertyChanged += (_, _) => ScheduleSessionSave();
 
         var ed = tab.Editor;
         ed.TextChanged += (_, _) => OnEditorTextChanged(tab);
@@ -112,6 +113,7 @@ public partial class MainWindow
         if (Active is null || ReferenceEquals(Active, _lastActive))
             return;
         _lastActive = Active;
+        ScheduleSessionSave();
 
         RefreshStatus();
         UpdateTitle();
