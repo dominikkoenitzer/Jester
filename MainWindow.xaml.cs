@@ -228,8 +228,26 @@ public partial class MainWindow : ThemedWindow
 
         Tabs.SelectedIndex = requested is not null
             ? _docs.IndexOf(requested)
-            : Math.Clamp(_settings.ActiveTab, 0, _docs.Count - 1);
+            : RestoredActiveTab(_docs.Select(d => d.FilePath).ToList(), _settings.OpenFiles, _settings.ActiveTab);
     }
+
+    /// <summary>The tab to select for the saved active tab, an index into the session's
+    /// files. Found by path, since a file that has gone missing shifts every tab after it.</summary>
+    internal static int RestoredActiveTab(IReadOnlyList<string?> tabPaths, IReadOnlyList<string> sessionFiles, int activeTab)
+    {
+        if (activeTab >= 0 && activeTab < sessionFiles.Count)
+        {
+            for (int i = 0; i < tabPaths.Count; i++)
+                if (string.Equals(tabPaths[i], sessionFiles[activeTab], StringComparison.OrdinalIgnoreCase))
+                    return i;
+        }
+        return Math.Clamp(activeTab, 0, Math.Max(0, tabPaths.Count - 1));
+    }
+
+    /// <summary>The active tab as saved: a position among the tabs that have a file, since
+    /// only those are saved. An Untitled tab counts as the next file along it.</summary>
+    internal static int SessionActiveTab(IReadOnlyList<string?> tabPaths, int selectedIndex) =>
+        tabPaths.Take(Math.Max(0, selectedIndex)).Count(p => p is not null);
 
     /// <summary>The files to open at startup: the previous session, then any command-line
     /// files that are not already part of it. Opening only the command-line files would
@@ -279,7 +297,7 @@ public partial class MainWindow : ThemedWindow
 
         _settings.RecentFiles = new List<string>(_recentFiles);
         _settings.OpenFiles = _docs.Where(d => d.FilePath is not null).Select(d => d.FilePath!).ToList();
-        _settings.ActiveTab = Math.Max(0, Tabs.SelectedIndex);
+        _settings.ActiveTab = SessionActiveTab(_docs.Select(d => d.FilePath).ToList(), Tabs.SelectedIndex);
 
         _settings.Save();
     }
