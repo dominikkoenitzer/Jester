@@ -16,6 +16,7 @@ internal sealed class DocumentTab : INotifyPropertyChanged
 
     private string? _filePath;
     private bool _isDirty;
+    private bool _changedOnDisk;
 
     public EditorView View { get; } = new();
 
@@ -58,14 +59,32 @@ internal sealed class DocumentTab : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// Unsaved edits restored from the last session while the file on disk has changed
+    /// since they began. Saving replaces that newer version, so the tab says so until then.
+    /// </summary>
+    public bool ChangedOnDisk
+    {
+        get => _changedOnDisk;
+        set
+        {
+            if (_changedOnDisk == value)
+                return;
+            _changedOnDisk = value;
+            Notify(nameof(Header));
+            Notify(nameof(ToolTip));
+        }
+    }
+
     /// <summary>File name (or the assigned "Untitled" name) with no dirty marker.</summary>
     public string Name => FilePath is null ? UntitledName : Path.GetFileName(FilePath);
 
     /// <summary>Tab caption: the name, prefixed with "*" while there are unsaved edits.</summary>
-    public string Header => (IsDirty ? "*" : "") + Name;
+    public string Header => (IsDirty ? "*" : "") + Name + (ChangedOnDisk ? " (changed on disk)" : "");
 
     /// <summary>Hover tooltip: the full path, or the placeholder name for new buffers.</summary>
-    public string ToolTip => FilePath ?? UntitledName;
+    public string ToolTip => (FilePath ?? UntitledName) +
+        (ChangedOnDisk ? "\nChanged on disk since these unsaved edits. Saving replaces that version." : "");
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

@@ -71,6 +71,15 @@ public partial class MainWindow
     {
         var session = SessionState.Merge(_session.ClaimOrphans());
         var opened = session.Tabs.Select(RestoreTab).ToList();
+
+        var changed = _docs.Where(d => d.ChangedOnDisk).Select(d => d.FilePath!).ToList();
+        if (changed.Count > 0)
+            Loaded += (_, _) => Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, () => MessageBox.Show(this,
+                "These files changed on disk after your last unsaved edits to them:\n\n" +
+                string.Join("\n", changed) +
+                "\n\nYour edits are open, marked \"changed on disk\". Saving one replaces the version on disk.",
+                AppName, MessageBoxButton.OK, MessageBoxImage.Warning));
+
         return SessionState.RestoredActive(opened, session.ActiveTab);
     }
 
@@ -89,6 +98,7 @@ public partial class MainWindow
         // The edits were made against this version of the file, not the one on disk now.
         tab.Disk = stored.Disk;
         tab.IsDirty = true;
+        tab.ChangedOnDisk = stored.Path is not null && SessionState.ChangedOnDisk(stored, DiskStamp.Of(stored.Path));
         RestoreCaret(tab.Editor, stored.Caret);
         return true;
     }
