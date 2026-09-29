@@ -313,20 +313,26 @@ public partial class MainWindow
         if (ActiveEditor is not { } ed)
             return;
 
-        string text = ed.Text;
-        int line = 1, start = 0;
-        for (int i = 0; i < text.Length && line < lineNumber; i++)
-        {
-            if (text[i] == '\n')
-            {
-                line++;
-                start = i + 1;
-            }
-        }
+        int start = LineStartIndex(ed.Text, lineNumber);
 
         ed.CaretIndex = start;
         ed.Select(start, 0);
         ScrollSelectionIntoView(start);
         ed.Focus();
+    }
+
+    /// <summary>Index of the first character of a line, or of the last line if there are fewer.</summary>
+    internal static int LineStartIndex(string text, int lineNumber)
+    {
+        int line = 1, start = 0;
+        for (int i = 0; i < text.Length && line < lineNumber; i++)
+        {
+            if (IsLineBreak(text, i))
+            {
+                line++;
+                start = i + 1;
+            }
+        }
+        return start;
     }
 }
