@@ -31,7 +31,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '9.0.x'
+          dotnet-version: '10.0.x'
 
       # The repository has both Jester.csproj and Jester.sln at its root, so every
       # command names the solution explicitly rather than relying on discovery.
