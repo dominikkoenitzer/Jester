@@ -4,7 +4,7 @@ Thanks for your interest in improving Jester! This guide gets you from clone to 
 
 ## Getting started
 
-**Prerequisites:** [.NET 9 SDK](https://dotnet.microsoft.com/download) on Windows 10/11.
+**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) on Windows 10/11.
 
 ```sh
 git clone https://github.com/dominikkoenitzer/Jester.git
