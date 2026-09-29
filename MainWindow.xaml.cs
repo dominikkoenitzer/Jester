@@ -53,7 +53,7 @@ public partial class MainWindow : ThemedWindow
         // Now holds the tabs of every session taken over, so those files can go.
         SaveSession();
         _docs.CollectionChanged += (_, _) => ScheduleSessionSave();
-        Closed += (_, _) => _session.Dispose();
+        Closed += (_, _) => CloseSession();
 
         Loaded += (_, _) => Active?.Editor.Focus();
     }

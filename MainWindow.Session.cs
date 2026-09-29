@@ -15,6 +15,15 @@ public partial class MainWindow
     private readonly SessionStore _session = new(SessionStore.DefaultDirectory);
     private DispatcherTimer? _sessionTimer;
     private DateTime _sessionPendingSince;
+    private bool _sessionClosed;
+
+    /// <summary>Stops writing once the window is gone; the last write was on closing.</summary>
+    private void CloseSession()
+    {
+        _sessionClosed = true;
+        _sessionTimer?.Stop();
+        _session.Dispose();
+    }
 
     private SessionSnapshot CaptureSession()
     {
@@ -41,6 +50,9 @@ public partial class MainWindow
     /// not slowed down, and off the UI thread.</summary>
     private void ScheduleSessionSave()
     {
+        if (_sessionClosed)
+            return;
+
         if (_sessionTimer is null)
         {
             _sessionTimer = new DispatcherTimer(DispatcherPriority.Background, Dispatcher) { Interval = SessionSaveDelay };
