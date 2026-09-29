@@ -115,12 +115,13 @@ public partial class MainWindow
         _ => "Windows (CRLF)",
     };
 
-    private static string EncodingKey(Encoding encoding) => encoding switch
+    internal static string EncodingKey(Encoding encoding) => encoding switch
     {
         UTF8Encoding utf8 => utf8.GetPreamble().Length > 0 ? "utf-8-bom" : "utf-8",
         _ when encoding.Equals(Encoding.Unicode) => "utf-16le",
         _ when encoding.Equals(Encoding.BigEndianUnicode) => "utf-16be",
-        _ => "utf-8",
+        // Any other encoding (an ANSI code page) matches no menu item, rather than claiming UTF-8.
+        _ => encoding.WebName,
     };
 
     private static string DescribeEncoding(Encoding encoding) => encoding switch

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -140,15 +141,38 @@ public partial class MainWindow
         }
     }
 
-    /// <summary>Reads a text file, honouring a byte-order mark if present and defaulting to
-    /// UTF-8 otherwise, returning the detected encoding so the file round-trips faithfully.</summary>
-    private static (string Text, Encoding Encoding) ReadFile(string path)
+    /// <summary>Reads a text file, honouring a byte-order mark if present. Without one the
+    /// bytes are UTF-8 only if they are valid UTF-8; otherwise they are read in the ANSI
+    /// code page. The detected encoding is returned so the file round-trips faithfully.</summary>
+    internal static (string Text, Encoding Encoding) ReadFile(string path)
     {
-        using var reader = new StreamReader(path,
-            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
-            detectEncodingFromByteOrderMarks: true);
-        string text = reader.ReadToEnd();
-        return (text, reader.CurrentEncoding);
+        byte[] bytes = File.ReadAllBytes(path);
+        var strictUtf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+        try
+        {
+            using var reader = new StreamReader(new MemoryStream(bytes), strictUtf8, detectEncodingFromByteOrderMarks: true);
+            string text = reader.ReadToEnd();
+            // Save with a UTF-8 encoder that does not throw, as before; the strict one is only for reading.
+            Encoding encoding = ReferenceEquals(reader.CurrentEncoding, strictUtf8)
+                ? new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+                : reader.CurrentEncoding;
+            return (text, encoding);
+        }
+        catch (DecoderFallbackException)
+        {
+            // Not UTF-8. Decoding it as UTF-8 anyway turned every invalid byte into U+FFFD,
+            // and saving then wrote EF BF BD over the original character.
+            Encoding ansi = AnsiEncoding();
+            return (ansi.GetString(bytes), ansi);
+        }
+    }
+
+    private static Encoding AnsiEncoding()
+    {
+        // .NET only ships UTF and ASCII encodings; the Windows code pages need this provider.
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        try { return Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage); }
+        catch { return Encoding.GetEncoding(1252); }
     }
 
     /// <summary>Returns true if it is safe to discard the given document.</summary>
