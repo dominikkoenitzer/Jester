@@ -8,7 +8,7 @@
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
 [![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
-[![tests](https://img.shields.io/badge/tests-57%20passing-512BD4)](tests/Jester.Tests)
+[![tests](https://img.shields.io/badge/tests-135%20passing-512BD4)](tests/Jester.Tests)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
@@ -90,8 +90,9 @@ The executable lands in `bin/Release/net10.0-windows/win-x64/publish/Jester.exe`
 dotnet test Jester.sln
 ```
 
-57 xunit tests cover the parts that work without a window: find/replace,
-settings persistence, and the command table. The WPF views are verified by
+135 xunit tests cover the parts that work without a window: find/replace,
+settings persistence, the command table, file encodings and line endings, and
+the session that keeps unsaved tabs. The WPF views are verified by
 running the app. CI runs the same command.
 
 ## Project structure
