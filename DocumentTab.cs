@@ -43,6 +43,9 @@ internal sealed class DocumentTab : INotifyPropertyChanged
 
     public Encoding Encoding { get; set; } = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
 
+    /// <summary>The file on disk as it was last read or saved, to tell whether it changed since.</summary>
+    public DiskStamp? Disk { get; set; }
+
     public bool IsDirty
     {
         get => _isDirty;
