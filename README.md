@@ -46,7 +46,7 @@ It's a single **portable** file. No installer, and no .NET install required, sin
 - **Format.** Word wrap, a font picker, and line-ending or encoding conversion.
 - **View.** Zoom, from the menu or `Ctrl` and the mouse wheel, and a toggleable status bar.
 - **Status bar.** Characters, lines, caret position, zoom, line ending and encoding.
-- **Safe by default.** Prompts before discarding unsaved work, including on sign-out or shutdown, and saves atomically so a crash can't corrupt your file.
+- **Safe by default.** Unsaved and Untitled tabs are kept as you type and come back with their text next launch, even after a crash or shutdown, and saves are atomic so a crash can't corrupt your file.
 - **Encoding aware.** Detects UTF-8 and UTF-16 BOMs and preserves the file's original encoding and line endings.
 
 ## Keyboard shortcuts
