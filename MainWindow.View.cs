@@ -80,6 +80,7 @@ public partial class MainWindow
             _ => new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
         };
         tab.IsDirty = true;
+        ScheduleSessionSave();
         UpdateEncodingInfo();
         SyncFormatMenus();
     }
