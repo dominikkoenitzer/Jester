@@ -11,7 +11,7 @@
 [![tests](https://img.shields.io/badge/tests-57%20passing-512BD4)](tests/Jester.Tests)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
-![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
 
 [**Download**](#download) · [Features](#features) · [Shortcuts](#keyboard-shortcuts) · [Build](#build-from-source) · [Contributing](#contributing)
 
@@ -66,7 +66,7 @@ It's a single **portable** file. No installer, and no .NET install required, sin
 
 ## Build from source
 
-**Prerequisites:** [.NET 9 SDK](https://dotnet.microsoft.com/download) on Windows.
+**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) on Windows.
 
 ```sh
 git clone https://github.com/dominikkoenitzer/Jester.git
@@ -82,7 +82,7 @@ dotnet publish Jester.csproj -c Release -r win-x64 --self-contained true ^
   -p:EnableCompressionInSingleFile=true
 ```
 
-The executable lands in `bin/Release/net9.0-windows/win-x64/publish/Jester.exe`.
+The executable lands in `bin/Release/net10.0-windows/win-x64/publish/Jester.exe`.
 
 ### Tests
 
