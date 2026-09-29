@@ -326,8 +326,11 @@ public partial class MainWindow : ThemedWindow
     // ------------------------------------------------------------------ Window
 
     /// <summary>Invoked during OS session end: returns false when the user cancels
-    /// (or a save fails), signalling that the shutdown should be blocked.</summary>
-    public bool PromptToSaveBeforeShutdown()
+    /// (or a save fails), signalling that the shutdown should be blocked. Once the
+    /// session is written every unsaved tab is kept, so there is nothing to ask.</summary>
+    public bool PromptToSaveBeforeShutdown() => SaveSession() || ConfirmCloseAll();
+
+    private bool ConfirmCloseAll()
     {
         foreach (var tab in _docs.ToList())
             if (!ConfirmClose(tab))
@@ -337,16 +340,15 @@ public partial class MainWindow : ThemedWindow
 
     private void Window_Closing(object sender, CancelEventArgs e)
     {
-        foreach (var tab in _docs.ToList())
+        // Unsaved and Untitled tabs come back next start with their text, as in any modern
+        // editor, so closing does not ask about them. Only when the session cannot be
+        // written would closing lose them, and then the user decides as before.
+        if (!SaveSession() && !ConfirmCloseAll())
         {
-            if (!ConfirmClose(tab))
-            {
-                e.Cancel = true;
-                return;
-            }
+            e.Cancel = true;
+            return;
         }
 
-        SaveSession();
         SaveSettings();
         _findWindow?.Close();
         _findInFilesWindow?.Close();
