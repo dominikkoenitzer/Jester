@@ -23,24 +23,42 @@ public partial class MainWindow
 
     private void Editor_PreviewKeyDown(DocumentTab tab, KeyEventArgs e)
     {
-        if (!_autoIndent || e.Key != Key.Return)
+        // Enter is handled even without auto-indent: the TextBox would insert CRLF whatever
+        // the file uses. Shift+Enter is a line break too, but has never auto-indented.
+        if (e.Key != Key.Return)
             return;
-        if ((Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Alt | ModifierKeys.Shift)) != 0)
+        var modifiers = Keyboard.Modifiers;
+        if ((modifiers & (ModifierKeys.Control | ModifierKeys.Alt)) != 0)
             return;
 
         var ed = tab.Editor;
-        string text = ed.Text;
         int start = ed.SelectionStart;
-        int lineStart = start == 0 ? 0 : text.LastIndexOf('\n', start - 1) + 1;
+        string lineBreak = LineBreakAt(ed.Text, start, indent: _autoIndent && modifiers == ModifierKeys.None);
 
-        var indent = new StringBuilder();
-        for (int i = lineStart; i < start && (text[i] == ' ' || text[i] == '\t'); i++)
-            indent.Append(text[i]);
-
-        ed.SelectedText = "\r\n" + indent;
-        ed.CaretIndex = start + 2 + indent.Length;
+        ed.SelectedText = lineBreak;
+        ed.CaretIndex = start + lineBreak.Length;
         ed.SelectionLength = 0;
         e.Handled = true;
+    }
+
+    /// <summary>What Enter inserts: the document's own line ending, the one the status bar
+    /// shows, and with <paramref name="indent"/> the current line's leading whitespace.</summary>
+    internal static string LineBreakAt(string text, int caret, bool indent)
+    {
+        var result = new StringBuilder(DetectLineEnding(text) switch
+        {
+            "LF" => "\n",
+            "CR" => "\r",
+            _ => "\r\n",
+        });
+
+        if (indent)
+        {
+            int lineStart = caret == 0 ? 0 : text.LastIndexOfAny(['\n', '\r'], caret - 1) + 1;
+            for (int i = lineStart; i < caret && (text[i] == ' ' || text[i] == '\t'); i++)
+                result.Append(text[i]);
+        }
+        return result.ToString();
     }
 
     private void Editor_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
