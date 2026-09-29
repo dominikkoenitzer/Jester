@@ -50,6 +50,8 @@ public partial class MainWindow : ThemedWindow
         ApplySettingsToGlobals();
         RestoreWindowBounds();
         RestoreSession();
+        // Now holds the tabs of every session taken over, so those files can go.
+        SaveSession();
         _docs.CollectionChanged += (_, _) => ScheduleSessionSave();
         Closed += (_, _) => _session.Dispose();
 
@@ -198,21 +200,13 @@ public partial class MainWindow : ThemedWindow
             .Where(a => !a.StartsWith('-') && !a.StartsWith('/'))
             .ToList();
 
-        foreach (string path in StartupFiles(_settings.OpenFiles, commandLineFiles))
-        {
-            if (!File.Exists(path))
-                continue;
-            try
-            {
-                var (text, encoding) = ReadFile(path);
-                var tab = CreateEmptyTab(select: false);
-                LoadInto(tab, text, Path.GetFullPath(path), encoding);
-            }
-            catch
-            {
-                // Skip files that vanished or became unreadable since last session.
-            }
-        }
+        // The stored session has every tab, unsaved ones included. Until one was ever
+        // written, the saved files listed in settings.json are the session.
+        int active = _session.HadSessions ? RestoreStoredTabs() : RestoreSavedFiles();
+
+        var openFiles = _docs.Where(d => d.FilePath is not null).Select(d => d.FilePath!).ToList();
+        foreach (string path in StartupFiles(openFiles, commandLineFiles).Skip(openFiles.Count))
+            OpenStartupFile(path);
 
         if (_docs.Count == 0)
             CreateEmptyTab(select: false);
@@ -228,9 +222,34 @@ public partial class MainWindow : ThemedWindow
         var requested = requestedPath is null ? null : _docs.FirstOrDefault(d =>
             string.Equals(d.FilePath, requestedPath, StringComparison.OrdinalIgnoreCase));
 
-        Tabs.SelectedIndex = requested is not null
-            ? _docs.IndexOf(requested)
-            : RestoredActiveTab(_docs.Select(d => d.FilePath).ToList(), _settings.OpenFiles, _settings.ActiveTab);
+        Tabs.SelectedIndex = requested is not null ? _docs.IndexOf(requested) : active;
+    }
+
+    /// <summary>Opens the saved files of the last session; returns the tab to select.</summary>
+    private int RestoreSavedFiles()
+    {
+        foreach (string path in StartupFiles(_settings.OpenFiles, Array.Empty<string>()))
+            OpenStartupFile(path);
+        return RestoredActiveTab(_docs.Select(d => d.FilePath).ToList(), _settings.OpenFiles, _settings.ActiveTab);
+    }
+
+    /// <summary>Opens a file in a new tab, or skips it if it has gone or cannot be read.</summary>
+    private DocumentTab? OpenStartupFile(string path)
+    {
+        if (!File.Exists(path))
+            return null;
+        try
+        {
+            var (text, encoding) = ReadFile(path);
+            var tab = CreateEmptyTab(select: false);
+            LoadInto(tab, text, Path.GetFullPath(path), encoding);
+            return tab;
+        }
+        catch
+        {
+            // Skip files that vanished or became unreadable since last session.
+            return null;
+        }
     }
 
     /// <summary>The tab to select for the saved active tab, an index into the session's
