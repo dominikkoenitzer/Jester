@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Text;
-using System.Windows.Controls;
+using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
@@ -20,7 +20,7 @@ internal sealed class DocumentTab : INotifyPropertyChanged
 
     public EditorView View { get; } = new();
 
-    public TextBox Editor => View.Editor;
+    public TextEditor Editor => View.Editor;
 
     public string UntitledName { get; }
 

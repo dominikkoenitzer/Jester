@@ -17,14 +17,16 @@ public partial class MainWindow
         string stamp = DateTime.Now.ToString("h:mm tt M/d/yyyy");
         int caret = ed.SelectionStart;
         ed.SelectedText = stamp;
-        ed.CaretIndex = caret + stamp.Length;
+        ed.Select(caret + stamp.Length, 0);
+        ed.TextArea.Caret.BringCaretToView();
         ed.Focus();
     }
 
     private void Editor_PreviewKeyDown(DocumentTab tab, KeyEventArgs e)
     {
-        // Enter is handled even without auto-indent: the TextBox would insert CRLF whatever
-        // the file uses. Shift+Enter is a line break too, but has never auto-indented.
+        // Enter is handled even without auto-indent: the editor would take the ending of the
+        // caret's line, not the file's, and indent whatever the setting. Shift+Enter is a
+        // line break too, but has never auto-indented.
         if (e.Key != Key.Return)
             return;
         var modifiers = Keyboard.Modifiers;
@@ -41,8 +43,8 @@ public partial class MainWindow
         string lineBreak = LineBreakAt(lines.LineEnding, before, before.Length, indent);
 
         ed.SelectedText = lineBreak;
-        ed.CaretIndex = start + lineBreak.Length;
-        ed.SelectionLength = 0;
+        ed.Select(start + lineBreak.Length, 0);
+        ed.TextArea.Caret.BringCaretToView();
         e.Handled = true;
     }
 

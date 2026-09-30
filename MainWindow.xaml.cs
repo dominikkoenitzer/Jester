@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
@@ -59,7 +60,7 @@ public partial class MainWindow : ThemedWindow
     }
 
     private DocumentTab? Active => Tabs.SelectedItem as DocumentTab;
-    private TextBox? ActiveEditor => Active?.Editor;
+    private TextEditor? ActiveEditor => Active?.Editor;
 
     // ------------------------------------------------------------- Commands
 
@@ -107,7 +108,7 @@ public partial class MainWindow : ThemedWindow
             (_, e) => e.CanExecute = ActiveEditor is not null && Clipboard.ContainsText());
         Bind(ApplicationCommands.Delete, (_, e) => { e.Handled = true; DeleteSelectionOrChar(); },
             (_, e) => e.CanExecute = Active is { } tab &&
-                (tab.Editor.SelectionLength > 0 || tab.Editor.CaretIndex < tab.View.Lines.Length));
+                (tab.Editor.SelectionLength > 0 || tab.Editor.CaretOffset < tab.View.Lines.Length));
         Bind(ApplicationCommands.SelectAll, (_, e) => { e.Handled = true; ActiveEditor?.SelectAll(); },
             (_, e) => e.CanExecute = Active?.View.Lines.Length > 0);
     }
@@ -121,11 +122,12 @@ public partial class MainWindow : ThemedWindow
         {
             ed.SelectedText = "";
         }
-        else if (ed.CaretIndex < ed.Text.Length)
+        else if (ed.CaretOffset < ed.Document.TextLength)
         {
-            int caret = ed.CaretIndex;
-            ed.Text = ed.Text.Remove(caret, DeleteLengthAt(ed.Text, caret));
-            ed.CaretIndex = caret;
+            var document = ed.Document;
+            int caret = ed.CaretOffset;
+            string next = document.GetText(caret, Math.Min(2, document.TextLength - caret));
+            document.Remove(caret, DeleteLengthAt(next, 0));
         }
     }
 

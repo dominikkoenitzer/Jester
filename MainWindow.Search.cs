@@ -48,9 +48,10 @@ public partial class MainWindow
 
         if (count > 0)
         {
-            int caret = ed.CaretIndex;
-            ed.Text = replaced;
-            ed.CaretIndex = Math.Min(caret, ed.Text.Length);
+            // One edit that Undo takes back; setting Text would clear the undo history.
+            int caret = ed.CaretOffset;
+            ed.Document.Replace(0, ed.Document.TextLength, replaced);
+            ed.Select(Math.Min(caret, replaced.Length), 0);
         }
 
         return count;
@@ -82,9 +83,8 @@ public partial class MainWindow
             return;
         try
         {
-            int line = ed.GetLineIndexFromCharacterIndex(charIndex);
-            if (line >= 0)
-                ed.ScrollToLine(line);
+            var location = ed.Document.GetLocation(charIndex);
+            ed.ScrollTo(location.Line, location.Column);
         }
         catch
         {
@@ -278,7 +278,7 @@ public partial class MainWindow
             return;
 
         int index = CharIndexOf(ed.Text, result.Line, result.Column);
-        ed.Select(index, Math.Min(result.Length, Math.Max(0, ed.Text.Length - index)));
+        ed.Select(index, Math.Min(result.Length, Math.Max(0, ed.Document.TextLength - index)));
         ScrollSelectionIntoView(index);
         ed.Focus();
     }
@@ -315,7 +315,6 @@ public partial class MainWindow
 
         int start = LineStartIndex(ed.Text, lineNumber);
 
-        ed.CaretIndex = start;
         ed.Select(start, 0);
         ScrollSelectionIntoView(start);
         ed.Focus();

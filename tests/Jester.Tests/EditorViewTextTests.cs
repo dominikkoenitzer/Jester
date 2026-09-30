@@ -3,8 +3,8 @@ using Xunit;
 namespace Jester.Tests;
 
 /// <summary>
-/// The editor keeps its text and line index in step with the TextBox from the changes
-/// the TextBox reports. These edit a real TextBox, with no window, and check that the
+/// The editor keeps its line index in step with the document from the changes the
+/// document reports. These edit a real TextEditor, with no window, and check that the
 /// index agrees with a full scan after typing, pasting, deleting, undo and redo.
 /// </summary>
 public class EditorViewTextTests
@@ -57,10 +57,29 @@ public class EditorViewTextTests
         AssertInStep(view);
     });
 
+    [Fact]
+    public void ReadsTheSameCharactersAsTheText() => StaThread.Run(() =>
+    {
+        var view = new EditorView();
+        view.Editor.Text = "one\r\ntwo\rthree\nfour";
+        view.Editor.Select(5, 0);
+        view.Editor.SelectedText = "\u00e9\U0001F600\t" + new string('x', 10_000);
+
+        string text = view.Editor.Text;
+        Assert.Equal(text, view.Read(0, text.Length));
+        for (int start = 0; start <= text.Length; start += Math.Max(1, text.Length / 50))
+        {
+            for (int length = 0; start + length <= text.Length && length <= 5; length++)
+                Assert.Equal(text.Substring(start, length), view.Read(start, length));
+        }
+        Assert.Equal("", view.Read(text.Length, 0));
+    });
+
     private static void AssertInStep(EditorView view)
     {
         string text = view.Editor.Text;
         var fresh = new LineIndex(text);
+        Assert.Equal(text.Length, view.Lines.Length);
         Assert.Equal(fresh.Count, view.Lines.Count);
         Assert.Equal(fresh.LineEnding, view.Lines.LineEnding);
         for (int i = 0; i <= text.Length; i++)
