@@ -8,7 +8,7 @@
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
 [![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
-[![tests](https://img.shields.io/badge/tests-164%20passing-512BD4)](tests/Jester.Tests)
+[![tests](https://img.shields.io/badge/tests-177%20passing-512BD4)](tests/Jester.Tests)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
@@ -90,10 +90,11 @@ The executable lands in `bin/Release/net10.0-windows/win-x64/publish/Jester.exe`
 dotnet test Jester.sln
 ```
 
-164 xunit tests cover the parts that work without a window: find/replace,
+177 xunit tests cover the parts that work without a window: find/replace,
 settings persistence, the command table, file encodings and line endings, the
-session that keeps unsaved tabs, and the line index behind the status bar and
-the gutter. The WPF views are verified by running the app. CI runs the same
+session that keeps unsaved tabs, the line index behind the status bar, and the
+editor's own edits, gutter and current-line highlight, laid out with no window.
+The rest of the WPF views are verified by running the app. CI runs the same
 command.
 
 ```sh
@@ -118,9 +119,9 @@ documents. It is not part of the solution, so CI leaves it out.
 | `TextSearch.cs` | Find/replace arithmetic, with no editor attached. |
 | `tests/Jester.Tests/` | xunit suite. |
 | `tests/Jester.Bench/` | Per-keystroke timings on large documents. |
-| `EditorView.cs` | One document's editor surface (text box + gutter + current-line highlight). |
+| `EditorView.cs` | One document's editor surface (AvalonEdit editor + gutter + current-line highlight). |
 | `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
-| `LineIndex.cs` | Where each line starts, updated per edit for the status bar and gutter. |
+| `LineIndex.cs` | Line lookups and the line ending, kept per edit for the status bar and gutter. |
 | `DocumentTab.cs` | Per-tab document state (path, encoding, dirty flag). |
 | `AppSettings.cs` | Loads/saves preferences and the last session as JSON. |
 | `ThemedWindow.cs` | Base window with the custom title bar / chrome. |
