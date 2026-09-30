@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Rendering;
 
@@ -20,6 +21,7 @@ internal sealed class EditorView : Grid
     private readonly Canvas _highlightLayer;
     private readonly Rectangle _currentLineHighlight;
     private bool _showLineNumbers = true;
+    private int? _pendingScroll;
 
     public TextEditor Editor { get; }
 
@@ -91,6 +93,51 @@ internal sealed class EditorView : Grid
 
     /// <summary>A stretch of the editor's text, read without copying the rest of it.</summary>
     public string Read(int start, int length) => Editor.Document.GetText(start, length);
+
+    /// <summary>
+    /// Scrolls a character index into view: now, or once the editor is shown, since it
+    /// has no layout before then. A file just opened from a search result, or a tab
+    /// restored with its caret far down, is in that state.
+    /// </summary>
+    public void ScrollIntoView(int offset)
+    {
+        if (Editor.IsLoaded)
+        {
+            ScrollTo(offset);
+            return;
+        }
+
+        if (_pendingScroll is null)
+            Editor.Loaded += ScrollWhenShown;
+        _pendingScroll = offset;
+    }
+
+    private void ScrollWhenShown(object sender, RoutedEventArgs e)
+    {
+        Editor.Loaded -= ScrollWhenShown;
+        // Loaded comes before the first layout; scroll once that has run.
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+        {
+            if (_pendingScroll is int offset)
+            {
+                _pendingScroll = null;
+                ScrollTo(offset);
+            }
+        });
+    }
+
+    private void ScrollTo(int offset)
+    {
+        try
+        {
+            var location = Editor.Document.GetLocation(Math.Clamp(offset, 0, Editor.Document.TextLength));
+            Editor.ScrollTo(location.Line, location.Column);
+        }
+        catch
+        {
+            // Layout not ready; the selection is still set, just not scrolled to.
+        }
+    }
 
     // Behaves and looks like the TextBox it replaced: no link underlines, no box
     // selection, copy and cut only with a selection, wrapped rows start at the margin,

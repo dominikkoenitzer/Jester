@@ -77,20 +77,7 @@ public partial class MainWindow
         return true;
     }
 
-    private void ScrollSelectionIntoView(int charIndex)
-    {
-        if (ActiveEditor is not { } ed)
-            return;
-        try
-        {
-            var location = ed.Document.GetLocation(charIndex);
-            ed.ScrollTo(location.Line, location.Column);
-        }
-        catch
-        {
-            // Layout not ready; the selection is still set, just not scrolled to.
-        }
-    }
+    private void ScrollSelectionIntoView(int charIndex) => Active?.View.ScrollIntoView(charIndex);
 
     private void FindNextFromMenu(bool searchDown)
     {

@@ -1,6 +1,5 @@
 using System.Windows;
 using System.Windows.Threading;
-using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
@@ -102,7 +101,7 @@ public partial class MainWindow
         {
             var saved = stored.Path is null ? null : OpenStartupFile(stored.Path);
             if (saved is not null)
-                RestoreCaret(saved.Editor, stored.Caret);
+                RestoreCaret(saved.View, stored.Caret);
             return saved is not null;
         }
 
@@ -112,26 +111,15 @@ public partial class MainWindow
         tab.Disk = stored.Disk;
         tab.IsDirty = true;
         tab.ChangedOnDisk = stored.Path is not null && SessionState.ChangedOnDisk(stored, DiskStamp.Of(stored.Path));
-        RestoreCaret(tab.Editor, stored.Caret);
+        RestoreCaret(tab.View, stored.Caret);
         return true;
     }
 
-    private static void RestoreCaret(TextEditor editor, int caret)
+    private static void RestoreCaret(EditorView view, int caret)
     {
+        var editor = view.Editor;
         editor.CaretOffset = Math.Clamp(caret, 0, editor.Document.TextLength);
-        if (editor.CaretOffset == 0)
-            return;
-
-        // The editor has no layout until its tab is first shown, so scroll it then.
-        void ScrollToCaret(object sender, RoutedEventArgs e)
-        {
-            editor.Loaded -= ScrollToCaret;
-            editor.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
-            {
-                var location = editor.Document.GetLocation(editor.CaretOffset);
-                editor.ScrollTo(location.Line, location.Column);
-            });
-        }
-        editor.Loaded += ScrollToCaret;
+        if (editor.CaretOffset > 0)
+            view.ScrollIntoView(editor.CaretOffset);
     }
 }
