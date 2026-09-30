@@ -24,7 +24,7 @@ internal sealed class EditorView : Grid
     public TextEditor Editor { get; }
 
     /// <summary>Where each line of the editor's text starts, updated with every change.</summary>
-    public LineIndex Lines { get; } = new();
+    public LineIndex Lines { get; }
 
     public EditorView()
     {
@@ -46,11 +46,9 @@ internal sealed class EditorView : Grid
         Configure(Editor);
         Editor.ContextMenu = BuildContextMenu();
 
-        var document = Editor.Document;
-        // Changed comes before the editor's TextChanged, so every handler of that sees the
-        // index already updated.
-        document.Changed += (_, e) =>
-            Lines.Apply(e.Offset, e.RemovalLength, e.InsertionLength, document.TextLength, document.GetText);
+        // The document's Changed comes before the editor's TextChanged, so every handler of
+        // that sees the index already updated.
+        Lines = new LineIndex(Editor.Document);
         Editor.TextChanged += (_, _) => OnTextChanged();
 
         _margin = new LineNumberMargin(Editor);

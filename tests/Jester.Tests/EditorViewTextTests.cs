@@ -78,11 +78,10 @@ public class EditorViewTextTests
     private static void AssertInStep(EditorView view)
     {
         string text = view.Editor.Text;
-        var fresh = new LineIndex(text);
         Assert.Equal(text.Length, view.Lines.Length);
-        Assert.Equal(fresh.Count, view.Lines.Count);
-        Assert.Equal(fresh.LineEnding, view.Lines.LineEnding);
+        Assert.Equal(MainWindow.GetLogicalLineCount(text), view.Lines.Count);
+        Assert.Equal(MainWindow.DetectLineEnding(text), view.Lines.LineEnding);
         for (int i = 0; i <= text.Length; i++)
-            Assert.Equal(fresh.PositionOf(i), view.Lines.PositionOf(i));
+            Assert.Equal(MainWindow.LineAndColumnAt(text, i), view.Lines.PositionOf(i));
     }
 }

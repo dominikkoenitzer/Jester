@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Text;
 using System.Windows.Controls;
+using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace Jester.Bench;
 
@@ -8,7 +10,8 @@ namespace Jester.Bench;
 /// The work the editor did for the status bar, the gutter and the current line on
 /// every keystroke, before and after the line index, on 1, 5 and 20 MB documents.
 /// Reading the TextBox's Text is the TextBox's own cost and is left out of both;
-/// the second table measures it, and a whole edit, on a real TextBox with no window.
+/// the second table measures it, and a whole edit, on a real TextBox with no window,
+/// next to the same edit in Jester's editor.
 /// Run from the repository root: dotnet run -c Release --project tests/Jester.Bench
 /// </summary>
 internal static class Program
@@ -34,21 +37,37 @@ internal static class Program
         }
 
         Console.WriteLine();
-        Console.WriteLine("A real TextBox, no window so no layout or rendering, caret in the middle.");
+        Console.WriteLine("A real TextBox and Jester's editor, no window so no layout or rendering, caret in the middle.");
         Console.WriteLine();
         Console.WriteLine($"{"Size",-6} {"TextBox edit",14} {"Text read",12} {"Read again",12} {"Jester edit",13}");
         foreach (int megabytes in new[] { 1, 5, 20 })
         {
             string text = Document(megabytes * 1024 * 1024);
             var (edit, read, again) = MeasureTextBox(new TextBox { Text = text });
-            var (jesterEdit, _, _) = MeasureTextBox(new EditorView { Editor = { Text = text } }.Editor);
+            double jesterEdit = MeasureEditor(new EditorView { Editor = { Text = text } }.Editor);
             Console.WriteLine($"{megabytes + " MB",-6} {Format(edit),14} {Format(read),12} {Format(again),12} {Format(jesterEdit),13}");
         }
     }
 
+    // The same edits in Jester's editor, which with its line index is all a keystroke
+    // costs before layout: nothing reads the whole text any more.
+    private static double MeasureEditor(TextEditor editor)
+    {
+        int middle = editor.Document.TextLength / 2;
+        double edit = 0;
+        const int runs = 40;
+        for (int run = 0; run < runs; run++)
+        {
+            editor.Select(middle, run % 2);
+            var watch = Stopwatch.StartNew();
+            editor.SelectedText = run % 2 == 0 ? "x" : "";
+            edit += watch.Elapsed.TotalMilliseconds;
+        }
+        return edit / runs;
+    }
+
     // Types a character in the middle and deletes it again, timing each edit alone
-    // and then the first and second read of Text after it. With Jester's editor the
-    // edit includes its own TextChanged work, which reads Text once.
+    // and then the first and second read of Text after it.
     private static (double Edit, double Read, double ReadAgain) MeasureTextBox(TextBox box)
     {
         int middle = box.Text.Length / 2;
@@ -117,29 +136,32 @@ internal static class Program
     }
 
     // Typing a character and deleting it again, so the text stays the same size;
-    // each half is one keystroke.
+    // each half is one keystroke. The edit to the document is part of it, since the
+    // index counts its line endings from the change; the undo history is left out.
     private static double MeasureAfter(string text, int caret)
     {
-        string typed = text.Insert(caret, "x");
-        var index = new LineIndex(text);
+        var document = new TextDocument(text);
+        document.UndoStack.SizeLimit = 0;
+        var index = new LineIndex(document);
         int firstVisible = index.StartOf(index.LineAt(Math.Max(0, caret - 2000)));
         return Measure(() =>
         {
-            After(index, typed, caret, 0, 1, firstVisible);
-            After(index, text, caret, 1, 0, firstVisible);
+            document.Insert(caret, "x");
+            After(index, caret, firstVisible);
+            document.Remove(caret, 1);
+            After(index, caret, firstVisible);
         }) / 2;
     }
 
-    private static void After(LineIndex index, string text, int caret, int removed, int added, int firstVisible)
+    private static void After(LineIndex index, int caret, int firstVisible)
     {
-        index.Apply(text, caret, removed, added);
         _sink += index.Count;
         _sink += index.LineEnding.Length;
         _sink += index.PositionOf(caret).Line;
         _sink += index.LineAt(caret);
         _sink += index.LineAt(firstVisible);
         for (int row = 0, line = index.LineAt(firstVisible); row < VisibleRows; row++, line++)
-            _sink += index.IsLineStart(index.StartOf(line)) ? 1 : 0;
+            _sink += index.StartOf(line);
     }
 
     // ------------------------------------------------ The scans as they were
