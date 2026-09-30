@@ -112,6 +112,12 @@ internal sealed class EditorView : Grid
         area.SelectionBorder = null;
         area.SelectionCornerRadius = 0;
         area.Caret.CaretBrush = new SolidColorBrush(Color.FromRgb(0x4A, 0x1D, 0x6A));
+
+        // AvalonEdit's Delete command only removes a selection. Without it the command
+        // reaches the window, whose Delete also removes the next character.
+        var editing = area.DefaultInputHandler.Editing;
+        foreach (var binding in editing.CommandBindings.Where(b => b.Command == ApplicationCommands.Delete).ToList())
+            editing.CommandBindings.Remove(binding);
     }
 
     private void OnTextChanged()
