@@ -153,11 +153,16 @@ internal sealed class EditorView : Grid
         _margin.CurrentLine = Lines.LineAt(area.Caret.Offset);
         _margin.InvalidateVisual();
 
-        // Only a line on screen has a row to highlight. The caret's row within it is the
-        // one to mark, so a wrapped line lights up where the caret is, as before.
+        // An edit or a scroll lays the lines out again, and VisualLinesChanged then brings
+        // the highlight back here; until that pass it stays where it is.
         var textView = area.TextView;
-        var line = textView.VisualLinesValid ? textView.GetVisualLine(area.Caret.Line) : null;
-        if (line is null || !IsAncestorOf(textView))
+        if (!textView.VisualLinesValid || !IsAncestorOf(textView))
+            return;
+
+        // Only a line on screen has a row to highlight. The caret's row within it is the
+        // one to mark, so a wrapped line lights up only where the caret is.
+        var line = textView.GetVisualLine(area.Caret.Line);
+        if (line is null)
         {
             _currentLineHighlight.Visibility = Visibility.Collapsed;
             return;
