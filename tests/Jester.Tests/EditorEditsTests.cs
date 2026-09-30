@@ -48,6 +48,33 @@ public class EditorEditsTests
     });
 
     [Fact]
+    public void UndoTakesBackARunOfTypingAtOnce() => StaThread.Run(() =>
+    {
+        var ed = new EditorView().Editor;
+        var area = ed.TextArea;
+        ed.Text = "x";
+        ed.Select(1, 0);
+        foreach (char c in "abc")
+            area.PerformTextInput(c.ToString());
+        ed.Select(0, 0); // Moving the caret ends the run.
+        area.PerformTextInput("y");
+        area.PerformTextInput("z");
+        ed.Document.Insert(ed.Document.TextLength, "-"); // So does any other edit.
+        area.PerformTextInput("w");
+
+        Assert.Equal("yzwxabc-", ed.Text);
+        Assert.True(ed.Undo());
+        Assert.Equal("yzxabc-", ed.Text);
+        Assert.True(ed.Undo());
+        Assert.Equal("yzxabc", ed.Text);
+        Assert.True(ed.Undo());
+        Assert.Equal("xabc", ed.Text);
+        Assert.True(ed.Undo());
+        Assert.Equal("x", ed.Text);
+        Assert.False(ed.CanUndo);
+    });
+
+    [Fact]
     public void CtrlDDoesNotDeleteTheLine() => StaThread.Run(() =>
     {
         var view = new EditorView();
