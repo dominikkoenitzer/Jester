@@ -106,9 +106,10 @@ public partial class MainWindow : ThemedWindow
         Bind(ApplicationCommands.Paste, (_, e) => { e.Handled = true; ActiveEditor?.Paste(); },
             (_, e) => e.CanExecute = ActiveEditor is not null && Clipboard.ContainsText());
         Bind(ApplicationCommands.Delete, (_, e) => { e.Handled = true; DeleteSelectionOrChar(); },
-            (_, e) => e.CanExecute = ActiveEditor is { } ed && (ed.SelectionLength > 0 || ed.CaretIndex < ed.Text.Length));
+            (_, e) => e.CanExecute = Active is { } tab &&
+                (tab.Editor.SelectionLength > 0 || tab.Editor.CaretIndex < tab.View.Lines.Length));
         Bind(ApplicationCommands.SelectAll, (_, e) => { e.Handled = true; ActiveEditor?.SelectAll(); },
-            (_, e) => e.CanExecute = ActiveEditor?.Text.Length > 0);
+            (_, e) => e.CanExecute = Active?.View.Lines.Length > 0);
     }
 
     private void DeleteSelectionOrChar()
