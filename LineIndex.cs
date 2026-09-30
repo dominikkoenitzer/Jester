@@ -11,11 +11,15 @@ internal sealed class LineIndex
 {
     private enum Kind : byte { CrLf, Lf, Cr }
 
-    // _starts[0] is always 0; _starts[k] (k >= 1) begins the line after a break of kind _kinds[k].
+    // Line k starts at Start(k): 0 for the first line, else just after a break of kind
+    // _kinds[k]. An edit moves every later line by the same amount, so rather than
+    // rewrite them all it records that as _shift, owed by every entry from _shiftFrom
+    // on, and only settles the entries between one edit and the next.
     private readonly List<int> _starts = [0];
     private readonly List<Kind> _kinds = [Kind.CrLf];
     private readonly List<int> _scannedStarts = [];
     private readonly List<Kind> _scannedKinds = [];
+    private int _shiftFrom, _shift;
     private int _crlf, _lf, _cr;
 
     public LineIndex(string text = "") => Reset(text);
@@ -35,6 +39,7 @@ internal sealed class LineIndex
         _starts.RemoveRange(1, _starts.Count - 1);
         _kinds.RemoveRange(1, _kinds.Count - 1);
         _crlf = _lf = _cr = 0;
+        _shiftFrom = _shift = 0;
         Scan(text, 0, text.Length - 1);
         _starts.AddRange(_scannedStarts);
         _kinds.AddRange(_scannedKinds);
@@ -65,19 +70,20 @@ internal sealed class LineIndex
 
         int first = LowerBound(lo + 1);
         int last = LowerBound(oldHi + 2);
+        SettleShiftBefore(last);
         for (int k = first; k < last; k++)
             Tally(_kinds[k], -1);
         _starts.RemoveRange(first, last - first);
         _kinds.RemoveRange(first, last - first);
 
-        int delta = added - removed;
-        if (delta != 0)
-            for (int k = first; k < _starts.Count; k++)
-                _starts[k] += delta;
+        // Every line after the edit moves by the size of the change.
+        _shiftFrom = first;
+        _shift += added - removed;
 
         Scan(text, lo, newHi);
         _starts.InsertRange(first, _scannedStarts);
         _kinds.InsertRange(first, _scannedKinds);
+        _shiftFrom += _scannedStarts.Count;
 
         Length = text.Length;
     }
@@ -86,20 +92,20 @@ internal sealed class LineIndex
     public int LineAt(int charIndex) => Math.Max(1, LowerBound(charIndex + 1));
 
     /// <summary>Where a 1-based line starts, clamped to the lines that exist.</summary>
-    public int StartOf(int line) => _starts[Math.Clamp(line, 1, _starts.Count) - 1];
+    public int StartOf(int line) => Start(Math.Clamp(line, 1, _starts.Count) - 1);
 
     /// <summary>Whether a character index is the first character of a line.</summary>
     public bool IsLineStart(int charIndex)
     {
         int line = LineAt(charIndex);
-        return _starts[line - 1] == charIndex;
+        return Start(line - 1) == charIndex;
     }
 
     /// <summary>The 1-based line and column of a caret position, as the status bar shows them.</summary>
     public (int Line, int Column) PositionOf(int caret)
     {
         int line = LineAt(caret);
-        return (line, caret - _starts[line - 1] + 1);
+        return (line, caret - Start(line - 1) + 1);
     }
 
     // Collects every break at an index in [from, to] of text, in order, and counts it.
@@ -134,14 +140,29 @@ internal sealed class LineIndex
             _cr += by;
     }
 
-    // The first position k in _starts with _starts[k] >= value (Count if none).
+    private int Start(int k) => k >= _shiftFrom ? _starts[k] + _shift : _starts[k];
+
+    // Makes the entries before k exact and moves the owed shift to start at k.
+    private void SettleShiftBefore(int k)
+    {
+        if (_shift != 0)
+        {
+            for (int i = _shiftFrom; i < k; i++)
+                _starts[i] += _shift;
+            for (int i = k; i < _shiftFrom; i++)
+                _starts[i] -= _shift;
+        }
+        _shiftFrom = k;
+    }
+
+    // The first k with Start(k) >= value (Count if none).
     private int LowerBound(int value)
     {
         int lo = 0, hi = _starts.Count;
         while (lo < hi)
         {
             int mid = (lo + hi) >>> 1;
-            if (_starts[mid] < value)
+            if (Start(mid) < value)
                 lo = mid + 1;
             else
                 hi = mid;
