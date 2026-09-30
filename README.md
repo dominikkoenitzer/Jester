@@ -8,7 +8,7 @@
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
 [![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
-[![tests](https://img.shields.io/badge/tests-177%20passing-512BD4)](tests/Jester.Tests)
+[![tests](https://img.shields.io/badge/tests-186%20passing-512BD4)](tests/Jester.Tests)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
 ![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
@@ -90,7 +90,7 @@ The executable lands in `bin/Release/net10.0-windows/win-x64/publish/Jester.exe`
 dotnet test Jester.sln
 ```
 
-177 xunit tests cover the parts that work without a window: find/replace,
+186 xunit tests cover the parts that work without a window: find/replace,
 settings persistence, the command table, file encodings and line endings, the
 session that keeps unsaved tabs, the line index behind the status bar, and the
 editor's own edits, gutter and current-line highlight, laid out with no window.
