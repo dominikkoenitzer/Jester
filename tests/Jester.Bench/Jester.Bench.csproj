@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Measures what the status bar and the gutter cost per keystroke on large
+       documents. Not part of Jester.sln, so CI neither builds nor runs it.
+       Program.cs says how to run it. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Jester.Bench</AssemblyName>
+    <RootNamespace>Jester.Bench</RootNamespace>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\LineIndex.cs" Link="LineIndex.cs" />
+  </ItemGroup>
+
+</Project>
