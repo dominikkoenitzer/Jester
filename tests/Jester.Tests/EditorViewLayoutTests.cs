@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Xunit;
@@ -39,6 +40,22 @@ public class EditorViewLayoutTests
 
         Assert.True(view.Editor.TextArea.TextView.VisualLines[0].TextLines.Count > 1);
         Assert.Equal(["1", "2"], GutterNumbers(view));
+    });
+
+    [Fact]
+    public void TheGutterLeavesALineUnnumberedOnceItsFirstRowScrollsAway() => StaThread.Run(() =>
+    {
+        var view = Shown(new string('x', 400) + "\nend" + string.Concat(Enumerable.Repeat("\nmore", 30)), wrap: true);
+        var textView = view.Editor.TextArea.TextView;
+        double firstRow = textView.VisualLines[0].TextLines[0].Height;
+
+        // The scroll viewer leaves its scrolling to a window; the view scrolls at once.
+        ((IScrollInfo)textView).SetVerticalOffset(firstRow * 2);
+        view.UpdateLayout();
+
+        Assert.Equal(firstRow * 2, textView.VerticalOffset, 3);
+        Assert.DoesNotContain("1", GutterNumbers(view));
+        Assert.Contains("2", GutterNumbers(view));
     });
 
     [Fact]
