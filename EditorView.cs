@@ -150,6 +150,8 @@ internal sealed class EditorView : Grid
         options.EnableRectangularSelection = false;
         options.CutCopyWholeLine = false;
         options.InheritWordWrapIndentation = false;
+        // Insert switches between inserting and overtyping, as it does in a TextBox.
+        options.AllowToggleOverstrikeMode = true;
 
         var area = editor.TextArea;
         area.SelectionBrush = new SolidColorBrush(Color.FromArgb(0x66, 0xE8, 0xB5, 0x3D));
