@@ -158,11 +158,18 @@ internal sealed class EditorView : Grid
         area.SelectionCornerRadius = 0;
         area.Caret.CaretBrush = new SolidColorBrush(Color.FromRgb(0x4A, 0x1D, 0x6A));
 
+        var editing = area.DefaultInputHandler.Editing;
+        void Unbind(ICommand command)
+        {
+            foreach (var binding in editing.CommandBindings.Where(b => b.Command == command).ToList())
+                editing.CommandBindings.Remove(binding);
+        }
+
         // AvalonEdit's Delete command only removes a selection. Without it the command
         // reaches the window, whose Delete also removes the next character.
-        var editing = area.DefaultInputHandler.Editing;
-        foreach (var binding in editing.CommandBindings.Where(b => b.Command == ApplicationCommands.Delete).ToList())
-            editing.CommandBindings.Remove(binding);
+        Unbind(ApplicationCommands.Delete);
+        // Ctrl+D would delete the caret's whole line, a key Jester gives no meaning.
+        Unbind(AvalonEditCommands.DeleteLine);
 
         // A right click outside the selection moves the caret there first, so Paste from
         // the context menu lands where the click was.

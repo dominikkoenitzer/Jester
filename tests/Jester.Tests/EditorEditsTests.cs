@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 using Xunit;
 
@@ -44,6 +45,17 @@ public class EditorEditsTests
 
         Assert.True(reached);
         Assert.Equal("abc", view.Editor.Text);
+    });
+
+    [Fact]
+    public void CtrlDDoesNotDeleteTheLine() => StaThread.Run(() =>
+    {
+        var view = new EditorView();
+        view.Editor.Text = "one\ntwo";
+
+        Assert.False(AvalonEditCommands.DeleteLine.CanExecute(null, view.Editor.TextArea));
+        AvalonEditCommands.DeleteLine.Execute(null, view.Editor.TextArea);
+        Assert.Equal("one\ntwo", view.Editor.Text);
     });
 
     [Theory]
