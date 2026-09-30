@@ -8,7 +8,7 @@ namespace Jester;
 /// <summary>
 /// Reads a stretch of a <see cref="TextBox"/>'s text without building the whole string.
 /// The first read of <see cref="TextBox.Text"/> after an edit copies the entire document
-/// (about 50 ms at 20 MB), so reading it on every keystroke made typing in a large file
+/// (some 40 ms at 20 MB), so reading it on every keystroke made typing in a large file
 /// slow however little else happened. The TextBox keeps its text in a container of
 /// <see cref="TextPointer"/> positions that WPF exposes on a RichTextBox but not on a
 /// TextBox; this reaches it by name. Should a WPF release rename it, every read falls
