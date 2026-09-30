@@ -39,9 +39,11 @@ internal sealed class LineNumberMargin : FrameworkElement
         _numberBrush = Frozen(Color.FromRgb(0xAA, 0x9F, 0xBC));
         _currentBrush = Frozen(Color.FromRgb(0xC9, 0x97, 0x1F));
 
-        // The view rebuilds its lines after an edit, a resize or a font change.
+        // The view rebuilds its lines after an edit, a resize or a font change. It is laid
+        // out after the gutter, so where its lines sit is only known once it has a size.
         _textView.VisualLinesChanged += (_, _) => InvalidateVisual();
         _textView.ScrollOffsetChanged += (_, _) => InvalidateVisual();
+        _textView.SizeChanged += (_, _) => InvalidateVisual();
     }
 
     private static SolidColorBrush Frozen(Color color)
@@ -72,7 +74,8 @@ internal sealed class LineNumberMargin : FrameworkElement
         dc.DrawRectangle(_background, null, new Rect(0, 0, ActualWidth, ActualHeight));
         dc.DrawRectangle(_separator, null, new Rect(ActualWidth - 1, 0, 1, ActualHeight));
 
-        if (!_textView.VisualLinesValid || !_textView.IsVisible)
+        // Before its template is applied the view is not yet beside the gutter.
+        if (!_textView.VisualLinesValid || FindCommonVisualAncestor(_textView) is null)
             return;
 
         var typeface = CurrentTypeface;
