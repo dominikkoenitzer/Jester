@@ -32,9 +32,13 @@ public partial class MainWindow
             return;
 
         var ed = tab.Editor;
+        var lines = tab.View.Lines;
         int start = ed.SelectionStart;
-        string lineBreak = LineBreakAt(tab.View.Lines.LineEnding, tab.View.Text, start,
-            indent: _autoIndent && modifiers == ModifierKeys.None);
+        bool indent = _autoIndent && modifiers == ModifierKeys.None;
+        // Only the current line up to the caret decides the indent.
+        int lineStart = lines.StartOf(lines.LineAt(start));
+        string before = indent ? tab.View.Read(lineStart, start - lineStart) : "";
+        string lineBreak = LineBreakAt(lines.LineEnding, before, before.Length, indent);
 
         ed.SelectedText = lineBreak;
         ed.CaretIndex = start + lineBreak.Length;

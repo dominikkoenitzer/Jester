@@ -17,15 +17,13 @@ internal sealed class EditorView : Grid
     private readonly Grid _textArea;
     private readonly Canvas _highlightLayer;
     private readonly Rectangle _currentLineHighlight;
+    private readonly TextBoxContent _content;
+    private readonly Func<int, int, string> _read;
     private bool _showLineNumbers = true;
-    private string _text = "";
 
     public TextBox Editor { get; }
 
-    /// <summary>The editor's text as of its last change, read from the TextBox once per change.</summary>
-    public string Text => _text;
-
-    /// <summary>Where each line of <see cref="Text"/> starts, updated with every change.</summary>
+    /// <summary>Where each line of the editor's text starts, updated with every change.</summary>
     public LineIndex Lines { get; } = new();
 
     public EditorView()
@@ -51,6 +49,8 @@ internal sealed class EditorView : Grid
         Editor.SetResourceReference(Control.ForegroundProperty, "EditorForegroundBrush");
         SpellCheck.SetIsEnabled(Editor, false);
         Editor.ContextMenu = BuildContextMenu();
+        _content = new TextBoxContent(Editor);
+        _read = _content.Read;
         // First, so every other TextChanged handler sees the index already updated.
         Editor.TextChanged += OnTextChanged;
 
@@ -92,18 +92,21 @@ internal sealed class EditorView : Grid
         }
     }
 
+    /// <summary>A stretch of the editor's text, read without copying the rest of it.</summary>
+    public string Read(int start, int length) => _content.Read(start, length);
+
     private void OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        _text = Editor.Text;
-        // One change is the usual case; anything else is rare enough to rescan.
+        // One change is the usual case, and reads only what changed; anything else is
+        // rare enough to rescan.
         if (e.Changes.Count == 1)
         {
             var change = e.Changes.First();
-            Lines.Apply(_text, change.Offset, change.RemovedLength, change.AddedLength);
+            Lines.Apply(change.Offset, change.RemovedLength, change.AddedLength, _content.Length, _read);
         }
         else
         {
-            Lines.Reset(_text);
+            Lines.Reset(Editor.Text);
         }
 
         // The gutter sizes itself to the line count.

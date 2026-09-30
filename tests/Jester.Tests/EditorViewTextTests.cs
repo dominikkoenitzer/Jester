@@ -61,7 +61,6 @@ public class EditorViewTextTests
     {
         string text = view.Editor.Text;
         var fresh = new LineIndex(text);
-        Assert.Equal(text, view.Text);
         Assert.Equal(fresh.Count, view.Lines.Count);
         Assert.Equal(fresh.LineEnding, view.Lines.LineEnding);
         for (int i = 0; i <= text.Length; i++)
