@@ -1,4 +1,3 @@
-using System.Runtime.ExceptionServices;
 using Xunit;
 
 namespace Jester.Tests;
@@ -11,7 +10,7 @@ namespace Jester.Tests;
 public class EditorViewTextTests
 {
     [Fact]
-    public void TheLineIndexFollowsEveryKindOfEdit() => OnStaThread(() =>
+    public void TheLineIndexFollowsEveryKindOfEdit() => StaThread.Run(() =>
     {
         var view = new EditorView();
         var ed = view.Editor;
@@ -67,20 +66,5 @@ public class EditorViewTextTests
         Assert.Equal(fresh.LineEnding, view.Lines.LineEnding);
         for (int i = 0; i <= text.Length; i++)
             Assert.Equal(fresh.PositionOf(i), view.Lines.PositionOf(i));
-    }
-
-    // WPF controls live on an STA thread.
-    private static void OnStaThread(Action test)
-    {
-        ExceptionDispatchInfo? failure = null;
-        var thread = new Thread(() =>
-        {
-            try { test(); }
-            catch (Exception ex) { failure = ExceptionDispatchInfo.Capture(ex); }
-        });
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-        failure?.Throw();
     }
 }
