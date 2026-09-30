@@ -33,7 +33,8 @@ public partial class MainWindow
 
         var ed = tab.Editor;
         int start = ed.SelectionStart;
-        string lineBreak = LineBreakAt(ed.Text, start, indent: _autoIndent && modifiers == ModifierKeys.None);
+        string lineBreak = LineBreakAt(tab.View.Lines.LineEnding, tab.View.Text, start,
+            indent: _autoIndent && modifiers == ModifierKeys.None);
 
         ed.SelectedText = lineBreak;
         ed.CaretIndex = start + lineBreak.Length;
@@ -43,9 +44,13 @@ public partial class MainWindow
 
     /// <summary>What Enter inserts: the document's own line ending, the one the status bar
     /// shows, and with <paramref name="indent"/> the current line's leading whitespace.</summary>
-    internal static string LineBreakAt(string text, int caret, bool indent)
+    internal static string LineBreakAt(string text, int caret, bool indent) =>
+        LineBreakAt(DetectLineEnding(text), text, caret, indent);
+
+    /// <summary>The same, with the document's line ending already known.</summary>
+    internal static string LineBreakAt(string ending, string text, int caret, bool indent)
     {
-        var result = new StringBuilder(DetectLineEnding(text) switch
+        var result = new StringBuilder(ending switch
         {
             "LF" => "\n",
             "CR" => "\r",
