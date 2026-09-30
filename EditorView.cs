@@ -123,7 +123,7 @@ internal sealed class EditorView : Grid
     private void UpdateCurrentLine()
     {
         int caret = Editor.CaretIndex;
-        _margin.CurrentLine = LogicalLineAt(Editor.Text, caret);
+        _margin.CurrentLine = Lines.LineAt(caret);
         _margin.InvalidateVisual();
 
         Rect r = Editor.GetRectFromCharacterIndex(caret);
@@ -157,19 +157,5 @@ internal sealed class EditorView : Grid
         menu.Items.Add(new Separator());
         menu.Items.Add(Item(ApplicationCommands.SelectAll, "Select _All"));
         return menu;
-    }
-
-    // A line break is a newline, or a carriage return that is not part of a CRLF pair.
-    private static bool IsLineBreak(string text, int index) =>
-        text[index] == '\n' || (text[index] == '\r' && (index + 1 == text.Length || text[index + 1] != '\n'));
-
-    private static int LogicalLineAt(string text, int charIndex)
-    {
-        int line = 1;
-        int limit = Math.Min(charIndex, text.Length);
-        for (int i = 0; i < limit; i++)
-            if (IsLineBreak(text, i))
-                line++;
-        return line;
     }
 }
