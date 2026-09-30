@@ -1,4 +1,5 @@
 using System.Text;
+using System.Windows.Threading;
 
 namespace Jester;
 
@@ -6,6 +7,9 @@ namespace Jester;
 public partial class MainWindow
 {
     // -------------------------------------------------------- Editor / status
+
+    private bool _statusPending;
+    private bool _statusTextPending;
 
     private void OnEditorTextChanged(DocumentTab tab)
     {
@@ -15,13 +19,40 @@ public partial class MainWindow
         tab.IsDirty = true;
         ScheduleSessionSave();
 
-        if (!ReferenceEquals(tab, Active))
+        if (ReferenceEquals(tab, Active))
+            ScheduleStatusUpdate(textChanged: true);
+    }
+
+    private void OnEditorSelectionChanged(DocumentTab tab)
+    {
+        if (ReferenceEquals(tab, Active))
+            ScheduleStatusUpdate(textChanged: false);
+    }
+
+    /// <summary>
+    /// Brings the status bar and title up to date once the current burst of events is
+    /// over. One keystroke raises TextChanged and SelectionChanged, and a held key many
+    /// of each, so this runs once per pass of the dispatcher rather than once per event.
+    /// </summary>
+    private void ScheduleStatusUpdate(bool textChanged)
+    {
+        _statusTextPending |= textChanged;
+        if (_statusPending)
             return;
 
-        UpdateDocumentInfo();
-        UpdateLineEndingInfo();
-        UpdatePositionInfo();
-        UpdateTitle();
+        _statusPending = true;
+        Dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
+        {
+            _statusPending = false;
+            if (_statusTextPending)
+            {
+                _statusTextPending = false;
+                UpdateDocumentInfo();
+                UpdateLineEndingInfo();
+                UpdateTitle();
+            }
+            UpdatePositionInfo();
+        });
     }
 
     private void RefreshStatus()

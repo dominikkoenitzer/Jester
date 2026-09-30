@@ -20,7 +20,7 @@ public partial class MainWindow
 
         var ed = tab.Editor;
         ed.TextChanged += (_, _) => OnEditorTextChanged(tab);
-        ed.SelectionChanged += (_, _) => { if (ReferenceEquals(tab, Active)) UpdatePositionInfo(); };
+        ed.SelectionChanged += (_, _) => OnEditorSelectionChanged(tab);
         ed.PreviewKeyDown += (_, e) => Editor_PreviewKeyDown(tab, e);
         ed.PreviewMouseWheel += Editor_PreviewMouseWheel;
         ed.PreviewDragOver += Editor_PreviewDragOver;
