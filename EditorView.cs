@@ -18,8 +18,15 @@ internal sealed class EditorView : Grid
     private readonly Canvas _highlightLayer;
     private readonly Rectangle _currentLineHighlight;
     private bool _showLineNumbers = true;
+    private string _text = "";
 
     public TextBox Editor { get; }
+
+    /// <summary>The editor's text as of its last change, read from the TextBox once per change.</summary>
+    public string Text => _text;
+
+    /// <summary>Where each line of <see cref="Text"/> starts, updated with every change.</summary>
+    public LineIndex Lines { get; } = new();
 
     public EditorView()
     {
@@ -44,6 +51,8 @@ internal sealed class EditorView : Grid
         Editor.SetResourceReference(Control.ForegroundProperty, "EditorForegroundBrush");
         SpellCheck.SetIsEnabled(Editor, false);
         Editor.ContextMenu = BuildContextMenu();
+        // First, so every other TextChanged handler sees the index already updated.
+        Editor.TextChanged += OnTextChanged;
 
         _margin = new LineNumberMargin(Editor);
         SetColumn(_margin, 0);
@@ -83,10 +92,22 @@ internal sealed class EditorView : Grid
         }
     }
 
-    /// <summary>Tells the gutter how many logical lines exist so it can size itself.</summary>
-    public void SetTotalLines(int lines)
+    private void OnTextChanged(object sender, TextChangedEventArgs e)
     {
-        _margin.TotalLines = Math.Max(1, lines);
+        _text = Editor.Text;
+        // One change is the usual case; anything else is rare enough to rescan.
+        if (e.Changes.Count == 1)
+        {
+            var change = e.Changes.First();
+            Lines.Apply(_text, change.Offset, change.RemovedLength, change.AddedLength);
+        }
+        else
+        {
+            Lines.Reset(_text);
+        }
+
+        // The gutter sizes itself to the line count.
+        _margin.TotalLines = Lines.Count;
         _margin.InvalidateMeasure();
         _margin.InvalidateVisual();
     }
