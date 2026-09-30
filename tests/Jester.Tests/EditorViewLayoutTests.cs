@@ -73,6 +73,19 @@ public class EditorViewLayoutTests
         Assert.Equal(textArea.ActualWidth, highlight.Width, 3);
     });
 
+    [Fact]
+    public void ARightClickOffTheTextPicksTheNearestCharacter() => StaThread.Run(() =>
+    {
+        var view = Shown("one\ntwo", wrap: false);
+        var area = view.Editor.TextArea;
+
+        var below = EditorView.CaretPositionAt(area, new Point(1000, 250));
+        var above = EditorView.CaretPositionAt(area, new Point(-5, -20));
+
+        Assert.Equal((2, 4), (below?.Line, below?.Column));
+        Assert.Equal((1, 1), (above?.Line, above?.Column));
+    });
+
     private static EditorView Shown(string text, bool wrap)
     {
         var view = new EditorView();

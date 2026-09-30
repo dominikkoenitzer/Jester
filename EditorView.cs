@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 
 namespace Jester;
@@ -174,10 +175,11 @@ internal sealed class EditorView : Grid
         Unbind(AvalonEditCommands.DeleteLine);
 
         // A right click outside the selection moves the caret there first, so Paste from
-        // the context menu lands where the click was.
-        area.MouseRightButtonDown += (_, e) =>
+        // the context menu lands where the click was. Below the last line or in the
+        // padding that is the nearest character, as a left click would pick.
+        editor.MouseRightButtonDown += (_, e) =>
         {
-            if (editor.GetPositionFromPoint(e.GetPosition(editor)) is not { } position)
+            if (CaretPositionAt(area, e.GetPosition(area.TextView)) is not { } position)
                 return;
             if (!area.Selection.Contains(editor.Document.GetOffset(position.Location)))
             {
@@ -185,6 +187,21 @@ internal sealed class EditorView : Grid
                 area.Caret.Position = position;
             }
         };
+    }
+
+    /// <summary>Where a click at <paramref name="point"/>, relative to the text view, puts
+    /// the caret: on the nearest line when it is above or below them all.</summary>
+    internal static TextViewPosition? CaretPositionAt(TextArea area, Point point)
+    {
+        var textView = area.TextView;
+        if (textView.DocumentHeight <= 0)
+            return null;
+
+        point.Y = Math.Clamp(point.Y, 0, textView.ActualHeight);
+        point += textView.ScrollOffset;
+        point.X = Math.Max(0, point.X);
+        point.Y = Math.Min(point.Y, textView.DocumentHeight - 0.01);
+        return textView.GetPosition(point);
     }
 
     private void OnTextChanged()
