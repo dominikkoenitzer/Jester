@@ -121,7 +121,6 @@ documents. It is not part of the solution, so CI leaves it out.
 | `EditorView.cs` | One document's editor surface (text box + gutter + current-line highlight). |
 | `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
 | `LineIndex.cs` | Where each line starts, updated per edit for the status bar and gutter. |
-| `TextBoxContent.cs` | Reads part of an editor's text without copying all of it. |
 | `DocumentTab.cs` | Per-tab document state (path, encoding, dirty flag). |
 | `AppSettings.cs` | Loads/saves preferences and the last session as JSON. |
 | `ThemedWindow.cs` | Base window with the custom title bar / chrome. |
