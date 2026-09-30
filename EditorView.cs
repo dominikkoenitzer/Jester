@@ -47,6 +47,7 @@ internal sealed class EditorView : Grid
         };
         Editor.SetResourceReference(Control.ForegroundProperty, "EditorForegroundBrush");
         Configure(Editor);
+        GroupTyping(Editor.TextArea);
         Editor.ContextMenu = BuildContextMenu();
 
         // The document's Changed comes before the editor's TextChanged, so every handler of
@@ -186,6 +187,35 @@ internal sealed class EditorView : Grid
                 area.ClearSelection();
                 area.Caret.Position = position;
             }
+        };
+    }
+
+    // Undo takes back a run of typing at once, as in a TextBox, not a character at a
+    // time. Any other edit ends the run, since its own undo step then comes last, and
+    // so does moving the caret.
+    private static void GroupTyping(TextArea area)
+    {
+        object? run = null;
+        bool typing = false;
+
+        area.TextEntering += (_, _) =>
+        {
+            var undo = area.Document.UndoStack;
+            if (run is not null && ReferenceEquals(undo.LastGroupDescriptor, run))
+                undo.StartContinuedUndoGroup(run);
+            else
+                undo.StartUndoGroup(run = new object());
+            typing = true;
+        };
+        area.TextEntered += (_, _) =>
+        {
+            typing = false;
+            area.Document.UndoStack.EndUndoGroup();
+        };
+        area.Caret.PositionChanged += (_, _) =>
+        {
+            if (!typing)
+                run = null;
         };
     }
 
