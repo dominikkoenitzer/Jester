@@ -45,4 +45,57 @@ public class EditorEditsTests
         Assert.True(reached);
         Assert.Equal("abc", view.Editor.Text);
     });
+
+    [Theory]
+    [InlineData("LF", "one\ntwo\nthree\n")]
+    [InlineData("CR", "one\rtwo\rthree\r")]
+    [InlineData("CRLF", "one\r\ntwo\r\nthree\r\n")]
+    public void ConvertingLineEndingsKeepsTheCaretAndUndoesInOneStep(string kind, string expected) => StaThread.Run(() =>
+    {
+        const string original = "one\r\ntwo\nthree\r";
+        var view = new EditorView();
+        var ed = view.Editor;
+        ed.Text = original;
+        ed.Select(ed.Document.GetOffset(3, 4), 0); // After "thr".
+
+        MainWindow.ConvertLineEndings(ed, kind);
+
+        Assert.Equal(expected, ed.Text);
+        Assert.Equal(kind, view.Lines.LineEnding);
+        Assert.Equal((3, 4), view.Lines.PositionOf(ed.CaretOffset));
+
+        Assert.True(ed.Undo());
+        Assert.Equal(original, ed.Text);
+        Assert.False(ed.CanUndo);
+    });
+
+    [Fact]
+    public void ConvertingToTheSameLineEndingChangesNothing() => StaThread.Run(() =>
+    {
+        var ed = new EditorView().Editor;
+        ed.Text = "one\ntwo";
+        bool changed = false;
+        ed.TextChanged += (_, _) => changed = true;
+
+        MainWindow.ConvertLineEndings(ed, "LF");
+
+        Assert.False(changed);
+        Assert.False(ed.CanUndo);
+    });
+
+    [Fact]
+    public void ReplaceAllUndoesInOneStep() => StaThread.Run(() =>
+    {
+        var ed = new EditorView().Editor;
+        ed.Text = "a cat, a Cat, a CAT";
+        ed.Select(5, 0);
+
+        Assert.Equal(3, MainWindow.ReplaceAllIn(ed, "cat", "dog", matchCase: false));
+
+        Assert.Equal("a dog, a dog, a dog", ed.Text);
+        Assert.Equal(5, ed.CaretOffset);
+        Assert.True(ed.Undo());
+        Assert.Equal("a cat, a Cat, a CAT", ed.Text);
+        Assert.False(ed.CanUndo);
+    });
 }

@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
@@ -39,11 +40,12 @@ public partial class MainWindow
         return DoFind(searchDown);
     }
 
-    public int ReplaceAll(string search, string replace, bool matchCase)
-    {
-        if (string.IsNullOrEmpty(search) || ActiveEditor is not { } ed)
-            return 0;
+    public int ReplaceAll(string search, string replace, bool matchCase) =>
+        string.IsNullOrEmpty(search) || ActiveEditor is not { } ed ? 0 : ReplaceAllIn(ed, search, replace, matchCase);
 
+    /// <summary>Replaces every match in the editor's text; returns how many there were.</summary>
+    internal static int ReplaceAllIn(TextEditor ed, string search, string replace, bool matchCase)
+    {
         var (replaced, count) = TextSearch.ReplaceAll(ed.Text, search, replace, matchCase);
 
         if (count > 0)
