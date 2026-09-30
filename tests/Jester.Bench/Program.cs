@@ -1,12 +1,14 @@
 using System.Diagnostics;
 using System.Text;
+using System.Windows.Controls;
 
 namespace Jester.Bench;
 
 /// <summary>
 /// The work the editor did for the status bar, the gutter and the current line on
 /// every keystroke, before and after the line index, on 1, 5 and 20 MB documents.
-/// Reading the TextBox's Text is the TextBox's own cost and is left out of both.
+/// Reading the TextBox's Text is the TextBox's own cost and is left out of both;
+/// the second table measures it, and a whole edit, on a real TextBox with no window.
 /// Run from the repository root: dotnet run -c Release --project tests/Jester.Bench
 /// </summary>
 internal static class Program
@@ -14,6 +16,7 @@ internal static class Program
     // Visible rows the gutter numbers per repaint.
     private const int VisibleRows = 50;
 
+    [STAThread]
     private static void Main()
     {
         Console.WriteLine("Per keystroke, typing one character; mean of many runs.");
@@ -29,6 +32,44 @@ internal static class Program
                 Console.WriteLine($"{megabytes + " MB",-6} {label,-7} {Format(before),12} {Format(after),12}");
             }
         }
+
+        Console.WriteLine();
+        Console.WriteLine("A real TextBox, no window so no layout or rendering, caret in the middle.");
+        Console.WriteLine();
+        Console.WriteLine($"{"Size",-6} {"TextBox edit",14} {"Text read",12} {"Read again",12} {"Jester edit",13}");
+        foreach (int megabytes in new[] { 1, 5, 20 })
+        {
+            string text = Document(megabytes * 1024 * 1024);
+            var (edit, read, again) = MeasureTextBox(new TextBox { Text = text });
+            var (jesterEdit, _, _) = MeasureTextBox(new EditorView { Editor = { Text = text } }.Editor);
+            Console.WriteLine($"{megabytes + " MB",-6} {Format(edit),14} {Format(read),12} {Format(again),12} {Format(jesterEdit),13}");
+        }
+    }
+
+    // Types a character in the middle and deletes it again, timing each edit alone
+    // and then the first and second read of Text after it. With Jester's editor the
+    // edit includes its own TextChanged work, which reads Text once.
+    private static (double Edit, double Read, double ReadAgain) MeasureTextBox(TextBox box)
+    {
+        int middle = box.Text.Length / 2;
+        double edit = 0, read = 0, again = 0;
+        const int runs = 40;
+        for (int run = 0; run < runs; run++)
+        {
+            box.Select(middle, run % 2);
+            var watch = Stopwatch.StartNew();
+            box.SelectedText = run % 2 == 0 ? "x" : "";
+            edit += watch.Elapsed.TotalMilliseconds;
+
+            watch.Restart();
+            _sink += box.Text.Length;
+            read += watch.Elapsed.TotalMilliseconds;
+
+            watch.Restart();
+            _sink += box.Text.Length;
+            again += watch.Elapsed.TotalMilliseconds;
+        }
+        return (edit / runs, read / runs, again / runs);
     }
 
     private static string Document(int length)

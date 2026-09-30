@@ -35,9 +35,10 @@
   </ItemGroup>
 
   <!-- AppSettings and TextSearch are internal: the app is a single assembly and
-       they are not public API. The test project needs to see them. -->
+       they are not public API. The test project and the benchmark need to see them. -->
   <ItemGroup>
     <InternalsVisibleTo Include="Jester.Tests" />
+    <InternalsVisibleTo Include="Jester.Bench" />
   </ItemGroup>
 
   <!-- QuestPDF copies its bundled Lato fonts as loose files into the output
