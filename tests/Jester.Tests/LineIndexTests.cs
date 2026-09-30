@@ -71,6 +71,26 @@ public class LineIndexTests
     }
 
     [Fact]
+    public void ReadsOnlyTheChangedTextAndOneCharacterEitherSide()
+    {
+        string before = string.Concat(Enumerable.Repeat("line\r\n", 1000));
+        string after = before.Insert(3000, "a\nb");
+        var index = new LineIndex(before);
+        int read = 0;
+
+        index.Apply(3000, 0, 3, after.Length, (start, length) =>
+        {
+            read += length;
+            return after.Substring(start, length);
+        });
+
+        // The three typed characters, the one before and after them, and the one on
+        // either side of those that decides whether they are breaks.
+        Assert.Equal(7, read);
+        AssertMatchesFullScan(after, index);
+    }
+
+    [Fact]
     public void RescansWhenTheChangeDoesNotFitTheText()
     {
         var index = new LineIndex("one\ntwo");

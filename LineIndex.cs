@@ -4,8 +4,8 @@ namespace Jester;
 /// Where every line of a document starts, kept up to date edit by edit. A line ends
 /// at a newline or at a carriage return that is not part of a CRLF pair, the same
 /// rule as the rest of the app, so a Macintosh (CR) file counts its lines too.
-/// An edit re-reads only the changed text and one character either side of it,
-/// so the status bar and the gutter no longer scan the whole document per keystroke.
+/// An edit reads only the changed text and one character either side of it, so
+/// neither the status bar nor the gutter needs the whole document per keystroke.
 /// </summary>
 internal sealed class LineIndex
 {
@@ -40,7 +40,7 @@ internal sealed class LineIndex
         _kinds.RemoveRange(1, _kinds.Count - 1);
         _crlf = _lf = _cr = 0;
         _shiftFrom = _shift = 0;
-        Scan(text, 0, text.Length - 1);
+        Scan(text, 0, text.Length, 0, text.Length - 1);
         _starts.AddRange(_scannedStarts);
         _kinds.AddRange(_scannedKinds);
         Length = text.Length;
@@ -52,12 +52,21 @@ internal sealed class LineIndex
     /// giving <paramref name="text"/>. Falls back to a full rescan when the change
     /// does not fit the text it describes.
     /// </summary>
-    public void Apply(string text, int offset, int removed, int added)
+    public void Apply(string text, int offset, int removed, int added) =>
+        Apply(offset, removed, added, text.Length, text.Substring);
+
+    /// <summary>
+    /// The same, for a text too costly to hand over whole: <paramref name="read"/>
+    /// returns a stretch of it, given where the stretch starts and how long it is.
+    /// Only the changed characters and one either side of them are read, unless the
+    /// change does not fit, which reads the whole text.
+    /// </summary>
+    public void Apply(int offset, int removed, int added, int newLength, Func<int, int, string> read)
     {
         if (offset < 0 || removed < 0 || added < 0 || offset + removed > Length ||
-            Length - removed + added != text.Length)
+            Length - removed + added != newLength)
         {
-            Reset(text);
+            Reset(read(0, newLength));
             return;
         }
 
@@ -66,7 +75,7 @@ internal sealed class LineIndex
         // to one past it; everything outside that window only moves.
         int lo = Math.Max(0, offset - 1);
         int oldHi = Math.Min(offset + removed, Length - 1);
-        int newHi = Math.Min(offset + added, text.Length - 1);
+        int newHi = Math.Min(offset + added, newLength - 1);
 
         int first = LowerBound(lo + 1);
         int last = LowerBound(oldHi + 2);
@@ -80,12 +89,15 @@ internal sealed class LineIndex
         _shiftFrom = first;
         _shift += added - removed;
 
-        Scan(text, lo, newHi);
+        // The window, plus the character before and after it that decide its breaks.
+        int from = Math.Max(0, lo - 1);
+        int to = Math.Min(newLength, newHi + 2);
+        Scan(to > from ? read(from, to - from) : "", from, newLength, lo, newHi);
         _starts.InsertRange(first, _scannedStarts);
         _kinds.InsertRange(first, _scannedKinds);
         _shiftFrom += _scannedStarts.Count;
 
-        Length = text.Length;
+        Length = newLength;
     }
 
     /// <summary>The 1-based line holding a character index; past the end is the last line.</summary>
@@ -108,18 +120,19 @@ internal sealed class LineIndex
         return (line, caret - Start(line - 1) + 1);
     }
 
-    // Collects every break at an index in [from, to] of text, in order, and counts it.
-    private void Scan(string text, int from, int to)
+    // Collects every break at an index in [from, to] of a text of the given length, in
+    // order, and counts it. The part of the text at hand starts at index partStart.
+    private void Scan(string part, int partStart, int length, int from, int to)
     {
         _scannedStarts.Clear();
         _scannedKinds.Clear();
         for (int i = from; i <= to; i++)
         {
-            char c = text[i];
+            char c = part[i - partStart];
             Kind kind;
             if (c == '\n')
-                kind = i > 0 && text[i - 1] == '\r' ? Kind.CrLf : Kind.Lf;
-            else if (c == '\r' && (i + 1 == text.Length || text[i + 1] != '\n'))
+                kind = i > 0 && part[i - 1 - partStart] == '\r' ? Kind.CrLf : Kind.Lf;
+            else if (c == '\r' && (i + 1 == length || part[i + 1 - partStart] != '\n'))
                 kind = Kind.Cr;
             else
                 continue;
