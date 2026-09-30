@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 
 namespace Jester;
 
@@ -119,16 +120,18 @@ public partial class MainWindow : ThemedWindow
             return;
 
         if (ed.SelectionLength > 0)
-        {
             ed.SelectedText = "";
-        }
-        else if (ed.CaretOffset < ed.Document.TextLength)
-        {
-            var document = ed.Document;
-            int caret = ed.CaretOffset;
-            string next = document.GetText(caret, Math.Min(2, document.TextLength - caret));
-            document.Remove(caret, DeleteLengthAt(next, 0));
-        }
+        else
+            DeleteNextChar(ed.Document, ed.CaretOffset);
+    }
+
+    /// <summary>Removes the character after <paramref name="caret"/>, if there is one.</summary>
+    internal static void DeleteNextChar(TextDocument document, int caret)
+    {
+        if (caret < 0 || caret >= document.TextLength)
+            return;
+        string next = document.GetText(caret, Math.Min(2, document.TextLength - caret));
+        document.Remove(caret, DeleteLengthAt(next, 0));
     }
 
     // A CRLF pair and a surrogate pair are each one character to the reader, and
