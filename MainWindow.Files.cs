@@ -69,7 +69,7 @@ public partial class MainWindow
     }
 
     private static bool IsPristineEmpty(DocumentTab tab) =>
-        tab.FilePath is null && !tab.IsDirty && tab.Editor.Text.Length == 0;
+        tab.FilePath is null && !tab.IsDirty && tab.Editor.Document.TextLength == 0;
 
     private bool Save(DocumentTab tab) => tab.FilePath is null ? SaveAs(tab) : WriteToFile(tab, tab.FilePath);
 

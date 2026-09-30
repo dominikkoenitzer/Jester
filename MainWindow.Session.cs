@@ -1,6 +1,6 @@
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Threading;
+using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
@@ -33,7 +33,7 @@ public partial class MainWindow
             // unsaved one is read once per write, never per keystroke.
             d.FilePath is not null && !d.IsDirty ? "" : d.Editor.Text,
             d.IsDirty,
-            d.Editor.CaretIndex,
+            d.Editor.CaretOffset,
             d.Encoding,
             d.Disk)).ToList();
         return SessionState.Snapshot(tabs, Tabs.SelectedIndex, DateTime.UtcNow);
@@ -116,10 +116,10 @@ public partial class MainWindow
         return true;
     }
 
-    private static void RestoreCaret(TextBox editor, int caret)
+    private static void RestoreCaret(TextEditor editor, int caret)
     {
-        editor.CaretIndex = Math.Clamp(caret, 0, editor.Text.Length);
-        if (editor.CaretIndex == 0)
+        editor.CaretOffset = Math.Clamp(caret, 0, editor.Document.TextLength);
+        if (editor.CaretOffset == 0)
             return;
 
         // The editor has no layout until its tab is first shown, so scroll it then.
@@ -128,9 +128,8 @@ public partial class MainWindow
             editor.Loaded -= ScrollToCaret;
             editor.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
             {
-                int line = editor.GetLineIndexFromCharacterIndex(editor.CaretIndex);
-                if (line >= 0)
-                    editor.ScrollToLine(line);
+                var location = editor.Document.GetLocation(editor.CaretOffset);
+                editor.ScrollTo(location.Line, location.Column);
             });
         }
         editor.Loaded += ScrollToCaret;

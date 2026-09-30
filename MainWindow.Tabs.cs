@@ -20,7 +20,8 @@ public partial class MainWindow
 
         var ed = tab.Editor;
         ed.TextChanged += (_, _) => OnEditorTextChanged(tab);
-        ed.SelectionChanged += (_, _) => OnEditorSelectionChanged(tab);
+        ed.TextArea.SelectionChanged += (_, _) => OnEditorSelectionChanged(tab);
+        ed.TextArea.Caret.PositionChanged += (_, _) => OnEditorSelectionChanged(tab);
         ed.PreviewKeyDown += (_, e) => Editor_PreviewKeyDown(tab, e);
         ed.PreviewMouseWheel += Editor_PreviewMouseWheel;
         ed.PreviewDragOver += Editor_PreviewDragOver;
@@ -35,8 +36,8 @@ public partial class MainWindow
     private void LoadInto(DocumentTab tab, string text, string? path, Encoding encoding)
     {
         _isLoadingFile = true;
+        // Also puts the caret at the start and begins a new undo history.
         tab.Editor.Text = text;
-        tab.Editor.CaretIndex = 0;
         tab.Editor.ScrollToHome();
         _isLoadingFile = false;
 

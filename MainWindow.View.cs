@@ -16,12 +16,9 @@ public partial class MainWindow
             ApplyWordWrap(tab);
     }
 
-    private void ApplyWordWrap(DocumentTab tab)
-    {
-        tab.Editor.TextWrapping = _wordWrap ? TextWrapping.Wrap : TextWrapping.NoWrap;
-        tab.Editor.HorizontalScrollBarVisibility =
-            _wordWrap ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
-    }
+    // The editor wraps only the lines on screen, and turns its horizontal scroll bar off
+    // while it does.
+    private void ApplyWordWrap(DocumentTab tab) => tab.Editor.WordWrap = _wordWrap;
 
     private void AutoIndent_Click(object sender, RoutedEventArgs e) =>
         _autoIndent = AutoIndentMenuItem.IsChecked;
@@ -57,13 +54,23 @@ public partial class MainWindow
         if (ActiveEditor is not { } ed || sender is not MenuItem { Tag: string kind })
             return;
 
-        string normalized = ed.Text.Replace("\r\n", "\n").Replace('\r', '\n');
-        ed.Text = kind switch
+        string text = ed.Text;
+        string normalized = text.Replace("\r\n", "\n").Replace('\r', '\n');
+        string converted = kind switch
         {
             "LF" => normalized,
             "CR" => normalized.Replace('\n', '\r'),
             _ => normalized.Replace("\n", "\r\n"),
         };
+        if (converted != text)
+        {
+            // One edit that Undo takes back; setting Text would clear the undo history. Every
+            // line keeps its number, so the caret stays on its line and column.
+            var document = ed.Document;
+            var caret = document.GetLocation(ed.CaretOffset);
+            document.Replace(0, document.TextLength, converted);
+            ed.Select(document.GetOffset(caret.Line, caret.Column), 0);
+        }
         SyncFormatMenus();
     }
 
