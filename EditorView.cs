@@ -54,7 +54,7 @@ internal sealed class EditorView : Grid
         // First, so every other TextChanged handler sees the index already updated.
         Editor.TextChanged += OnTextChanged;
 
-        _margin = new LineNumberMargin(Editor);
+        _margin = new LineNumberMargin(Editor, Lines);
         SetColumn(_margin, 0);
         Children.Add(_margin);
 

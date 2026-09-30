@@ -17,6 +17,7 @@ internal sealed class LineNumberMargin : FrameworkElement
     private const double RightPadding = 9;
 
     private readonly TextBox _editor;
+    private readonly LineIndex _lines;
     private readonly Brush _background;
     private readonly Brush _separator;
     private readonly Brush _numberBrush;
@@ -28,9 +29,10 @@ internal sealed class LineNumberMargin : FrameworkElement
     /// <summary>1-based logical line the caret sits on; rendered emphasised.</summary>
     public int CurrentLine { get; set; } = 1;
 
-    public LineNumberMargin(TextBox editor)
+    public LineNumberMargin(TextBox editor, LineIndex lines)
     {
         _editor = editor;
+        _lines = lines;
 
         _background = Frozen(Color.FromRgb(0xF1, 0xEA, 0xDD));
         _separator = Frozen(Color.FromRgb(0xDC, 0xCB, 0xA4));
@@ -76,12 +78,6 @@ internal sealed class LineNumberMargin : FrameworkElement
         if (first < 0 || last < first)
             return;
 
-        string text = _editor.Text;
-        int firstChar = SafeCharFromLine(first);
-        if (firstChar < 0)
-            return;
-
-        int logical = CountNewlines(text, firstChar) + 1;
         var typeface = CurrentTypeface;
         var boldTypeface = new Typeface(typeface.FontFamily, typeface.Style, FontWeights.Bold, typeface.Stretch);
         double fontSize = _editor.FontSize;
@@ -93,10 +89,9 @@ internal sealed class LineNumberMargin : FrameworkElement
             if (charIdx < 0)
                 continue;
 
-            bool startsLogicalLine = charIdx == 0 || (charIdx <= text.Length && text[charIdx - 1] == '\n');
-            if (i > first && startsLogicalLine)
-                logical++;
-            if (!startsLogicalLine)
+            // A wrapped row continues a line; only a row that starts one is numbered.
+            int logical = _lines.LineAt(charIdx);
+            if (_lines.StartOf(logical) != charIdx)
                 continue;
 
             Rect r = _editor.GetRectFromCharacterIndex(charIdx);
@@ -117,15 +112,5 @@ internal sealed class LineNumberMargin : FrameworkElement
     {
         try { return _editor.GetCharacterIndexFromLineIndex(line); }
         catch { return -1; }
-    }
-
-    private static int CountNewlines(string text, int upTo)
-    {
-        int count = 0;
-        int limit = Math.Min(upTo, text.Length);
-        for (int i = 0; i < limit; i++)
-            if (text[i] == '\n')
-                count++;
-        return count;
     }
 }
