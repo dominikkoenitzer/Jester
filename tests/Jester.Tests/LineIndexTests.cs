@@ -1,11 +1,12 @@
+using ICSharpCode.AvalonEdit.Document;
 using Xunit;
 
 namespace Jester.Tests;
 
 /// <summary>
 /// The line index the status bar and the gutter read instead of rescanning the text.
-/// After any edit it must say exactly what a full scan of the new text says, CR, LF
-/// and CRLF alike, including edits that join or split a CRLF pair.
+/// After any edit to its document it must say exactly what a full scan of the new text
+/// says, CR, LF and CRLF alike, including edits that join or split a CRLF pair.
 /// </summary>
 public class LineIndexTests
 {
@@ -20,7 +21,7 @@ public class LineIndexTests
     [InlineData("\r\r\n\n", 4, "CRLF")]
     public void CountsLinesAndTheLineEndingLikeAFullScan(string text, int lines, string ending)
     {
-        var index = new LineIndex(text);
+        var index = Index(text);
         Assert.Equal(lines, index.Count);
         Assert.Equal(ending, index.LineEnding);
         Assert.Equal(text.Length, index.Length);
@@ -35,7 +36,7 @@ public class LineIndexTests
     [InlineData("one\ntwo", 99, 2, 96)]
     public void GivesTheSameLineAndColumnAsTheStatusBar(string text, int caret, int line, int column)
     {
-        Assert.Equal((line, column), new LineIndex(text).PositionOf(caret));
+        Assert.Equal((line, column), Index(text).PositionOf(caret));
         Assert.Equal((line, column), MainWindow.LineAndColumnAt(text, caret));
     }
 
@@ -61,9 +62,10 @@ public class LineIndexTests
         string before, int offset, int removed, string inserted, int lines, string ending)
     {
         string after = before.Remove(offset, removed).Insert(offset, inserted);
-        var index = new LineIndex(before);
+        var document = new TextDocument(before);
+        var index = new LineIndex(document);
 
-        index.Apply(after, offset, removed, inserted.Length);
+        document.Replace(offset, removed, inserted);
 
         Assert.Equal(lines, index.Count);
         Assert.Equal(ending, index.LineEnding);
@@ -71,31 +73,12 @@ public class LineIndexTests
     }
 
     [Fact]
-    public void ReadsOnlyTheChangedTextAndOneCharacterEitherSide()
+    public void CountsAWholeNewTextFromScratch()
     {
-        string before = string.Concat(Enumerable.Repeat("line\r\n", 1000));
-        string after = before.Insert(3000, "a\nb");
-        var index = new LineIndex(before);
-        int read = 0;
+        var document = new TextDocument("one\ntwo");
+        var index = new LineIndex(document);
 
-        index.Apply(3000, 0, 3, after.Length, (start, length) =>
-        {
-            read += length;
-            return after.Substring(start, length);
-        });
-
-        // The three typed characters, the one before and after them, and the one on
-        // either side of those that decides whether they are breaks.
-        Assert.Equal(7, read);
-        AssertMatchesFullScan(after, index);
-    }
-
-    [Fact]
-    public void RescansWhenTheChangeDoesNotFitTheText()
-    {
-        var index = new LineIndex("one\ntwo");
-
-        index.Apply("a\rb\rc", 0, 0, 1);
+        document.Text = "a\rb\rc";
 
         Assert.Equal(3, index.Count);
         Assert.Equal("CR", index.LineEnding);
@@ -103,13 +86,54 @@ public class LineIndexTests
     }
 
     [Fact]
+    public void FollowsSeveralEditsMadeAsOne()
+    {
+        var document = new TextDocument("a\rb\r\nc");
+        var index = new LineIndex(document);
+
+        document.BeginUpdate();
+        document.Insert(2, "\n");
+        document.Remove(4, 1);
+        document.Insert(document.TextLength, "\r");
+        document.EndUpdate();
+
+        Assert.Equal("a\r\nb\nc\r", document.Text);
+        AssertMatchesFullScan(document.Text, index);
+    }
+
+    [Fact]
+    public void FollowsUndoAndRedo()
+    {
+        var document = new TextDocument("one\r\ntwo");
+        var index = new LineIndex(document);
+
+        document.Replace(3, 2, "\n");
+        document.Insert(0, "\r");
+        AssertMatchesFullScan(document.Text, index);
+
+        while (document.UndoStack.CanUndo)
+        {
+            document.UndoStack.Undo();
+            AssertMatchesFullScan(document.Text, index);
+        }
+        Assert.Equal("CRLF", index.LineEnding);
+
+        while (document.UndoStack.CanRedo)
+        {
+            document.UndoStack.Redo();
+            AssertMatchesFullScan(document.Text, index);
+        }
+        Assert.Equal("LF", index.LineEnding);
+    }
+
+    [Fact]
     public void KnowsWhichCharactersStartALine()
     {
-        var index = new LineIndex("ab\r\ncd\ref\ngh");
+        var index = Index("ab\r\ncd\ref\ngh");
 
         int[] starts = [0, 4, 7, 10];
         for (int i = 0; i <= 12; i++)
-            Assert.Equal(starts.Contains(i), index.IsLineStart(i));
+            Assert.Equal(starts.Contains(i), index.StartOf(index.LineAt(i)) == i);
         Assert.Equal(7, index.StartOf(3));
         Assert.Equal(10, index.StartOf(99));
         Assert.Equal(0, index.StartOf(0));
@@ -121,7 +145,8 @@ public class LineIndexTests
         var random = new Random(96);
         const string alphabet = "ab\r\n\r\n";
         string text = "";
-        var index = new LineIndex(text);
+        var document = new TextDocument();
+        var index = new LineIndex(document);
 
         for (int step = 0; step < 5000; step++)
         {
@@ -132,18 +157,17 @@ public class LineIndexTests
                 inserted[i] = alphabet[random.Next(alphabet.Length)];
 
             text = text.Remove(offset, removed).Insert(offset, new string(inserted));
-            index.Apply(text, offset, removed, inserted.Length);
+            document.Replace(offset, removed, new string(inserted));
 
             AssertMatchesFullScan(text, index);
         }
     }
 
+    private static LineIndex Index(string text) => new(new TextDocument(text));
+
     private static void AssertMatchesFullScan(string text, LineIndex index)
     {
-        var fresh = new LineIndex(text);
         Assert.Equal(text.Length, index.Length);
-        Assert.Equal(fresh.Count, index.Count);
-        Assert.Equal(fresh.LineEnding, index.LineEnding);
         Assert.Equal(MainWindow.GetLogicalLineCount(text), index.Count);
         Assert.Equal(MainWindow.DetectLineEnding(text), index.LineEnding);
         // Every caret on short texts; on longer ones the ends and a spread between.
