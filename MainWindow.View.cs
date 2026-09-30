@@ -1,6 +1,7 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
@@ -54,6 +55,13 @@ public partial class MainWindow
         if (ActiveEditor is not { } ed || sender is not MenuItem { Tag: string kind })
             return;
 
+        ConvertLineEndings(ed, kind);
+        SyncFormatMenus();
+    }
+
+    /// <summary>Makes every line break <paramref name="kind"/>: "CRLF", "LF" or "CR".</summary>
+    internal static void ConvertLineEndings(TextEditor ed, string kind)
+    {
         string text = ed.Text;
         string normalized = text.Replace("\r\n", "\n").Replace('\r', '\n');
         string converted = kind switch
@@ -71,7 +79,6 @@ public partial class MainWindow
             document.Replace(0, document.TextLength, converted);
             ed.Select(document.GetOffset(caret.Line, caret.Column), 0);
         }
-        SyncFormatMenus();
     }
 
     private void Encoding_Click(object sender, RoutedEventArgs e)
