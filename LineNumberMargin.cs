@@ -39,6 +39,9 @@ internal sealed class LineNumberMargin : FrameworkElement
         _numberBrush = Frozen(Color.FromRgb(0xAA, 0x9F, 0xBC));
         _currentBrush = Frozen(Color.FromRgb(0xC9, 0x97, 0x1F));
 
+        // A number half scrolled off the top stays inside the gutter, not over the tabs.
+        ClipToBounds = true;
+
         // The view rebuilds its lines after an edit, a resize or a font change. It is laid
         // out after the gutter, so where its lines sit is only known once it has a size.
         _textView.VisualLinesChanged += (_, _) => InvalidateVisual();
@@ -87,8 +90,14 @@ internal sealed class LineNumberMargin : FrameworkElement
         // number goes on its first row.
         foreach (var line in _textView.VisualLines)
         {
+            // A line whose first row has scrolled out of sight is not numbered, just like
+            // a row that only continues a wrapped line.
+            var firstRow = line.TextLines[0];
+            if (line.GetTextLineVisualYPosition(firstRow, VisualYPosition.LineBottom) <= _textView.VerticalOffset)
+                continue;
+
             int logical = line.FirstDocumentLine.LineNumber;
-            double top = line.GetTextLineVisualYPosition(line.TextLines[0], VisualYPosition.TextTop) - _textView.VerticalOffset;
+            double top = line.GetTextLineVisualYPosition(firstRow, VisualYPosition.TextTop) - _textView.VerticalOffset;
             double y = _textView.TranslatePoint(new Point(0, top), this).Y;
 
             bool isCurrent = logical == CurrentLine;
