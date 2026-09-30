@@ -41,18 +41,18 @@ public partial class MainWindow
 
     private void UpdateDocumentInfo()
     {
-        if (ActiveEditor is not { } ed)
+        if (Active?.View.Lines is not { } lines)
             return;
-        string text = ed.Text;
-        DocInfo.Text = $"{text.Length:N0} chars  ·  {GetLogicalLineCount(text):N0} lines";
+        DocInfo.Text = $"{lines.Length:N0} chars  ·  {lines.Count:N0} lines";
     }
 
     private void UpdatePositionInfo()
     {
-        if (ActiveEditor is not { } ed)
+        if (Active is not { } tab)
             return;
 
-        var (line, column) = LineAndColumnAt(ed.Text, ed.SelectionStart);
+        var ed = tab.Editor;
+        var (line, column) = tab.View.Lines.PositionOf(ed.SelectionStart);
         int selection = ed.SelectionLength;
         PositionInfo.Text = selection > 0
             ? $"Ln {line}, Col {column}   ({selection:N0} selected)"
@@ -80,17 +80,17 @@ public partial class MainWindow
 
     private void UpdateLineEndingInfo()
     {
-        if (ActiveEditor is not { } ed)
+        if (Active is not { } tab)
             return;
-        LineEndingInfo.Text = DescribeLineEnding(ed.Text);
+        LineEndingInfo.Text = DescribeLineEnding(tab.View.Lines.LineEnding);
     }
 
     private void SyncFormatMenus()
     {
-        if (ActiveEditor is not { } ed || Active is not { } tab)
+        if (Active is not { } tab)
             return;
 
-        string ending = DetectLineEnding(ed.Text);
+        string ending = tab.View.Lines.LineEnding;
         CrlfMenuItem.IsChecked = ending == "CRLF";
         LfMenuItem.IsChecked = ending == "LF";
         CrMenuItem.IsChecked = ending == "CR";
@@ -111,7 +111,7 @@ public partial class MainWindow
         return text.Contains('\r') ? "CR" : "CRLF";
     }
 
-    private static string DescribeLineEnding(string text) => DetectLineEnding(text) switch
+    private static string DescribeLineEnding(string ending) => ending switch
     {
         "LF" => "Unix (LF)",
         "CR" => "Macintosh (CR)",
