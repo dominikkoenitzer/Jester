@@ -103,7 +103,7 @@ public partial class MainWindow
         Utf16BeMenuItem.IsChecked = enc == "utf-16be";
     }
 
-    private static string DetectLineEnding(string text)
+    internal static string DetectLineEnding(string text)
     {
         if (text.Contains("\r\n"))
             return "CRLF";
@@ -152,7 +152,7 @@ public partial class MainWindow
         return line;
     }
 
-    private static int GetLogicalLineCount(string text)
+    internal static int GetLogicalLineCount(string text)
     {
         int lines = 1;
         for (int i = 0; i < text.Length; i++)
