@@ -26,7 +26,6 @@ public partial class MainWindow
         ed.PreviewDragOver += Editor_PreviewDragOver;
         ed.PreviewDrop += Editor_PreviewDrop;
 
-        tab.View.SetTotalLines(1);
         _docs.Add(tab);
         if (select)
             Tabs.SelectedItem = tab;
@@ -46,7 +45,6 @@ public partial class MainWindow
         tab.Disk = path is null ? null : DiskStamp.Of(path);
         tab.ChangedOnDisk = false;
         tab.IsDirty = false;
-        tab.View.SetTotalLines(GetLogicalLineCount(text));
     }
 
     private void NewFile()

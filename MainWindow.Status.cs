@@ -14,7 +14,6 @@ public partial class MainWindow
 
         tab.IsDirty = true;
         ScheduleSessionSave();
-        tab.View.SetTotalLines(GetLogicalLineCount(tab.Editor.Text));
 
         if (!ReferenceEquals(tab, Active))
             return;
