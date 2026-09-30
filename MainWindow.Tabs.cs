@@ -24,6 +24,7 @@ public partial class MainWindow
         ed.TextArea.Caret.PositionChanged += (_, _) => OnEditorSelectionChanged(tab);
         ed.PreviewKeyDown += (_, e) => Editor_PreviewKeyDown(tab, e);
         ed.PreviewMouseWheel += Editor_PreviewMouseWheel;
+        ed.PreviewDragEnter += Editor_PreviewDragOver;
         ed.PreviewDragOver += Editor_PreviewDragOver;
         ed.PreviewDrop += Editor_PreviewDrop;
 
