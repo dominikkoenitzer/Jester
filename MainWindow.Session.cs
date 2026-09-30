@@ -29,8 +29,9 @@ public partial class MainWindow
     {
         var tabs = _docs.Select(d => SessionState.Capture(
             d.FilePath,
-            // A saved file is kept as its path, so its text is not copied out at all.
-            d.FilePath is not null && !d.IsDirty ? "" : d.Editor.Text,
+            // A saved file is kept as its path, so its text is not taken at all. An
+            // unsaved one hands over the string its editor already holds, not a new copy.
+            d.FilePath is not null && !d.IsDirty ? "" : d.View.Text,
             d.IsDirty,
             d.Editor.CaretIndex,
             d.Encoding,
@@ -71,7 +72,8 @@ public partial class MainWindow
     private void SaveSessionInBackground()
     {
         _sessionTimer?.Stop();
-        // The text is read here, on the UI thread; only the writing moves off it.
+        // The snapshot is taken here, on the UI thread, from the text each editor already
+        // holds; the writing moves off it.
         var snapshot = CaptureSession();
         long sequence = _session.NextSequence();
         Task.Run(() => _session.Write(snapshot, sequence));
