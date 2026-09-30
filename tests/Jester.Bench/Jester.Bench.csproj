@@ -5,7 +5,8 @@
        Program.cs says how to run it. -->
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>Jester.Bench</AssemblyName>
@@ -14,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\LineIndex.cs" Link="LineIndex.cs" />
+    <ProjectReference Include="..\..\Jester.csproj" />
   </ItemGroup>
 
 </Project>
