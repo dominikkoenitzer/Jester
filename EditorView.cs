@@ -118,6 +118,19 @@ internal sealed class EditorView : Grid
         var editing = area.DefaultInputHandler.Editing;
         foreach (var binding in editing.CommandBindings.Where(b => b.Command == ApplicationCommands.Delete).ToList())
             editing.CommandBindings.Remove(binding);
+
+        // A right click outside the selection moves the caret there first, so Paste from
+        // the context menu lands where the click was.
+        area.MouseRightButtonDown += (_, e) =>
+        {
+            if (editor.GetPositionFromPoint(e.GetPosition(editor)) is not { } position)
+                return;
+            if (!area.Selection.Contains(editor.Document.GetOffset(position.Location)))
+            {
+                area.ClearSelection();
+                area.Caret.Position = position;
+            }
+        };
     }
 
     private void OnTextChanged()
