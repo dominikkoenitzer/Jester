@@ -4,7 +4,7 @@
 
 # Jester
 
-**A lightweight, beautiful notepad for Windows, in purple and gold.**
+**A fast, beautiful notepad for Windows, in purple and gold.**
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
 [![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
