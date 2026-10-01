@@ -77,5 +77,5 @@ jobs:
           gh release delete latest --yes --cleanup-tag || true
           gh release create latest Jester.exe \
             --title "Jester" \
-            --notes "The latest build of Jester, a lightweight themed notepad for Windows. Download **Jester.exe** below and run it. No installer, no .NET required." \
+            --notes "The latest build of Jester, a fast themed notepad for Windows. Download **Jester.exe** below and run it. No installer, no .NET required." \
             --latest
