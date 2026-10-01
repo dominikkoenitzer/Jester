@@ -13,7 +13,7 @@
     <Authors>Jester</Authors>
     <Company>Jester</Company>
     <Copyright>Copyright © 2026 Jester</Copyright>
-    <Description>Jester, a lightweight notepad for Windows, built with C# and WPF.</Description>
+    <Description>Jester, a fast notepad for Windows, built with C# and WPF.</Description>
     <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
 
