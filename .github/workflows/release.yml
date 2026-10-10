@@ -72,10 +72,32 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Replace the single rolling release so its tag points at this commit
-          # and Jester.exe is the current build.
-          gh release delete latest --yes --cleanup-tag || true
-          gh release create latest Jester.exe \
-            --title "Jester" \
-            --notes "The latest build of Jester, a fast themed notepad for Windows. Download **Jester.exe** below and run it. No installer, no .NET required." \
-            --latest
+          # Refresh the single rolling release in place, so its tag points at
+          # this commit and Jester.exe is the current build.
+          notes="The latest build of Jester, a fast themed notepad for Windows. Download **Jester.exe** below and run it. No installer, no .NET required."
+
+          if ! gh release view latest > /dev/null 2>&1; then
+            gh release create latest Jester.exe \
+              --target "$GITHUB_SHA" \
+              --title "Jester" \
+              --notes "$notes" \
+              --latest
+            exit 0
+          fi
+
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/git/refs/tags/latest" \
+            -f sha="$GITHUB_SHA" -F force=true --silent
+
+          # Upload the new build under a second name, then swap it in, so the
+          # direct Jester.exe link keeps working while the upload runs.
+          cp Jester.exe Jester.next.exe
+          gh release upload latest Jester.next.exe --clobber
+          release="repos/$GITHUB_REPOSITORY/releases/tags/latest"
+          old=$(gh api "$release" --jq '.assets[] | select(.name == "Jester.exe") | .id')
+          new=$(gh api "$release" --jq '.assets[] | select(.name == "Jester.next.exe") | .id')
+          if [ -n "$old" ]; then
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/releases/assets/$old" --silent
+          fi
+          gh api -X PATCH "repos/$GITHUB_REPOSITORY/releases/assets/$new" -f name=Jester.exe --silent
+
+          gh release edit latest --title "Jester" --notes "$notes" --latest
