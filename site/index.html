@@ -85,11 +85,13 @@ body {
   overflow-x: clip;
 }
 a { color: var(--accent-ink); text-underline-offset: 0.18em; }
-a:focus-visible, .btn:focus-visible, summary:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; border-radius: 0.6rem; }
+a:focus-visible, .btn:focus-visible, summary:focus-visible, .codecard:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: 3px; }
+a:not(.btn):focus-visible, summary:focus-visible { border-radius: 0.6rem; }
+.vh { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 img { display: block; max-width: 100%; height: auto; }
 picture { display: contents; }
 kbd { font: inherit; font-weight: 700; color: var(--text); }
-code { font: 0.92em/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; }
+code { font: 0.92em/1.5 ui-monospace, "Cascadia Mono", Consolas, monospace; overflow-wrap: anywhere; }
 .wrap { position: relative; max-width: 78rem; margin: 0 auto; padding: 0 1.5rem; }
 section[id] { scroll-margin-top: 1.5rem; }
 
@@ -145,7 +147,7 @@ nav.top { position: relative; display: flex; align-items: center; justify-conten
   align-items: center;
   padding-top: clamp(2.5rem, 8vh, 5.5rem);
 }
-h1 { margin: 0; font-size: clamp(3.5rem, 9vw, 7.75rem); line-height: 0.92; letter-spacing: -0.055em; font-weight: 780; }
+h1 { margin: 0; font-size: clamp(3.5rem, var(--h1-vw, 9vw), var(--h1-max, 7.75rem)); line-height: 0.92; letter-spacing: -0.055em; font-weight: 780; }
 .lede { margin: 1.5rem 0 0; max-width: 27rem; font-size: clamp(1.15rem, 1.7vw, 1.3rem); line-height: 1.5; }
 .get { margin-top: 2.25rem; }
 .small { margin: 1rem 0 0; font-size: 0.93rem; color: var(--muted); line-height: 1.5; }
@@ -317,6 +319,9 @@ footer p { margin: 0.3rem 0; }
   .feature { margin-bottom: clamp(6rem, 18vw, 8rem); }
   .pair .shot { width: 80%; }
 }
+@media (min-width: 600px) and (max-width: 900px) {
+  .grid2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .btn { transition: none; }
@@ -350,7 +355,7 @@ footer p { margin: 0.3rem 0; }
 </div>
 </div>
 <div class="hero-shot">
-<figure class="window"><picture><img src="img/hero.webp" width="2560" height="1600" alt="Jester with five tabs open, a C# file in the editor with line numbers and the status bar showing line, column and encoding" fetchpriority="high" decoding="async"></picture></figure>
+<figure class="window"><picture><img src="img/hero.webp" srcset="img/hero-1440.webp 1440w, img/hero.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Jester with five tabs open, a C# file in the editor with line numbers and the status bar showing line, column and encoding" fetchpriority="high" decoding="async"></picture></figure>
 </div>
 </div>
 </div>
@@ -365,7 +370,7 @@ footer p { margin: 0.3rem 0; }
 <p>The session is written as you type, so a crash or a shutdown keeps them too.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f5.webp" width="2560" height="1600" alt="Jester after a restart with the unsaved Untitled and recipe tabs back" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f5.webp" srcset="img/f5-1440.webp 1440w, img/f5.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Jester after a restart with the unsaved Untitled and recipe tabs back" loading="lazy" decoding="async"></picture></div>
 <div class="detail"><picture><img src="img/c5.webp" width="1180" height="295" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
@@ -376,7 +381,7 @@ footer p { margin: 0.3rem 0; }
 <p>Find Next, Replace and Replace All, with match case, wrap around and a search direction. Replace All is one step that Undo takes back.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 70% 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f1.webp" width="2560" height="1600" alt="The Replace dialog over a recipe, replacing sugar with honey" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 70% 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f1.webp" srcset="img/f1-1440.webp 1440w, img/f1.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The Replace dialog over a recipe, replacing sugar with honey" loading="lazy" decoding="async"></picture></div>
 <div class="detail"><picture><img src="img/c1.webp" width="1112" height="398" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
@@ -387,7 +392,7 @@ footer p { margin: 0.3rem 0; }
 <p>Find in Files, <kbd>Ctrl+Shift+F</kbd>, searches a folder and its subfolders, with filters such as <code>*.cs</code>. Double-click a result to open the file at that line.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 100%; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f2.webp" width="2560" height="1600" alt="Find in Files results: nine matches in three files" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 100%; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f2.webp" srcset="img/f2-1440.webp 1440w, img/f2.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Find in Files results: nine matches in three files" loading="lazy" decoding="async"></picture></div>
 <div class="detail"><picture><img src="img/c2.webp" width="1700" height="382" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
@@ -399,7 +404,7 @@ footer p { margin: 0.3rem 0; }
 <p>If a file still looks wrong, File, Reopen with Encoding reads it again in the encoding you pick.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f3.webp" width="2560" height="1600" alt="The File menu with Reopen with Encoding open on a Windows-1252 file" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f3.webp" srcset="img/f3-1440.webp 1440w, img/f3.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The File menu with Reopen with Encoding open on a Windows-1252 file" loading="lazy" decoding="async"></picture></div>
 <div class="detail" style="width: 34%"><picture><img src="img/c3.webp" width="900" height="710" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
@@ -410,12 +415,13 @@ footer p { margin: 0.3rem 0; }
 <p>The Format menu switches a tab between Windows, Unix and old Mac line endings, and between UTF-8, UTF-8 with BOM and UTF-16. Word wrap, auto indent and the font sit in the same menu.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f4.webp" width="2560" height="1600" alt="The Format menu with Line Endings open and Windows (CRLF) ticked" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f4.webp" srcset="img/f4-1440.webp 1440w, img/f4.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The Format menu with Line Endings open and Windows (CRLF) ticked" loading="lazy" decoding="async"></picture></div>
 <div class="detail" style="width: 34%"><picture><img src="img/c4.webp" width="680" height="460" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
 </section>
-<section id="new" aria-label="Details">
+<section id="new" aria-labelledby="new-h">
+<h2 id="new-h" class="vh">Details</h2>
 <div class="grid2">
 <div class="card">
 <div class="num">Built 10 October 2026</div>
@@ -454,7 +460,8 @@ footer p { margin: 0.3rem 0; }
 <li><span>Export to PDF</span><kbd><kbd>Ctrl+Shift+E</kbd></kbd></li>
 </ul>
 </section>
-<section aria-label="Install, update and remove">
+<section aria-labelledby="basics-h">
+<h2 id="basics-h" class="vh">Install, update and remove</h2>
 <div class="grid3">
 <div class="card">
 <div class="num">01</div>
