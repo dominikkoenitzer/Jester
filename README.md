@@ -7,7 +7,7 @@
 **A fast, beautiful notepad for Windows, in purple and gold.**
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
-[![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](../../releases/latest)
+[![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe)
 [![tests](https://img.shields.io/badge/tests-186%20passing-512BD4)](tests/Jester.Tests)
 [![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
@@ -21,13 +21,11 @@
 
 ## Download
 
-1. Head to the [**latest release**](../../releases/latest).
-2. Download **`Jester.exe`**.
-3. Double-click to run. That's it.
+[Download Jester.exe](https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe) and double-click it. That's it.
 
 It's a single **portable** file. No installer, and no .NET install required, since the runtime is bundled. Works on **Windows 10 and 11 (64-bit)**.
 
-> First launch may show a SmartScreen prompt because the build is unsigned. Choose *More info*, then *Run anyway*.
+> If Windows shows "Windows protected your PC", click *More info*, then *Run anyway*. It shows because the build is unsigned.
 
 ## Features
 
