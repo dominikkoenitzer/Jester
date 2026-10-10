@@ -81,10 +81,8 @@ dotnet run -c Release
 
 Produce the portable single-file build that ships in releases:
 
-```sh
-dotnet publish Jester.csproj -c Release -r win-x64 --self-contained true ^
-  -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true ^
-  -p:EnableCompressionInSingleFile=true
+```powershell
+dotnet publish Jester.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true
 ```
 
 The executable lands in `bin/Release/net10.0-windows/win-x64/publish/Jester.exe`.
