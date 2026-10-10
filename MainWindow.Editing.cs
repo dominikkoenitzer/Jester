@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -14,12 +15,19 @@ public partial class MainWindow
         if (ActiveEditor is not { } ed)
             return;
 
-        string stamp = DateTime.Now.ToString("h:mm tt M/d/yyyy");
+        string stamp = DateTimeStamp(DateTime.Now, CultureInfo.CurrentCulture);
         int caret = ed.SelectionStart;
         ed.SelectedText = stamp;
         ed.Select(caret + stamp.Length, 0);
         ed.TextArea.Caret.BringCaretToView();
         ed.Focus();
+    }
+
+    /// <summary>The short time, a space, then the short date, in the user's own formats.</summary>
+    internal static string DateTimeStamp(DateTime when, CultureInfo culture)
+    {
+        var format = culture.DateTimeFormat;
+        return when.ToString(format.ShortTimePattern + " " + format.ShortDatePattern, culture);
     }
 
     private void Editor_PreviewKeyDown(DocumentTab tab, KeyEventArgs e)
