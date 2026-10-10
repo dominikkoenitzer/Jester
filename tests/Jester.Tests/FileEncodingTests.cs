@@ -117,6 +117,68 @@ public class FileEncodingTests : IDisposable
         Assert.Equal(bytes, RoundTrip(path));
     }
 
+    [Theory]
+    [InlineData("utf-8")]
+    [InlineData("utf-8-bom")]
+    [InlineData("utf-16le")]
+    [InlineData("utf-16be")]
+    public void DecodesInTheChosenEncodingWithoutItsByteOrderMark(string kind)
+    {
+        var encoding = MainWindow.ReopenEncoding(kind);
+        byte[] bytes = [.. encoding.GetPreamble(), .. encoding.GetBytes("Grüße")];
+
+        Assert.Equal("Grüße", MainWindow.Decode(bytes, encoding));
+    }
+
+    [Fact]
+    public void DropsAUtf8ByteOrderMarkWhenReopenedAsUtf8WithoutOne()
+    {
+        byte[] bytes = [.. Encoding.UTF8.GetPreamble(), .. Encoding.UTF8.GetBytes("Grüße")];
+
+        Assert.Equal("Grüße", MainWindow.Decode(bytes, MainWindow.ReopenEncoding("utf-8")));
+    }
+
+    [Fact]
+    public void DecodesWindows1252()
+    {
+        byte[] bytes = { 0x4B, 0xE4, 0x73, 0x65 };
+
+        Assert.Equal("Käse", MainWindow.Decode(bytes, MainWindow.ReopenEncoding("windows-1252")));
+    }
+
+    [Fact]
+    public void ReopensAUtf8FileAsWindows1252AndSavesTheSameBytes()
+    {
+        byte[] bytes = Encoding.UTF8.GetBytes("Grüße");
+        string path = Write(bytes);
+
+        var (text, encoding) = MainWindow.ReadFile(path, MainWindow.ReopenEncoding("windows-1252"));
+        string copy = path + ".saved";
+        File.WriteAllText(copy, text, encoding);
+
+        Assert.Equal("GrÃ¼ÃŸe", text);
+        Assert.Equal(1252, encoding.CodePage);
+        Assert.Equal(bytes, File.ReadAllBytes(copy));
+    }
+
+    [Theory]
+    [InlineData("utf-8-bom")]
+    [InlineData("utf-16le")]
+    [InlineData("utf-16be")]
+    public void ReopenedFilesSaveBackWithTheirByteOrderMark(string kind)
+    {
+        var encoding = MainWindow.ReopenEncoding(kind);
+        byte[] bytes = [.. encoding.GetPreamble(), .. encoding.GetBytes("Grüße")];
+        string path = Write(bytes);
+
+        var (text, read) = MainWindow.ReadFile(path, encoding);
+        string copy = path + ".saved";
+        File.WriteAllText(copy, text, read);
+
+        Assert.Equal("Grüße", text);
+        Assert.Equal(bytes, File.ReadAllBytes(copy));
+    }
+
     [Fact]
     public void DoesNotTickUtf8InTheMenuForAnAnsiFile()
     {

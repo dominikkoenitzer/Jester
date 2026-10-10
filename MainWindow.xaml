@@ -12,10 +12,18 @@
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
+            <MenuItem Header="_File" SubmenuOpened="FileMenu_SubmenuOpened">
                 <MenuItem Header="_New Tab" Command="ApplicationCommands.New" InputGestureText="Ctrl+N" />
                 <MenuItem Header="_Open..." Command="ApplicationCommands.Open" InputGestureText="Ctrl+O" />
                 <MenuItem x:Name="RecentFilesMenu" Header="Open _Recent" />
+                <MenuItem x:Name="ReopenMenu" Header="Reopen with _Encoding">
+                    <MenuItem Header="UTF-8" Click="ReopenWithEncoding_Click" Tag="utf-8" />
+                    <MenuItem Header="UTF-8 with BOM" Click="ReopenWithEncoding_Click" Tag="utf-8-bom" />
+                    <MenuItem Header="UTF-16 LE" Click="ReopenWithEncoding_Click" Tag="utf-16le" />
+                    <MenuItem Header="UTF-16 BE" Click="ReopenWithEncoding_Click" Tag="utf-16be" />
+                    <MenuItem Header="Windows-1252" Click="ReopenWithEncoding_Click" Tag="windows-1252" />
+                    <MenuItem x:Name="AnsiReopenMenuItem" Header="ANSI" Click="ReopenWithEncoding_Click" Tag="ansi" />
+                </MenuItem>
                 <Separator />
                 <MenuItem Header="_Save" Command="ApplicationCommands.Save" InputGestureText="Ctrl+S" />
                 <MenuItem Header="Save _As..." Command="{x:Static local:JesterCommands.SaveAs}" />

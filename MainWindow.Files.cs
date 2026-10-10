@@ -169,6 +169,72 @@ public partial class MainWindow
         }
     }
 
+    /// <summary>Reads a text file in the encoding the user chose rather than the detected one.</summary>
+    internal static (string Text, Encoding Encoding) ReadFile(string path, Encoding encoding) =>
+        (Decode(File.ReadAllBytes(path), encoding), encoding);
+
+    /// <summary>Decodes the bytes, leaving out a byte-order mark that belongs to the encoding.</summary>
+    internal static string Decode(byte[] bytes, Encoding encoding)
+    {
+        // Any UTF-8 drops the UTF-8 mark, so UTF-8 without one does not show it as a character.
+        ReadOnlySpan<byte> bom = encoding is UTF8Encoding ? Encoding.UTF8.Preamble : encoding.Preamble;
+        int skip = !bom.IsEmpty && bytes.AsSpan().StartsWith(bom) ? bom.Length : 0;
+        return encoding.GetString(bytes, skip, bytes.Length - skip);
+    }
+
+    internal static Encoding ReopenEncoding(string kind) => kind switch
+    {
+        "utf-8-bom" => new UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+        "utf-16le" => Encoding.Unicode,
+        "utf-16be" => Encoding.BigEndianUnicode,
+        "windows-1252" => Windows1252(),
+        "ansi" => AnsiEncoding(),
+        _ => new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+    };
+
+    private static Encoding Windows1252()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        return Encoding.GetEncoding(1252);
+    }
+
+    private void FileMenu_SubmenuOpened(object sender, RoutedEventArgs e)
+    {
+        // Only a file on disk can be read again.
+        ReopenMenu.IsEnabled = Active?.FilePath is not null;
+        AnsiReopenMenuItem.Header = $"ANSI (Windows-{AnsiEncoding().CodePage})";
+    }
+
+    private void ReopenWithEncoding_Click(object sender, RoutedEventArgs e)
+    {
+        if (Active is not { FilePath: { } path } tab || sender is not MenuItem { Tag: string kind })
+            return;
+
+        if (tab.IsDirty && MessageBox.Show(this,
+                $"Reopening {tab.Name} discards your unsaved changes to it.\n\nReopen it anyway?",
+                AppName, MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
+            return;
+
+        string text;
+        Encoding encoding;
+        try
+        {
+            (text, encoding) = ReadFile(path, ReopenEncoding(kind));
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, $"Could not open the file.\n\n{ex.Message}",
+                AppName, MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        LoadInto(tab, text, path, encoding);
+        ScheduleSessionSave();
+        RefreshStatus();
+        UpdateTitle();
+        SyncFormatMenus();
+    }
+
     private static Encoding AnsiEncoding()
     {
         // .NET only ships UTF and ASCII encodings; the Windows code pages need this provider.
