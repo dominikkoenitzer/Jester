@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Jester"
         Style="{StaticResource JesterWindowStyle}"
-        Title="Find" SizeToContent="Height" Width="450"
+        Title="Find" SizeToContent="Height" Width="540"
         ResizeMode="NoResize" ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
         PreviewKeyDown="Window_PreviewKeyDown">
@@ -34,13 +34,15 @@
                        VerticalAlignment="Center" Margin="0,0,8,8" />
             <TextBox x:Name="ReplaceBox" Grid.Row="1" Grid.Column="1" Margin="0,0,0,8" Padding="2,3" />
 
-            <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-                <CheckBox x:Name="MatchCaseBox" Content="Match _case" Margin="0,0,18,0" VerticalAlignment="Center" />
-                <CheckBox x:Name="WrapBox" Content="_Wrap around" IsChecked="True" Margin="0,0,18,0" VerticalAlignment="Center" />
-                <TextBlock Text="Direction:" VerticalAlignment="Center" Margin="0,0,8,0" />
-                <RadioButton x:Name="UpRadio" Content="_Up" GroupName="Dir" Margin="0,0,10,0" VerticalAlignment="Center" />
-                <RadioButton x:Name="DownRadio" Content="_Down" GroupName="Dir" IsChecked="True" VerticalAlignment="Center" />
-            </StackPanel>
+            <WrapPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+                <CheckBox x:Name="MatchCaseBox" Content="Match _case" Margin="0,2,18,2" VerticalAlignment="Center" />
+                <CheckBox x:Name="WrapBox" Content="_Wrap around" IsChecked="True" Margin="0,2,18,2" VerticalAlignment="Center" />
+                <StackPanel Orientation="Horizontal" Margin="0,2,0,2">
+                    <TextBlock Text="Direction:" VerticalAlignment="Center" Margin="0,0,8,0" />
+                    <RadioButton x:Name="UpRadio" Content="_Up" GroupName="Dir" Margin="0,0,10,0" VerticalAlignment="Center" />
+                    <RadioButton x:Name="DownRadio" Content="_Down" GroupName="Dir" IsChecked="True" VerticalAlignment="Center" />
+                </StackPanel>
+            </WrapPanel>
         </Grid>
     </DockPanel>
 </local:ThemedWindow>
