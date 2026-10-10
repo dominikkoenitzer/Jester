@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
 
@@ -16,6 +17,7 @@ public partial class MainWindow : ThemedWindow
     private const double PointsToDip = 96.0 / 72.0;
     private const int MaxRecentFiles = 10;
     private const int MaxFindResults = 5000;
+    private static readonly TimeSpan SettingsSaveDelay = TimeSpan.FromMilliseconds(750);
 
     private readonly ObservableCollection<DocumentTab> _docs = new();
     private readonly AppSettings _settings;
@@ -23,6 +25,7 @@ public partial class MainWindow : ThemedWindow
 
     private bool _isLoadingFile;
     private DocumentTab? _lastActive;
+    private DispatcherTimer? _settingsTimer;
 
     // Global formatting, shared by every tab so the editor feels like one app.
     private FontFamily _fontFamily = new("Consolas");
@@ -55,9 +58,20 @@ public partial class MainWindow : ThemedWindow
         // Now holds the tabs of every session taken over, so those files can go.
         SaveSession();
         _docs.CollectionChanged += (_, _) => ScheduleSessionSave();
-        Closed += (_, _) => CloseSession();
+        Closed += (_, _) =>
+        {
+            _settingsTimer?.Stop();
+            CloseSession();
+        };
 
-        Loaded += (_, _) => Active?.Editor.Focus();
+        Loaded += (_, _) =>
+        {
+            Active?.Editor.Focus();
+            // Hooked once the window is up, so restoring its bounds is not a change.
+            LocationChanged += (_, _) => ScheduleSettingsSave();
+            SizeChanged += (_, _) => ScheduleSettingsSave();
+            StateChanged += (_, _) => ScheduleSettingsSave();
+        };
     }
 
     private DocumentTab? Active => Tabs.SelectedItem as DocumentTab;
@@ -294,8 +308,22 @@ public partial class MainWindow : ThemedWindow
         return files;
     }
 
+    /// <summary>Writes the settings a moment after the last change, so a crash keeps them
+    /// and a burst of changes, like dragging the window, is one write.</summary>
+    private void ScheduleSettingsSave()
+    {
+        if (_settingsTimer is null)
+        {
+            _settingsTimer = new DispatcherTimer(DispatcherPriority.Background, Dispatcher) { Interval = SettingsSaveDelay };
+            _settingsTimer.Tick += (_, _) => SaveSettings();
+        }
+        _settingsTimer.Stop();
+        _settingsTimer.Start();
+    }
+
     private void SaveSettings()
     {
+        _settingsTimer?.Stop();
         if (WindowState == WindowState.Normal)
         {
             _settings.WindowLeft = Left;

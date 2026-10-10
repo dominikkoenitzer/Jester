@@ -247,6 +247,7 @@ public partial class MainWindow
             _recentFiles.RemoveRange(MaxRecentFiles, _recentFiles.Count - MaxRecentFiles);
 
         RebuildRecentMenu();
+        ScheduleSettingsSave();
     }
 
     private void RebuildRecentMenu()
@@ -270,7 +271,7 @@ public partial class MainWindow
 
         RecentFilesMenu.Items.Add(new Separator());
         var clear = new MenuItem { Header = "_Clear Recent Files" };
-        clear.Click += (_, _) => { _recentFiles.Clear(); RebuildRecentMenu(); };
+        clear.Click += (_, _) => { _recentFiles.Clear(); RebuildRecentMenu(); ScheduleSettingsSave(); };
         RecentFilesMenu.Items.Add(clear);
     }
 
@@ -289,6 +290,7 @@ public partial class MainWindow
                 AppName, MessageBoxButton.OK, MessageBoxImage.Warning);
             _recentFiles.RemoveAll(p => string.Equals(p, path, StringComparison.OrdinalIgnoreCase));
             RebuildRecentMenu();
+            ScheduleSettingsSave();
         }
     }
 }

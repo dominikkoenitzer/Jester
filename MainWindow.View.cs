@@ -15,24 +15,32 @@ public partial class MainWindow
         _wordWrap = WordWrapMenuItem.IsChecked;
         foreach (var tab in _docs)
             ApplyWordWrap(tab);
+        ScheduleSettingsSave();
     }
 
     // The editor wraps only the lines on screen, and turns its horizontal scroll bar off
     // while it does.
     private void ApplyWordWrap(DocumentTab tab) => tab.Editor.WordWrap = _wordWrap;
 
-    private void AutoIndent_Click(object sender, RoutedEventArgs e) =>
+    private void AutoIndent_Click(object sender, RoutedEventArgs e)
+    {
         _autoIndent = AutoIndentMenuItem.IsChecked;
+        ScheduleSettingsSave();
+    }
 
     private void LineNumbers_Click(object sender, RoutedEventArgs e)
     {
         _showLineNumbers = LineNumbersMenuItem.IsChecked;
         foreach (var tab in _docs)
             tab.View.ShowLineNumbers = _showLineNumbers;
+        ScheduleSettingsSave();
     }
 
-    private void StatusBar_Click(object sender, RoutedEventArgs e) =>
+    private void StatusBar_Click(object sender, RoutedEventArgs e)
+    {
         StatusBarControl.Visibility = StatusBarMenuItem.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        ScheduleSettingsSave();
+    }
 
     private void ChooseFont()
     {
@@ -110,6 +118,7 @@ public partial class MainWindow
             tab.View.RefreshGutter();
         }
         ZoomInfo.Text = $"{Math.Round(_zoom * 100)}%";
+        ScheduleSettingsSave();
     }
 
     private void ApplyFormattingTo(DocumentTab tab)

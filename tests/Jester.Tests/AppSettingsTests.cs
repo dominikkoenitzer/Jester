@@ -103,6 +103,26 @@ public class AppSettingsTests : IDisposable
     }
 
     [Fact]
+    public void AFirstSaveLeavesOnlyTheSettingsFile()
+    {
+        new AppSettings().SaveTo(_path);
+
+        Assert.Equal(new[] { _path }, Directory.GetFiles(_dir));
+    }
+
+    [Fact]
+    public void SavingReplacesTheOldFileWithNoTempFileLeft()
+    {
+        new AppSettings { FontFamily = "Consolas", Zoom = 1.0 }.SaveTo(_path);
+        new AppSettings { FontFamily = "Cascadia Code", Zoom = 1.5 }.SaveTo(_path);
+
+        var loaded = AppSettings.LoadFrom(_path);
+        Assert.Equal("Cascadia Code", loaded.FontFamily);
+        Assert.Equal(1.5, loaded.Zoom);
+        Assert.Equal(new[] { _path }, Directory.GetFiles(_dir));
+    }
+
+    [Fact]
     public void AMissingFileFallsBackToDefaults()
     {
         var loaded = AppSettings.LoadFrom(Path.Combine(_dir, "not_written_yet.json"));
