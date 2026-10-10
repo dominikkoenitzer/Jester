@@ -4,11 +4,9 @@
 
 # Jester
 
-**A fast, beautiful notepad for Windows, in purple and gold.**
+A fast notepad for Windows, in purple and gold.
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
-
-[**Download**](#download) · [Features](#features) · [Shortcuts](#keyboard-shortcuts) · [Build](#build-from-source) · [Contributing](#contributing)
 
 <img src="screenshot.png" width="760" alt="Jester screenshot" />
 
@@ -16,43 +14,27 @@
 
 ## Download
 
-[Download Jester.exe](https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe) and double-click it. That's it.
+[Download Jester.exe](https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe), then double-click it.
 
-It's a single **portable** file. No installer, and no .NET install required, since the runtime is bundled. Works on **Windows 10 and 11 (64-bit)**.
+It's a single portable file. No installer, and no .NET install required, since the runtime is bundled. Works on Windows 10 and 11 (64-bit).
 
-> If Windows shows "Windows protected your PC", click *More info*, then *Run anyway*. It shows because the build is unsigned.
-
-## Your data, updates and removal
-
-Jester keeps everything it remembers in `%APPDATA%\Jester`:
-
-- `settings.json`: font, zoom, word wrap and the other Format and View choices, the window's size and position, and the recent files.
-- `sessions\`: one `.json` file per window with its tabs, including the text of unsaved and Untitled tabs, plus a `.lock` file while that window is open.
-- `crash.log`: only there if Jester ever hit an unexpected error.
-
-**Update:** download the new Jester.exe and put it in place of the old one. Your settings and session stay, since they live in that folder and not next to the exe.
-
-**Remove:** close every Jester window, then delete Jester.exe and the `%APPDATA%\Jester` folder. That also deletes the text of unsaved tabs, so save anything you want to keep first.
+If Windows shows "Windows protected your PC", click More info, then Run anyway. It shows because the build is unsigned.
 
 ## Features
 
-- **Tabbed editing.** Work on many files at once, each with its own undo history and
-  encoding. Close with `Ctrl+W` or middle-click, switch with `Ctrl+Tab`.
-- **Line numbers.** A gutter with the current line highlighted, plus a current-line
-  highlight in the editor (toggle in **View**).
-- **Find in Files.** Search a whole folder (`Ctrl+Shift+F`) with filters and subfolders,
-  then double-click a result to jump straight to it.
-- **Files.** New, Open (multiple at once), Save, Save As, Save All, **Open Recent**,
-  drag-and-drop, and "Open with Jester" from Explorer.
-- **Session restore.** Reopens your window, tabs and preferences next launch.
-- **Export to PDF.** Turn any note into a clean, paginated A4 PDF (`Ctrl+Shift+E`).
-- **Find and replace,** with replace all, match case, wrap-around and direction.
-- **Go To Line**, **insert time/date**, **auto-indent**, unlimited **undo/redo**.
-- **Format.** Word wrap, a font picker, and line-ending or encoding conversion.
-- **View.** Zoom, from the menu or `Ctrl` and the mouse wheel, and a toggleable status bar.
-- **Status bar.** Characters, lines, caret position, zoom, line ending and encoding.
-- **Safe by default.** Unsaved and Untitled tabs are kept as you type and come back with their text next launch, even after a crash or shutdown, and saves are atomic so a crash can't corrupt your file.
-- **Encoding aware.** Detects UTF-8 and UTF-16 BOMs and preserves the file's original encoding and line endings.
+- Tabs, each with its own undo history and encoding. Close one with `Ctrl+W` or a middle-click, switch with `Ctrl+Tab`.
+- Line numbers in a gutter you can hide from View, with the current line highlighted in the gutter and the editor.
+- Find and replace, with Replace All, match case, wrap-around and direction.
+- Find in Files (`Ctrl+Shift+F`) searches a whole folder, with file filters and subfolders; double-click a result to jump straight to it.
+- Open several files at once, reopen one from Open Recent, drop files on the editor, or open a file with Jester from Explorer.
+- Export to PDF (`Ctrl+Shift+E`) turns the current tab into a clean, paginated A4 PDF.
+- Go To Line, the time and date in your own short formats, auto-indent, and unlimited undo and redo.
+- Format: word wrap, a font picker, and converting the line endings or the encoding.
+- Zoom from the View menu or with `Ctrl` and the mouse wheel.
+- A status bar you can hide, with characters, lines, caret position, zoom, line ending and encoding.
+- Your window, tabs and preferences come back on the next launch. Unsaved and Untitled tabs are kept as you type and return with their text, even after a crash or shutdown.
+- Saves are atomic, so a crash can't corrupt your file.
+- Files with a UTF-8 or UTF-16 byte-order mark open in that encoding, other files as UTF-8 when they are valid UTF-8 and in the ANSI code page when not, and every file is saved back in its own encoding and line endings. File > Reopen with Encoding reads a file again in the encoding you pick.
 
 ## Keyboard shortcuts
 
@@ -68,6 +50,18 @@ Jester keeps everything it remembers in `%APPDATA%\Jester`:
 | Export to PDF | `Ctrl+Shift+E` | Restore Zoom | `Ctrl+0` |
 | Exit | `Ctrl+Q` | Undo / Redo | `Ctrl+Z` / `Ctrl+Y` |
 | Select All | `Ctrl+A` | | |
+
+## Your data, updates and removal
+
+Jester keeps everything it remembers in `%APPDATA%\Jester`:
+
+- `settings.json`: font, zoom, word wrap and the other Format and View choices, the window's size and position, and the recent and open files.
+- `sessions\`: one `.json` file per window with its tabs, including the text of unsaved and Untitled tabs, plus a `.lock` file while that window is open.
+- `crash.log`: only there if Jester ever hit an unexpected error.
+
+To update, download the new Jester.exe and put it in place of the old one. Your settings and session stay, since they live in that folder and not next to the exe.
+
+To remove Jester, close every Jester window, then delete Jester.exe and the `%APPDATA%\Jester` folder. That also deletes the text of unsaved tabs, so save anything you want to keep first.
 
 ## Build from source
 
@@ -121,37 +115,39 @@ documents. It is not part of the solution, so CI leaves it out.
 | `App.xaml(.cs)` | Application entry point, session-end and crash handling. |
 | `MainWindow.xaml(.cs)` | The main window: fields, command bindings, settings/session, shutdown. |
 | `MainWindow.Tabs.cs` | Creating, switching and closing document tabs. |
-| `MainWindow.Files.cs` | Open, save, PDF export and the recent-files list. |
+| `MainWindow.Files.cs` | Open, save, reopen with an encoding, PDF export and the recent-files list. |
 | `MainWindow.Search.cs` | Find, replace, find-in-files and go-to-line. |
 | `MainWindow.View.cs` | Word wrap, line numbers, font, encoding, line endings, zoom. |
-| `MainWindow.Editing.cs` | Auto-indent, ctrl-wheel zoom, drag and drop. |
+| `MainWindow.Editing.cs` | Auto-indent, the time/date stamp, ctrl-wheel zoom, drag and drop. |
+| `MainWindow.Session.cs` | Keeping every tab, saved or not, across restarts and crashes. |
 | `MainWindow.Status.cs` | Title bar and status bar updates. |
-| `TextSearch.cs` | Find/replace arithmetic, with no editor attached. |
-| `tests/Jester.Tests/` | xunit suite. |
-| `tests/Jester.Bench/` | Per-keystroke timings on large documents. |
+| `SessionState.cs` | What the session keeps of each tab and how stored sessions come back. |
+| `SessionStore.cs` | One session file per window, with its lock file. |
 | `EditorView.cs` | One document's editor surface (AvalonEdit editor + gutter + current-line highlight). |
 | `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
 | `LineIndex.cs` | Line lookups and the line ending, kept per edit for the status bar and gutter. |
 | `DocumentTab.cs` | Per-tab document state (path, encoding, dirty flag). |
-| `AppSettings.cs` | Loads/saves preferences and the last session as JSON. |
+| `TextSearch.cs` | Find/replace arithmetic, with no editor attached. |
+| `FindResult.cs` | One Find in Files match. |
+| `AppSettings.cs` | Loads and saves preferences as JSON. |
 | `ThemedWindow.cs` | Base window with the custom title bar / chrome. |
 | `Theme.xaml` | The purple and gold theme: palette and control styles. |
 | `JesterCommands.cs` | Custom routed commands and key gestures. |
 | `PdfExporter.cs` | Renders the document to PDF (QuestPDF). |
 | `FindReplaceWindow`, `FindInFilesWindow`, `GoToWindow`, `FontWindow` | Dialogs. |
-| `Assets/jester.ico` | Application icon. |
+| `Assets/` | The application icon and the logo. |
+| `tests/Jester.Tests/` | xunit suite. |
+| `tests/Jester.Bench/` | Per-keystroke timings on large documents. |
 
 ## Contributing
 
-Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md), and open an issue if you find a bug or have an idea.
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md), and open an issue if you find a bug or have an idea. Report security issues privately, as [SECURITY.md](SECURITY.md) describes.
 
 ## License
 
-Jester is free software licensed under the **[GNU GPL v3.0](LICENSE)**.
+Jester is free software licensed under the [GNU GPL v3.0](LICENSE).
 Copyright © 2026 Jester.
-
 
 ## Author
 
 Built and written by [@dominikkoenitzer](https://github.com/dominikkoenitzer).
-
