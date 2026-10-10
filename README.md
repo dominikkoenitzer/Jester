@@ -64,9 +64,16 @@ It's a single **portable** file. No installer, and no .NET install required, sin
 
 ## Build from source
 
-**Prerequisites:** [.NET 10 SDK](https://dotnet.microsoft.com/download) on Windows.
+You need Git and the [.NET 10 SDK](https://dotnet.microsoft.com/download) on Windows. On a fresh PC, install both with winget:
 
-```sh
+```powershell
+winget install --id Git.Git --exact
+winget install --id Microsoft.DotNet.SDK.10 --exact
+```
+
+Then open a new terminal, so it picks up the new PATH, and run:
+
+```powershell
 git clone https://github.com/dominikkoenitzer/Jester.git
 cd Jester
 dotnet run -c Release
