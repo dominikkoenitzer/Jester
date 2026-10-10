@@ -1,0 +1,275 @@
+{
+  "slug": "jester",
+  "name": "Jester",
+  "description": "A fast notepad for Windows, in purple and gold. One portable file: download it and start typing.",
+  "colours": {
+    "light": {
+      "accent": "#4a1d6a",
+      "accent-hover": "#3b1555",
+      "accent-ink": "#5e2a82",
+      "band": "#eee7f4",
+      "tile": "#f6f1fa",
+      "stage": "#f0eaf6"
+    },
+    "dark": {
+      "accent": "#8946b9",
+      "accent-hover": "#9a57c9",
+      "accent-ink": "#c9a2e8",
+      "band": "#1d1526",
+      "tile": "#251a31",
+      "stage": "#1c1625"
+    }
+  },
+  "platforms": {
+    "windows": "Windows"
+  },
+  "hero": {
+    "lede": "A fast notepad for Windows, in purple and gold. One portable file: download it and start typing.",
+    "notes": [
+      "Windows 10 and 11, 64-bit. Nothing to install.",
+      "If Windows says it protected your PC, click More info, then Run anyway."
+    ],
+    "away": "Jester runs on Windows. Open this page on your PC to download it.",
+    "image": {
+      "name": "hero",
+      "w": 2560,
+      "h": 1600,
+      "dark": false,
+      "alt": "Jester with five tabs open, a C# file in the editor with line numbers and the status bar showing line, column and encoding"
+    }
+  },
+  "features": [
+    {
+      "label": "Tabs",
+      "title": "Unsaved tabs survive a restart",
+      "body": [
+        "Close Jester with unsaved or Untitled tabs and they come back with their text on the next start, marked with an asterisk.",
+        "The session is written as you type, so a crash or a shutdown keeps them too."
+      ],
+      "main": {
+        "name": "f5",
+        "w": 2560,
+        "h": 1600,
+        "dark": false,
+        "pos": "0 0",
+        "alt": "Jester after a restart with the unsaved Untitled and recipe tabs back"
+      },
+      "detail": {
+        "name": "c5",
+        "w": 1180,
+        "h": 295,
+        "dark": false
+      }
+    },
+    {
+      "label": "Replace",
+      "title": "Find and replace in one dialog",
+      "body": [
+        "Find Next, Replace and Replace All, with match case, wrap around and a search direction. Replace All is one step that Undo takes back."
+      ],
+      "main": {
+        "name": "f1",
+        "w": 2560,
+        "h": 1600,
+        "dark": false,
+        "pos": "70% 0",
+        "alt": "The Replace dialog over a recipe, replacing sugar with honey"
+      },
+      "detail": {
+        "name": "c1",
+        "w": 1112,
+        "h": 398,
+        "dark": false
+      }
+    },
+    {
+      "label": "Search",
+      "title": "Search a whole folder at once",
+      "body": [
+        "Find in Files, <kbd>Ctrl+Shift+F</kbd>, searches a folder and its subfolders, with filters such as <code>*.cs</code>. Double-click a result to open the file at that line."
+      ],
+      "main": {
+        "name": "f2",
+        "w": 2560,
+        "h": 1600,
+        "dark": false,
+        "pos": "0 100%",
+        "alt": "Find in Files results: nine matches in three files"
+      },
+      "detail": {
+        "name": "c2",
+        "w": 1700,
+        "h": 382,
+        "dark": false
+      }
+    },
+    {
+      "label": "Encodings",
+      "title": "Every file keeps its encoding",
+      "body": [
+        "Files open in the encoding they were saved in and are written back the same way, line endings included.",
+        "If a file still looks wrong, File, Reopen with Encoding reads it again in the encoding you pick."
+      ],
+      "main": {
+        "name": "f3",
+        "w": 2560,
+        "h": 1600,
+        "dark": false,
+        "pos": "0 0",
+        "alt": "The File menu with Reopen with Encoding open on a Windows-1252 file"
+      },
+      "detail": {
+        "name": "c3",
+        "w": 900,
+        "h": 710,
+        "dark": false,
+        "style": "width: 34%"
+      }
+    },
+    {
+      "label": "Format",
+      "title": "Line endings in one click",
+      "body": [
+        "The Format menu switches a tab between Windows, Unix and old Mac line endings, and between UTF-8, UTF-8 with BOM and UTF-16. Word wrap, auto indent and the font sit in the same menu."
+      ],
+      "main": {
+        "name": "f4",
+        "w": 2560,
+        "h": 1600,
+        "dark": false,
+        "pos": "0 0",
+        "alt": "The Format menu with Line Endings open and Windows (CRLF) ticked"
+      },
+      "detail": {
+        "name": "c4",
+        "w": 680,
+        "h": 460,
+        "dark": false,
+        "style": "width: 34%"
+      }
+    }
+  ],
+  "new": {
+    "label": "Built 10 October 2026",
+    "version": "",
+    "items": [
+      "File, Reopen with Encoding reads the open file again in the encoding you pick.",
+      "Time and date (<kbd>F5</kbd>) writes them in the short formats set in Windows.",
+      "Settings are saved a moment after each change, so a crash keeps them.",
+      "The Replace dialog always shows all of its options."
+    ]
+  },
+  "requirements": [
+    "Windows 10 or 11, 64-bit",
+    "About 81 MB to download",
+    "No install and no admin rights",
+    "No internet connection"
+  ],
+  "privacy": {
+    "title": "No network at all",
+    "body": [
+      "Jester has no network code and sends nothing anywhere. The only other program it starts is your PDF viewer, and only if you say yes after exporting a PDF."
+    ]
+  },
+  "data": {
+    "title": "One folder, nothing next to the exe",
+    "body": [
+      "Your settings, open tabs and the text of unsaved tabs live in <code>%APPDATA%\\Jester</code>. Settings are saved a moment after each change, and the session as you type."
+    ]
+  },
+  "keys": [
+    [
+      "Ctrl+N",
+      "New tab"
+    ],
+    [
+      "Ctrl+W",
+      "Close tab"
+    ],
+    [
+      "Ctrl+Tab",
+      "Next tab"
+    ],
+    [
+      "Ctrl+F F3",
+      "Find, find next"
+    ],
+    [
+      "Ctrl+H",
+      "Replace"
+    ],
+    [
+      "Ctrl+Shift+F",
+      "Find in Files"
+    ],
+    [
+      "Ctrl+G",
+      "Go to line"
+    ],
+    [
+      "Ctrl+Shift+E",
+      "Export to PDF"
+    ]
+  ],
+  "basics": [
+    {
+      "title": "Get started",
+      "steps": [
+        "Download Jester.exe.",
+        "Double-click it. There is nothing to install.",
+        "Start typing."
+      ]
+    },
+    {
+      "title": "Updates",
+      "body": [
+        "Download the new Jester.exe and put it in place of the old one. Your settings and tabs stay, because they live in <code>%APPDATA%\\Jester</code>."
+      ]
+    },
+    {
+      "title": "Removing it",
+      "body": [
+        "Close every Jester window, then delete Jester.exe and the <code>%APPDATA%\\Jester</code> folder. Save unsaved tabs first; their text lives in that folder."
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is Jester free?",
+      "a": [
+        "Yes. Jester is free software under the GNU GPL v3.0."
+      ]
+    },
+    {
+      "q": "Why does Windows say it protected my PC?",
+      "a": [
+        "Jester is not signed with a paid certificate, so Windows warns about it the first time. Click More info, then Run anyway."
+      ]
+    },
+    {
+      "q": "Do I have to install anything?",
+      "a": [
+        "No. Jester.exe is one portable file with everything it needs inside. Double-click it, no admin rights needed."
+      ]
+    },
+    {
+      "q": "Where does Jester keep my data?",
+      "a": [
+        "In <code>%APPDATA%\\Jester</code>: <code>settings.json</code> for your preferences and window, <code>sessions</code> for your open tabs, and <code>crash.log</code> only if something went wrong. Nothing is written next to the exe."
+      ]
+    },
+    {
+      "q": "What happens to unsaved tabs if I close Jester or it crashes?",
+      "a": [
+        "They come back with their text the next time you start it. Jester keeps unsaved and Untitled tabs as you type, so closing never asks you to save them."
+      ]
+    }
+  ],
+  "closing": {
+    "title": "Get Jester",
+    "sub": "Free for Windows 10 and 11. One file, nothing to install."
+  },
+  "footer": [
+    "For AI assistants: <a href=\"/skill/jester.zip\">the Jester skill</a> and <a href=\"/llms.txt\">llms.txt</a>."
+  ]
+}
