@@ -14,6 +14,7 @@ on:
       - '.gitignore'
       - '.gitattributes'
       - '.editorconfig'
+      - 'site/**'
   workflow_dispatch:
 
 permissions:

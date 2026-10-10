@@ -1,0 +1,17 @@
+# Jester
+
+> A plain-text notepad for 64-bit Windows 10 and 11 that keeps every tab, saved or not, across restarts and crashes.
+
+Jester is one portable file, Jester.exe, with the .NET runtime bundled. There is no installer, no account and no update check.
+It opens files in tabs, finds and replaces, searches every file in a folder and exports a tab to an A4 PDF.
+Preferences and unsaved tabs are stored in %AppData%\Jester.
+Files given on the command line open as tabs. There are no command-line flags and no automation interface.
+
+## Download
+
+- [Jester for Windows](/download/windows): the latest Jester.exe for 64-bit Windows 10 and 11. If Windows says it protected your PC, click More info, then Run anyway.
+
+## Agent skill
+
+- [Skill](/skill/jester.zip): the jester skill folder in the Agent Skills format, to add to an AI assistant.
+- [SKILL.md](/skill/jester/SKILL.md): the skill's instructions as plain Markdown: features, shortcuts, settings, files, install, update and removal.
