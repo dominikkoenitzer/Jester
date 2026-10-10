@@ -27,6 +27,18 @@ It's a single **portable** file. No installer, and no .NET install required, sin
 
 > If Windows shows "Windows protected your PC", click *More info*, then *Run anyway*. It shows because the build is unsigned.
 
+## Your data, updates and removal
+
+Jester keeps everything it remembers in `%APPDATA%\Jester`:
+
+- `settings.json`: font, zoom, word wrap and the other Format and View choices, the window's size and position, and the recent files.
+- `sessions\`: one `.json` file per window with its tabs, including the text of unsaved and Untitled tabs, plus a `.lock` file while that window is open.
+- `crash.log`: only there if Jester ever hit an unexpected error.
+
+**Update:** download the new Jester.exe and put it in place of the old one. Your settings and session stay, since they live in that folder and not next to the exe.
+
+**Remove:** close every Jester window, then delete Jester.exe and the `%APPDATA%\Jester` folder. That also deletes the text of unsaved tabs, so save anything you want to keep first.
+
 ## Features
 
 - **Tabbed editing.** Work on many files at once, each with its own undo history and
