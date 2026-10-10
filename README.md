@@ -7,11 +7,6 @@
 **A fast, beautiful notepad for Windows, in purple and gold.**
 
 [![CI](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml/badge.svg)](https://github.com/dominikkoenitzer/Jester/actions/workflows/ci.yml)
-[![Download](https://img.shields.io/badge/download-Jester.exe-E8B53D)](https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe)
-[![tests](https://img.shields.io/badge/tests-201%20passing-512BD4)](tests/Jester.Tests)
-[![License: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
-![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6)
-![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)
 
 [**Download**](#download) · [Features](#features) · [Shortcuts](#keyboard-shortcuts) · [Build](#build-from-source) · [Contributing](#contributing)
 
