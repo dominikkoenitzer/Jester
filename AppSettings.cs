@@ -31,9 +31,7 @@ internal sealed class AppSettings
     public List<string> OpenFiles { get; set; } = new();
     public int ActiveTab { get; set; }
 
-    private static string SettingsPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Jester", "settings.json");
+    private static string SettingsPath => Path.Combine(AppPaths.DataDirectory, "settings.json");
 
     public static AppSettings Load() => LoadFrom(SettingsPath);
 

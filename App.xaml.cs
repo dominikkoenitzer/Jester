@@ -45,8 +45,7 @@ public partial class App : Application
             LogCrash("AppDomain", ex);
     }
 
-    private static string CrashLogPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Jester", "crash.log");
+    private static string CrashLogPath => Path.Combine(AppPaths.DataDirectory, "crash.log");
 
     private static void LogCrash(string source, Exception ex)
     {
