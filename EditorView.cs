@@ -24,6 +24,12 @@ internal sealed class EditorView : Grid
     private bool _showLineNumbers = true;
     private int? _pendingScroll;
 
+    /// <summary>The caret's colour, from the theme. The caret itself is not an element, so
+    /// the brush comes through this property.</summary>
+    private static readonly DependencyProperty CaretBrushProperty =
+        DependencyProperty.Register("CaretBrush", typeof(Brush), typeof(EditorView),
+            new PropertyMetadata(null, (d, e) => ((EditorView)d).Editor.TextArea.Caret.CaretBrush = (Brush?)e.NewValue));
+
     public TextEditor Editor { get; }
 
     /// <summary>Where each line of the editor's text starts, updated with every change.</summary>
@@ -41,7 +47,7 @@ internal sealed class EditorView : Grid
             HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
             FontFamily = new FontFamily("Consolas"),
             BorderThickness = new Thickness(0),
-            Padding = new Thickness(10, 8, 10, 8),
+            Padding = new Thickness(12, 10, 12, 10),
             AllowDrop = true,
             Background = Brushes.Transparent,
         };
@@ -55,6 +61,10 @@ internal sealed class EditorView : Grid
         Lines = new LineIndex(Editor.Document);
         Editor.TextChanged += (_, _) => OnTextChanged();
 
+        SetResourceReference(BackgroundProperty, "EditorBackgroundBrush");
+        SetResourceReference(CaretBrushProperty, "CaretBrush");
+        Editor.TextArea.SetResourceReference(TextArea.SelectionBrushProperty, "SelectionBrush");
+
         _margin = new LineNumberMargin(Editor);
         SetColumn(_margin, 0);
         Children.Add(_margin);
@@ -64,11 +74,8 @@ internal sealed class EditorView : Grid
         SetColumn(_textArea, 1);
 
         _highlightLayer = new Canvas { IsHitTestVisible = false, ClipToBounds = true };
-        _currentLineHighlight = new Rectangle
-        {
-            Fill = new SolidColorBrush(Color.FromArgb(0x24, 0xE8, 0xB5, 0x3D)),
-            Height = 0,
-        };
+        _currentLineHighlight = new Rectangle { Height = 0 };
+        _currentLineHighlight.SetResourceReference(Shape.FillProperty, "CurrentLineBrush");
         _highlightLayer.Children.Add(_currentLineHighlight);
 
         _textArea.Children.Add(_highlightLayer);
@@ -143,7 +150,7 @@ internal sealed class EditorView : Grid
 
     // Behaves and looks like the TextBox it replaced: no link underlines, no box
     // selection, copy and cut only with a selection, wrapped rows start at the margin,
-    // and the theme's purple caret over a gold selection that keeps the text's colour.
+    // and a selection that keeps the text's colour. The colours come from the theme.
     private static void Configure(TextEditor editor)
     {
         var options = editor.Options;
@@ -156,11 +163,9 @@ internal sealed class EditorView : Grid
         options.AllowToggleOverstrikeMode = true;
 
         var area = editor.TextArea;
-        area.SelectionBrush = new SolidColorBrush(Color.FromArgb(0x66, 0xE8, 0xB5, 0x3D));
         area.SelectionForeground = null;
         area.SelectionBorder = null;
-        area.SelectionCornerRadius = 0;
-        area.Caret.CaretBrush = new SolidColorBrush(Color.FromRgb(0x4A, 0x1D, 0x6A));
+        area.SelectionCornerRadius = 2;
 
         var editing = area.DefaultInputHandler.Editing;
         void Unbind(ICommand command)
