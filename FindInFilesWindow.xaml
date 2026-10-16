@@ -7,7 +7,7 @@
         ResizeMode="NoResize" ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
         PreviewKeyDown="Window_PreviewKeyDown">
-    <DockPanel Margin="14">
+    <DockPanel Margin="20,16,20,20">
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
             <Button Content="_Find All" Click="FindAll_Click" IsDefault="True" Width="96" Margin="0,0,8,0" Padding="0,5" />
             <Button Content="Close" IsCancel="True" Width="96" Padding="0,5" />
