@@ -16,7 +16,7 @@ internal sealed class AppSettings
     public double WindowHeight { get; set; } = 640;
     public bool WindowMaximized { get; set; }
 
-    public string FontFamily { get; set; } = "Consolas";
+    public string FontFamily { get; set; } = "Cascadia Mono";
     public double FontSize { get; set; } = 11;
     public bool Bold { get; set; }
     public bool Italic { get; set; }

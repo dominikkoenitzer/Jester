@@ -165,8 +165,7 @@ public partial class MainWindow : ThemedWindow
 
     private void ApplySettingsToGlobals()
     {
-        try { _fontFamily = new FontFamily(_settings.FontFamily); }
-        catch { _fontFamily = new FontFamily("Consolas"); }
+        _fontFamily = InstalledFont(_settings.FontFamily);
 
         _baseFontSizePoints = Math.Clamp(_settings.FontSize, 1, 512);
         _bold = _settings.Bold;
@@ -186,6 +185,15 @@ public partial class MainWindow : ThemedWindow
         _recentFiles.Clear();
         _recentFiles.AddRange(_settings.RecentFiles);
         RebuildRecentMenu();
+    }
+
+    /// <summary>The named font, or Consolas when this PC does not have it: Windows 10 has
+    /// no Cascadia Mono, and WPF would otherwise draw the text in a proportional font.</summary>
+    private static FontFamily InstalledFont(string name)
+    {
+        bool installed = Fonts.SystemFontFamilies.Any(f => string.Equals(f.Source, name, StringComparison.OrdinalIgnoreCase));
+        try { return new FontFamily(installed ? name : "Consolas"); }
+        catch { return new FontFamily("Consolas"); }
     }
 
     private void RestoreWindowBounds()
