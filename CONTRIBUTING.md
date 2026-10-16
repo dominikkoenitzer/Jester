@@ -18,7 +18,7 @@ dotnet run            # launch the app
 See the [Project structure](README.md#project-structure) table in the README. In short:
 
 - UI lives in the `*.xaml` files; logic in their `*.xaml.cs` partners.
-- The look is centralized in **`Theme.xaml`**, so change colors and styles there, not per-control.
+- The look is centralized: colors live in **`Themes/Dark.xaml`** and **`Themes/Light.xaml`**, styles in **`Theme.xaml`**. Change them there, not per-control, and check both themes.
 - Custom window chrome is in **`ThemedWindow.cs`**; commands in **`JesterCommands.cs`**.
 
 ## Tests
