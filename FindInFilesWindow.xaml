@@ -27,14 +27,14 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Find what:" VerticalAlignment="Center" Margin="0,0,8,8" />
-            <TextBox x:Name="FindBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8" Padding="2,3" />
+            <TextBox x:Name="FindBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8" />
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Folder:" VerticalAlignment="Center" Margin="0,0,8,8" />
-            <TextBox x:Name="FolderBox" Grid.Row="1" Grid.Column="1" Margin="0,0,8,8" Padding="2,3" />
+            <TextBox x:Name="FolderBox" Grid.Row="1" Grid.Column="1" Margin="0,0,8,8" />
             <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Click="Browse_Click" Margin="0,0,0,8" Padding="10,3" />
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Filters:" VerticalAlignment="Center" Margin="0,0,8,8" />
-            <TextBox x:Name="FilterBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8" Padding="2,3"
+            <TextBox x:Name="FilterBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8"
                      Text="*.*" ToolTip="Semicolon-separated patterns, e.g. *.txt;*.cs;*.md" />
 
             <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,4,0,0">
