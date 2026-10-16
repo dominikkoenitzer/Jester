@@ -42,7 +42,6 @@ public partial class MainWindow : ThemedWindow
     private bool _matchCase;
     private bool _wrapAround = true;
 
-    private FindReplaceWindow? _findWindow;
     private FindInFilesWindow? _findInFilesWindow;
 
     public MainWindow()
@@ -64,9 +63,20 @@ public partial class MainWindow : ThemedWindow
             CloseSession();
         };
 
+        FindBar.Owner = this;
+        // Esc in the text closes the find panel too.
+        PreviewKeyDown += (_, e) =>
+        {
+            if (e.Key == Key.Escape && FindBar.IsVisible)
+            {
+                e.Handled = true;
+                CloseFindPanel();
+            }
+        };
         Loaded += (_, _) =>
         {
             Active?.Editor.Focus();
+            KeepFindPanelBelowTheTabs();
             // Hooked once the window is up, so restoring its bounds is not a change.
             LocationChanged += (_, _) => ScheduleSettingsSave();
             SizeChanged += (_, _) => ScheduleSettingsSave();
@@ -392,7 +402,6 @@ public partial class MainWindow : ThemedWindow
         }
 
         SaveSettings();
-        _findWindow?.Close();
         _findInFilesWindow?.Close();
     }
 }

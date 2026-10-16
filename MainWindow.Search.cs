@@ -2,6 +2,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 
 namespace Jester;
@@ -10,7 +11,7 @@ namespace Jester;
 public partial class MainWindow
 {
     // --------------------------------------------------------------- Find APIs
-    // Called by FindReplaceWindow; also reused by the F3 / Shift+F3 menu commands.
+    // Called by the find panel; also reused by the F3 / Shift+F3 menu commands.
 
     public bool FindNext(string search, bool matchCase, bool wrapAround, bool searchDown)
     {
@@ -93,33 +94,53 @@ public partial class MainWindow
             ReportNotFound(_searchText);
     }
 
-    private void ReportNotFound(string search) =>
+    private void ReportNotFound(string search)
+    {
+        // With the panel open the note goes there, as it does for its own buttons.
+        if (FindBar.IsVisible)
+        {
+            FindBar.ShowStatus("No results");
+            return;
+        }
         MessageBox.Show(this, $"Cannot find \"{search}\".",
             AppName, MessageBoxButton.OK, MessageBoxImage.Information);
+    }
 
     private void ShowFindReplace(bool replaceMode)
     {
         if (ActiveEditor is not { } ed)
             return;
 
-        if (_findWindow is null || !_findWindow.IsLoaded)
-        {
-            _findWindow = new FindReplaceWindow(this) { Owner = this };
-            _findWindow.Closed += (_, _) => _findWindow = null;
-        }
-
         string selected = ed.SelectedText;
         if (ed.SelectionLength > 0 && !selected.Contains('\n') && !selected.Contains('\r'))
-            _findWindow.SearchText = selected;
-        else if (_searchText.Length > 0)
-            _findWindow.SearchText = _searchText;
+            FindBar.SearchText = selected;
+        else if (_searchText.Length > 0 && FindBar.SearchText.Length == 0)
+            FindBar.SearchText = _searchText;
 
-        _findWindow.ShowReplace(replaceMode);
-        _findWindow.MatchCase = _matchCase;
-        _findWindow.WrapAround = _wrapAround;
-        _findWindow.Show();
-        _findWindow.Activate();
-        _findWindow.FocusSearchBox();
+        FindBar.ShowReplace(replaceMode);
+        FindBar.MatchCase = _matchCase;
+        FindBar.WrapAround = _wrapAround;
+        FindBar.ShowStatus("");
+        FindBar.Visibility = Visibility.Visible;
+        // The panel is laid out on the next pass; its box takes the focus once it is there.
+        Dispatcher.BeginInvoke(FindBar.FocusSearchBox, DispatcherPriority.Input);
+    }
+
+    /// <summary>Hides the find panel and puts the focus back in the text.</summary>
+    public void CloseFindPanel()
+    {
+        FindBar.Visibility = Visibility.Collapsed;
+        Active?.Editor.Focus();
+    }
+
+    // The panel sits just under the tab strip, which grows a row when the tabs wrap.
+    private void KeepFindPanelBelowTheTabs()
+    {
+        if (Tabs.Template.FindName("HeaderStrip", Tabs) is not FrameworkElement strip)
+            return;
+        void Place() => FindBar.Margin = new Thickness(0, strip.ActualHeight + 8, 24, 0);
+        strip.SizeChanged += (_, _) => Place();
+        Place();
     }
 
     // ----------------------------------------------------------- Find in Files

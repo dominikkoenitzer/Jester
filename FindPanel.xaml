@@ -1,0 +1,79 @@
+<UserControl x:Class="Jester.FindPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Width="470" Focusable="False"
+             FontFamily="{DynamicResource UiFont}"
+             KeyboardNavigation.TabNavigation="Cycle"
+             PreviewKeyDown="Panel_PreviewKeyDown">
+    <UserControl.Resources>
+        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="Padding" Value="10,3" />
+            <Setter Property="MinHeight" Value="30" />
+            <Setter Property="MinWidth" Value="76" />
+            <Setter Property="Margin" Value="6,0,0,0" />
+        </Style>
+        <Style x:Key="Hint" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource MutedTextBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Margin" Value="9,0,0,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource PopupBackgroundBrush}" BorderBrush="{DynamicResource PopupBorderBrush}"
+            BorderThickness="1" CornerRadius="8" Padding="10">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="16" ShadowDepth="4" Direction="270" Color="#FF000000"
+                              Opacity="{DynamicResource PopupShadowOpacity}" />
+        </Border.Effect>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Grid.Column="0">
+                <TextBox x:Name="FindBox" AutomationProperties.Name="Find"
+                         TextChanged="FindBox_TextChanged" KeyDown="FindBox_KeyDown" />
+                <TextBlock x:Name="FindHint" Text="Find" Style="{StaticResource Hint}" />
+            </Grid>
+            <Button Grid.Row="0" Grid.Column="1" x:Name="PreviousButton" Content="Previous"
+                    ToolTip="Find Previous (Shift+F3)" Click="Previous_Click" />
+            <Button Grid.Row="0" Grid.Column="2" x:Name="NextButton" Content="Next"
+                    ToolTip="Find Next (F3)" Click="Next_Click" />
+            <Button Grid.Row="0" Grid.Column="3" Style="{StaticResource TabCloseButton}" Width="28" Height="28"
+                    Margin="6,0,0,0" FontSize="10" Content="&#xE8BB;" Foreground="{DynamicResource ChromeTextBrush}"
+                    ToolTip="Close (Esc)" AutomationProperties.Name="Close" Click="Close_Click" />
+
+            <Grid Grid.Row="1" Grid.Column="0" x:Name="ReplaceRow" Margin="0,6,0,0">
+                <TextBox x:Name="ReplaceBox" AutomationProperties.Name="Replace with"
+                         TextChanged="ReplaceBox_TextChanged" KeyDown="ReplaceBox_KeyDown" />
+                <TextBlock x:Name="ReplaceHint" Text="Replace with" Style="{StaticResource Hint}" />
+            </Grid>
+            <Button Grid.Row="1" Grid.Column="1" x:Name="ReplaceButton" Content="Replace" Margin="6,6,0,0"
+                    Click="Replace_Click" />
+            <Button Grid.Row="1" Grid.Column="2" x:Name="ReplaceAllButton" Content="Replace All" Margin="6,6,0,0"
+                    Click="ReplaceAll_Click" />
+
+            <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Margin="2,10,2,0">
+                <TextBlock x:Name="StatusText" DockPanel.Dock="Right" VerticalAlignment="Center" FontSize="12"
+                           Foreground="{DynamicResource MutedTextBrush}" />
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox x:Name="MatchCaseBox" Content="Match case" Margin="0,0,18,0" FontSize="12.5"
+                              ToolTip="Alt+C" Click="Option_Click" />
+                    <CheckBox x:Name="WrapBox" Content="Wrap around" IsChecked="True" FontSize="12.5"
+                              ToolTip="Alt+W" Click="Option_Click" />
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+    </Border>
+</UserControl>

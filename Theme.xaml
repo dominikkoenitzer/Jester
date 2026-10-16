@@ -628,7 +628,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="TabControl">
                     <DockPanel>
-                        <Grid DockPanel.Dock="Top" Background="{DynamicResource WindowBackgroundBrush}">
+                        <Grid x:Name="HeaderStrip" DockPanel.Dock="Top" Background="{DynamicResource WindowBackgroundBrush}">
                             <Border Height="1" VerticalAlignment="Bottom" Background="{DynamicResource HairlineBrush}" />
                             <TabPanel IsItemsHost="True" Margin="8,0" Background="Transparent" />
                         </Grid>

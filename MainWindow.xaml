@@ -142,48 +142,53 @@
             </DockPanel>
         </Border>
 
-        <TabControl x:Name="Tabs" Style="{StaticResource JesterTabControl}"
-                    ItemContainerStyle="{StaticResource JesterTabItem}"
-                    SelectionChanged="Tabs_SelectionChanged"
-                    PreviewMouseDown="Tabs_PreviewMouseDown">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Header}" VerticalAlignment="Center"
-                                   Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" />
-                        <Grid Margin="10,0,0,0" Width="20" Height="20">
-                            <Ellipse x:Name="DirtyMark" Width="7" Height="7" Visibility="Collapsed"
-                                     Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" />
-                            <Button x:Name="CloseButton" Content="&#xE8BB;" FontSize="9" Visibility="Hidden"
-                                    Style="{StaticResource TabCloseButton}"
-                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}"
-                                    Click="CloseTabButton_Click" ToolTip="Close tab" />
-                        </Grid>
-                    </StackPanel>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
-                            <Setter TargetName="CloseButton" Property="Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
-                            <Setter TargetName="CloseButton" Property="Visibility" Value="Visible" />
-                        </DataTrigger>
-                        <!-- Unsaved: a dot in the close button's place until the pointer is on the tab. -->
-                        <MultiDataTrigger>
-                            <MultiDataTrigger.Conditions>
-                                <Condition Binding="{Binding IsDirty}" Value="True" />
-                                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False" />
-                            </MultiDataTrigger.Conditions>
-                            <Setter TargetName="DirtyMark" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="CloseButton" Property="Visibility" Value="Hidden" />
-                        </MultiDataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <ContentPresenter Content="{Binding View}" />
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
+        <Grid>
+            <TabControl x:Name="Tabs" Style="{StaticResource JesterTabControl}"
+                        ItemContainerStyle="{StaticResource JesterTabItem}"
+                        SelectionChanged="Tabs_SelectionChanged"
+                        PreviewMouseDown="Tabs_PreviewMouseDown">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Header}" VerticalAlignment="Center"
+                                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" />
+                            <Grid Margin="10,0,0,0" Width="20" Height="20">
+                                <Ellipse x:Name="DirtyMark" Width="7" Height="7" Visibility="Collapsed"
+                                         Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" />
+                                <Button x:Name="CloseButton" Content="&#xE8BB;" FontSize="9" Visibility="Hidden"
+                                        Style="{StaticResource TabCloseButton}"
+                                        Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}"
+                                        Click="CloseTabButton_Click" ToolTip="Close tab" />
+                            </Grid>
+                        </StackPanel>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                                <Setter TargetName="CloseButton" Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="True">
+                                <Setter TargetName="CloseButton" Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <!-- Unsaved: a dot in the close button's place until the pointer is on the tab. -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsDirty}" Value="True" />
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=TabItem}}" Value="False" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="DirtyMark" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="CloseButton" Property="Visibility" Value="Hidden" />
+                            </MultiDataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <ContentPresenter Content="{Binding View}" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+
+            <local:FindPanel x:Name="FindBar" HorizontalAlignment="Right" VerticalAlignment="Top"
+                             Margin="0,46,24,0" Visibility="Collapsed" />
+        </Grid>
     </DockPanel>
 </local:ThemedWindow>
