@@ -21,8 +21,7 @@ internal sealed class SessionStore : IDisposable
     private long _sequence;
     private long _written;
 
-    public static string DefaultDirectory => System.IO.Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Jester", "sessions");
+    public static string DefaultDirectory => System.IO.Path.Combine(AppPaths.DataDirectory, "sessions");
 
     public SessionStore(string directory)
     {
