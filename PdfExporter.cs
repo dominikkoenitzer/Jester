@@ -11,6 +11,9 @@ internal static class PdfExporter
     {
         // QuestPDF Community licence: free for individuals and small businesses.
         QuestPDF.Settings.License = LicenseType.Community;
+        // The PDF uses the editor's font, which is installed on the PC rather than shipped
+        // with Jester. QuestPDF only looks at installed fonts when asked to.
+        QuestPDF.Settings.UseSystemFonts = true;
     }
 
     public static void Export(string path, string text, string documentTitle, string fontFamily, double fontSizePoints)
