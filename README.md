@@ -14,7 +14,7 @@ A fast notepad for Windows, in purple and gold.
 
 ## Download
 
-[Download Jester.exe](https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe), then double-click it.
+[Download Jester](https://get-jester.vercel.app), then double-click it.
 
 It's a single portable file. No installer, and no .NET install required, since the runtime is bundled. Works on Windows 10 and 11 (64-bit).
 
