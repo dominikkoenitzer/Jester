@@ -34,7 +34,7 @@ public class AppSettingsTests : IDisposable
 
         Assert.Equal(950, settings.WindowWidth);
         Assert.Equal(640, settings.WindowHeight);
-        Assert.Equal("Consolas", settings.FontFamily);
+        Assert.Equal("Cascadia Mono", settings.FontFamily);
         Assert.Equal(11, settings.FontSize);
         Assert.Equal(1.0, settings.Zoom);
         Assert.True(settings.ShowLineNumbers);
@@ -127,7 +127,7 @@ public class AppSettingsTests : IDisposable
     {
         var loaded = AppSettings.LoadFrom(Path.Combine(_dir, "not_written_yet.json"));
         Assert.Equal(950, loaded.WindowWidth);
-        Assert.Equal("Consolas", loaded.FontFamily);
+        Assert.Equal("Cascadia Mono", loaded.FontFamily);
     }
 
     [Theory]
@@ -144,7 +144,7 @@ public class AppSettingsTests : IDisposable
         var loaded = AppSettings.LoadFrom(_path);
 
         Assert.Equal(950, loaded.WindowWidth);
-        Assert.Equal("Consolas", loaded.FontFamily);
+        Assert.Equal("Cascadia Mono", loaded.FontFamily);
     }
 
     [Fact]
