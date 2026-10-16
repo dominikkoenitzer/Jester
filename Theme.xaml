@@ -598,7 +598,7 @@
                         <Border x:Name="bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1,0,1,0" />
                         <Border x:Name="indicator" Height="2" VerticalAlignment="Top" Margin="1,0"
                                 Background="{DynamicResource TabIndicatorBrush}" Visibility="Hidden" />
-                        <ContentPresenter ContentSource="Header" VerticalAlignment="Center" Margin="14,0,8,0" />
+                        <ContentPresenter ContentSource="Header" VerticalAlignment="Center" Margin="12,0,8,0" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsSelected" Value="True">
@@ -630,7 +630,7 @@
                     <DockPanel>
                         <Grid x:Name="HeaderStrip" DockPanel.Dock="Top" Background="{DynamicResource WindowBackgroundBrush}">
                             <Border Height="1" VerticalAlignment="Bottom" Background="{DynamicResource HairlineBrush}" />
-                            <TabPanel IsItemsHost="True" Margin="8,0" Background="Transparent" />
+                            <TabPanel IsItemsHost="True" Margin="4,0" Background="Transparent" />
                         </Grid>
                         <Border Background="{DynamicResource EditorBackgroundBrush}">
                             <ContentPresenter ContentSource="SelectedContent" />
