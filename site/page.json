@@ -162,13 +162,14 @@
     }
   },
   "new": {
-    "label": "Built 10 October 2026",
+    "label": "Built 17 October 2026",
     "version": "",
     "items": [
-      "File, Reopen with Encoding reads the open file again in the encoding you pick.",
-      "Time and date (<kbd>F5</kbd>) writes them in the short formats set in Windows.",
-      "Settings are saved a moment after each change, so a crash keeps them.",
-      "The Replace dialog always shows all of its options."
+      "A dark and a light theme that follow the Windows app mode and switch as soon as it changes.",
+      "Find and replace in a panel over the text: <kbd>Enter</kbd> finds the next match, <kbd>Shift</kbd>+<kbd>Enter</kbd> the previous one.",
+      "Export to PDF works again and uses the fonts installed on the PC.",
+      "The editor starts in Cascadia Mono, with Consolas where it is missing.",
+      "Roomier dialogs with a themed font preview."
     ]
   },
   "requirements": [
