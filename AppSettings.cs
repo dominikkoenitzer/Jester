@@ -16,7 +16,7 @@ internal sealed class AppSettings
     public double WindowHeight { get; set; } = 640;
     public bool WindowMaximized { get; set; }
 
-    public string FontFamily { get; set; } = "Consolas";
+    public string FontFamily { get; set; } = "Cascadia Mono";
     public double FontSize { get; set; } = 11;
     public bool Bold { get; set; }
     public bool Italic { get; set; }
@@ -31,9 +31,7 @@ internal sealed class AppSettings
     public List<string> OpenFiles { get; set; } = new();
     public int ActiveTab { get; set; }
 
-    private static string SettingsPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "Jester", "settings.json");
+    private static string SettingsPath => Path.Combine(AppPaths.DataDirectory, "settings.json");
 
     public static AppSettings Load() => LoadFrom(SettingsPath);
 

@@ -9,6 +9,7 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        ThemeManager.FollowSystem();
         SessionEnding += OnSessionEnding;
         DispatcherUnhandledException += OnDispatcherUnhandledException;
         AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
@@ -45,8 +46,7 @@ public partial class App : Application
             LogCrash("AppDomain", ex);
     }
 
-    private static string CrashLogPath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Jester", "crash.log");
+    private static string CrashLogPath => Path.Combine(AppPaths.DataDirectory, "crash.log");
 
     private static void LogCrash(string source, Exception ex)
     {

@@ -13,20 +13,25 @@ namespace Jester;
 /// </summary>
 internal sealed class LineNumberMargin : FrameworkElement
 {
-    private const double LeftPadding = 10;
-    private const double RightPadding = 9;
+    private const double LeftPadding = 16;
+    private const double RightPadding = 12;
+
+    // The theme's colours for the numbers and for the caret's line.
+    private static readonly DependencyProperty NumberBrushProperty =
+        DependencyProperty.Register("NumberBrush", typeof(Brush), typeof(LineNumberMargin),
+            new FrameworkPropertyMetadata(Frozen(Color.FromRgb(0xB2, 0xAA, 0xBD)), FrameworkPropertyMetadataOptions.AffectsRender));
+
+    private static readonly DependencyProperty CurrentBrushProperty =
+        DependencyProperty.Register("CurrentBrush", typeof(Brush), typeof(LineNumberMargin),
+            new FrameworkPropertyMetadata(Frozen(Color.FromRgb(0xA8, 0x79, 0x0F)), FrameworkPropertyMetadataOptions.AffectsRender));
 
     private readonly TextEditor _editor;
     private readonly TextView _textView;
-    private readonly Brush _background;
-    private readonly Brush _separator;
-    private readonly Brush _numberBrush;
-    private readonly Brush _currentBrush;
 
     /// <summary>Total logical lines in the document; drives the gutter width.</summary>
     public int TotalLines { get; set; } = 1;
 
-    /// <summary>1-based logical line the caret sits on; rendered emphasised.</summary>
+    /// <summary>1-based logical line the caret sits on; drawn in the accent colour.</summary>
     public int CurrentLine { get; set; } = 1;
 
     public LineNumberMargin(TextEditor editor)
@@ -34,10 +39,8 @@ internal sealed class LineNumberMargin : FrameworkElement
         _editor = editor;
         _textView = editor.TextArea.TextView;
 
-        _background = Frozen(Color.FromRgb(0xF1, 0xEA, 0xDD));
-        _separator = Frozen(Color.FromRgb(0xDC, 0xCB, 0xA4));
-        _numberBrush = Frozen(Color.FromRgb(0xAA, 0x9F, 0xBC));
-        _currentBrush = Frozen(Color.FromRgb(0xC9, 0x97, 0x1F));
+        SetResourceReference(NumberBrushProperty, "GutterTextBrush");
+        SetResourceReference(CurrentBrushProperty, "GutterCurrentBrush");
 
         // A number half scrolled off the top stays inside the gutter, not over the tabs.
         ClipToBounds = true;
@@ -65,7 +68,7 @@ internal sealed class LineNumberMargin : FrameworkElement
     {
         int digits = Math.Max(2, TotalLines.ToString(CultureInfo.InvariantCulture).Length);
         var sample = new FormattedText(new string('0', digits), CultureInfo.InvariantCulture,
-            FlowDirection.LeftToRight, CurrentTypeface, _editor.FontSize, _numberBrush, Dpi);
+            FlowDirection.LeftToRight, CurrentTypeface, _editor.FontSize, Brushes.Black, Dpi);
 
         double width = LeftPadding + sample.Width + RightPadding;
         double height = double.IsInfinity(availableSize.Height) ? 0 : availableSize.Height;
@@ -74,15 +77,13 @@ internal sealed class LineNumberMargin : FrameworkElement
 
     protected override void OnRender(DrawingContext dc)
     {
-        dc.DrawRectangle(_background, null, new Rect(0, 0, ActualWidth, ActualHeight));
-        dc.DrawRectangle(_separator, null, new Rect(ActualWidth - 1, 0, 1, ActualHeight));
-
         // Before its template is applied the view is not yet beside the gutter.
         if (!_textView.VisualLinesValid || FindCommonVisualAncestor(_textView) is null)
             return;
 
         var typeface = CurrentTypeface;
-        var boldTypeface = new Typeface(typeface.FontFamily, typeface.Style, FontWeights.Bold, typeface.Stretch);
+        var numberBrush = (Brush)GetValue(NumberBrushProperty);
+        var currentBrush = (Brush)GetValue(CurrentBrushProperty);
         double fontSize = _editor.FontSize;
         double dpi = Dpi;
 
@@ -103,8 +104,7 @@ internal sealed class LineNumberMargin : FrameworkElement
             bool isCurrent = logical == CurrentLine;
             var ft = new FormattedText(logical.ToString(CultureInfo.InvariantCulture),
                 CultureInfo.InvariantCulture, FlowDirection.LeftToRight,
-                isCurrent ? boldTypeface : typeface, fontSize,
-                isCurrent ? _currentBrush : _numberBrush, dpi);
+                typeface, fontSize, isCurrent ? currentBrush : numberBrush, dpi);
 
             dc.DrawText(ft, new Point(ActualWidth - RightPadding - ft.Width, y));
         }
