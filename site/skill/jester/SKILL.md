@@ -17,7 +17,7 @@ Jester is a plain-text notepad for 64-bit Windows 10 and 11. It is one file, `Je
 - Shows line numbers, highlights the current line, auto-indents and wraps words.
 - Reads files with a byte-order mark as UTF-8, UTF-16 or UTF-32. A file without one is read as UTF-8 when it is valid UTF-8, otherwise in the Windows ANSI code page, and it is saved back the same way.
 
-It has no syntax highlighting, no regular-expression or whole-word search, no spell check, no printing (export a PDF and print that) and one colour theme.
+It has no syntax highlighting, no regular-expression or whole-word search, no spell check, and no printing (export a PDF and print that). It has a dark and a light theme, which follow the Windows app mode.
 
 ## Keyboard shortcuts
 
@@ -48,7 +48,7 @@ It has no syntax highlighting, no regular-expression or whole-word search, no sp
 | New line without auto-indent | Shift+Enter |
 | Switch between insert and overtype | Insert |
 | Open a Find in Files result | Enter or double-click on the result |
-| Close the Find or Find in Files dialog | Escape |
+| Close the find panel or the Find in Files dialog | Escape |
 
 The menus open with Alt+F (File), Alt+E (Edit), Alt+O (Format) and Alt+V (View). Word wrap, auto indent, font, line endings, encoding, line numbers and the status bar have no shortcut; they are in the Format and View menus.
 
@@ -62,13 +62,13 @@ The menus open with Alt+F (File), Alt+E (Edit), Alt+O (Format) and Alt+V (View).
 
 ## Details that answer common questions
 
-- Find and Replace: options are Match case, Wrap around and Direction (Up or Down). Replace All is one step that a single Undo takes back. F3 with no earlier search opens Find.
+- Find and Replace: a panel at the top right of the editor. Enter finds the next match, Shift+Enter the previous one; options are Match case and Wrap around. Replace All is one step that a single Undo takes back. F3 with no earlier search opens Find.
 - Find in Files: enter the text, a folder (it starts at the folder of the current file) and filters separated by semicolons or commas, for example `*.txt;*.md` (default `*.*`). Options are Match case and Include subfolders. It searches plain text line by line, skips hidden and system files and files over 4 MB, and stops at 5,000 matches. Results appear in a panel above the status bar.
 - Go To: a number past the last line goes to the last line.
 - Time/Date inserts the current time and date in the short time and short date formats of the Windows region settings, time first, for example `2:05 PM 3/7/2026` for English (United States) or `14:05 07.03.2026` for German (Switzerland).
 - Font and zoom apply to every tab. Font sizes from 1 to 512 points; zoom from 20% to 500% in steps of 10%.
 - Changing the encoding in Format, Encoding marks the tab as unsaved; the file changes only when the user saves. File, Reopen with Encoding reads the file from disk again in the chosen encoding; it is available only for a tab with a file, and when the tab has unsaved changes it asks first, because reopening discards them. Converting line endings is an edit that Undo takes back. Enter always inserts the line ending the tab already uses.
-- Tab names: an unsaved tab starts with `*`. New tabs are called Untitled, Untitled 2 and so on. A restored tab whose file changed on disk since the unsaved edits shows `(changed on disk)`; saving it replaces the version on disk.
+- Tab names: an unsaved tab shows a dot after its name (screen readers hear a leading `*`). New tabs are called Untitled, Untitled 2 and so on. A restored tab whose file changed on disk since the unsaved edits shows `(changed on disk)`; saving it replaces the version on disk.
 - The status bar shows characters, lines, line and column (plus the selection size), zoom, line ending and encoding.
 - PDF export: A4 page, 2 cm margins, the file name as a heading, page numbers as "Page N of M" at the bottom, the editor's font at 6 to 24 points. Long lines wrap. Jester offers to open the PDF afterwards.
 

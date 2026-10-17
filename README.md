@@ -24,7 +24,7 @@ If Windows shows "Windows protected your PC", click More info, then Run anyway. 
 
 - Tabs, each with its own undo history and encoding. Close one with `Ctrl+W` or a middle-click, switch with `Ctrl+Tab`.
 - Line numbers in a gutter you can hide from View, with the current line highlighted in the gutter and the editor.
-- Find and replace, with Replace All, match case, wrap-around and direction.
+- Find and replace in a panel over the text, with Replace All, match case and wrap-around. Enter finds the next match, Shift+Enter the previous one.
 - Find in Files (`Ctrl+Shift+F`) searches a whole folder, with file filters and subfolders; double-click a result to jump straight to it.
 - Open several files at once, reopen one from Open Recent, drop files on the editor, or open a file with Jester from Explorer.
 - Export to PDF (`Ctrl+Shift+E`) turns the current tab into a clean, paginated A4 PDF.
@@ -32,6 +32,7 @@ If Windows shows "Windows protected your PC", click More info, then Run anyway. 
 - Format: word wrap, a font picker, and converting the line endings or the encoding.
 - Zoom from the View menu or with `Ctrl` and the mouse wheel.
 - A status bar you can hide, with characters, lines, caret position, zoom, line ending and encoding.
+- A dark and a light theme that follow the Windows app mode and switch as soon as it changes.
 - Your window, tabs and preferences come back on the next launch. Unsaved and Untitled tabs are kept as you type and return with their text, even after a crash or shutdown.
 - Saves are atomic, so a crash can't corrupt your file.
 - Files with a UTF-8 or UTF-16 byte-order mark open in that encoding, other files as UTF-8 when they are valid UTF-8 and in the ANSI code page when not, and every file is saved back in its own encoding and line endings. File > Reopen with Encoding reads a file again in the encoding you pick.
@@ -130,11 +131,14 @@ documents. It is not part of the solution, so CI leaves it out.
 | `TextSearch.cs` | Find/replace arithmetic, with no editor attached. |
 | `FindResult.cs` | One Find in Files match. |
 | `AppSettings.cs` | Loads and saves preferences as JSON. |
-| `ThemedWindow.cs` | Base window with the custom title bar / chrome. |
-| `Theme.xaml` | The purple and gold theme: palette and control styles. |
+| `ThemedWindow.cs` | Base window with the custom title bar: the menu, the title and the caption buttons in one row. |
+| `Theme.xaml` | Control styles, drawn from the active palette. |
+| `Themes/Dark.xaml`, `Themes/Light.xaml` | The two palettes in purple and gold. |
+| `ThemeManager.cs` | Picks the palette that matches the Windows app mode and swaps it when that changes. |
+| `FindPanel.xaml(.cs)` | Find and replace, over the top right of the editor. |
 | `JesterCommands.cs` | Custom routed commands and key gestures. |
 | `PdfExporter.cs` | Renders the document to PDF (QuestPDF). |
-| `FindReplaceWindow`, `FindInFilesWindow`, `GoToWindow`, `FontWindow` | Dialogs. |
+| `FindInFilesWindow`, `GoToWindow`, `FontWindow` | Dialogs. |
 | `Assets/` | The application icon and the logo. |
 | `tests/Jester.Tests/` | xunit suite. |
 | `tests/Jester.Bench/` | Per-keystroke timings on large documents. |

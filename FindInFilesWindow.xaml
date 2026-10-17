@@ -7,7 +7,7 @@
         ResizeMode="NoResize" ShowInTaskbar="False"
         WindowStartupLocation="CenterOwner"
         PreviewKeyDown="Window_PreviewKeyDown">
-    <DockPanel Margin="14">
+    <DockPanel Margin="20,16,20,20">
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
             <Button Content="_Find All" Click="FindAll_Click" IsDefault="True" Width="96" Margin="0,0,8,0" Padding="0,5" />
             <Button Content="Close" IsCancel="True" Width="96" Padding="0,5" />
@@ -27,14 +27,14 @@
             </Grid.RowDefinitions>
 
             <TextBlock Grid.Row="0" Grid.Column="0" Text="Find what:" VerticalAlignment="Center" Margin="0,0,8,8" />
-            <TextBox x:Name="FindBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8" Padding="2,3" />
+            <TextBox x:Name="FindBox" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8" />
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Folder:" VerticalAlignment="Center" Margin="0,0,8,8" />
-            <TextBox x:Name="FolderBox" Grid.Row="1" Grid.Column="1" Margin="0,0,8,8" Padding="2,3" />
+            <TextBox x:Name="FolderBox" Grid.Row="1" Grid.Column="1" Margin="0,0,8,8" />
             <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Click="Browse_Click" Margin="0,0,0,8" Padding="10,3" />
 
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Filters:" VerticalAlignment="Center" Margin="0,0,8,8" />
-            <TextBox x:Name="FilterBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8" Padding="2,3"
+            <TextBox x:Name="FilterBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,0,0,8"
                      Text="*.*" ToolTip="Semicolon-separated patterns, e.g. *.txt;*.cs;*.md" />
 
             <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,4,0,0">

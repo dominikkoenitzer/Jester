@@ -355,7 +355,7 @@ footer p { margin: 0.3rem 0; }
 </div>
 </div>
 <div class="hero-shot">
-<figure class="window"><picture><img src="img/hero.webp" srcset="img/hero-1440.webp 1440w, img/hero.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Jester with five tabs open, a C# file in the editor with line numbers and the status bar showing line, column and encoding" fetchpriority="high" decoding="async"></picture></figure>
+<figure class="window"><picture><source srcset="img/hero-dark-1440.webp 1440w, img/hero-dark.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" media="(prefers-color-scheme: dark)"><img src="img/hero-light.webp" srcset="img/hero-light-1440.webp 1440w, img/hero-light.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Jester with three tabs open, release notes in the editor with line numbers and the status bar showing line, column, line ending and encoding" fetchpriority="high" decoding="async"></picture></figure>
 </div>
 </div>
 </div>
@@ -366,23 +366,24 @@ footer p { margin: 0.3rem 0; }
 <div class="text">
 <p class="label">Tabs</p>
 <h2>Unsaved tabs survive a restart</h2>
-<p>Close Jester with unsaved or Untitled tabs and they come back with their text on the next start, marked with an asterisk.</p>
+<p>Close Jester with unsaved or Untitled tabs and they come back with their text on the next start, marked with a dot.</p>
 <p>The session is written as you type, so a crash or a shutdown keeps them too.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f5.webp" srcset="img/f5-1440.webp 1440w, img/f5.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Jester after a restart with the unsaved Untitled and recipe tabs back" loading="lazy" decoding="async"></picture></div>
-<div class="detail"><picture><img src="img/c5.webp" width="1180" height="295" alt="" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2200 / 1400"><picture><source srcset="img/f5-dark-1440.webp 1440w, img/f5-dark.webp 2200w" sizes="(max-width: 900px) 100vw, 60vw" media="(prefers-color-scheme: dark)"><img src="img/f5-light.webp" srcset="img/f5-light-1440.webp 1440w, img/f5-light.webp 2200w" sizes="(max-width: 900px) 100vw, 60vw" width="2200" height="1400" alt="Jester with three tabs, the edited todo list marked unsaved with a dot" loading="lazy" decoding="async"></picture></div>
+<div class="detail"><picture><source srcset="img/c5-dark.webp" media="(prefers-color-scheme: dark)"><img src="img/c5-light.webp" width="1180" height="294" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
 <div class="feature flip">
 <div class="text">
 <p class="label">Replace</p>
-<h2>Find and replace in one dialog</h2>
-<p>Find Next, Replace and Replace All, with match case, wrap around and a search direction. Replace All is one step that Undo takes back.</p>
+<h2>Find and replace over the text</h2>
+<p>Find and replace sit in a panel at the top right of the editor, so the text stays in view. <kbd>Enter</kbd> finds the next match and <kbd>Shift+Enter</kbd> the previous one, with match case and wrap around.</p>
+<p>Replace All is one step that Undo takes back.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 70% 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f1.webp" srcset="img/f1-1440.webp 1440w, img/f1.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The Replace dialog over a recipe, replacing sugar with honey" loading="lazy" decoding="async"></picture></div>
-<div class="detail"><picture><img src="img/c1.webp" width="1112" height="398" alt="" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 70% 0; --zoom: 1; --ar: 2560 / 1600"><picture><source srcset="img/f1-dark-1440.webp 1440w, img/f1-dark.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" media="(prefers-color-scheme: dark)"><img src="img/f1-light.webp" srcset="img/f1-light-1440.webp 1440w, img/f1-light.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The find and replace panel over the release notes, with undo history found" loading="lazy" decoding="async"></picture></div>
+<div class="detail"><picture><source srcset="img/c1-dark.webp" media="(prefers-color-scheme: dark)"><img src="img/c1-light.webp" width="980" height="264" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
 <div class="feature">
@@ -392,8 +393,8 @@ footer p { margin: 0.3rem 0; }
 <p>Find in Files, <kbd>Ctrl+Shift+F</kbd>, searches a folder and its subfolders, with filters such as <code>*.cs</code>. Double-click a result to open the file at that line.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 100%; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f2.webp" srcset="img/f2-1440.webp 1440w, img/f2.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Find in Files results: nine matches in three files" loading="lazy" decoding="async"></picture></div>
-<div class="detail"><picture><img src="img/c2.webp" width="1700" height="382" alt="" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 100%; --zoom: 1; --ar: 2560 / 1600"><picture><source srcset="img/f2-dark-1440.webp 1440w, img/f2-dark.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" media="(prefers-color-scheme: dark)"><img src="img/f2-light.webp" srcset="img/f2-light-1440.webp 1440w, img/f2-light.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Find in Files results: six matches in three files" loading="lazy" decoding="async"></picture></div>
+<div class="detail"><picture><source srcset="img/c2-dark.webp" media="(prefers-color-scheme: dark)"><img src="img/c2-light.webp" width="1700" height="370" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
 <div class="feature flip">
@@ -404,8 +405,8 @@ footer p { margin: 0.3rem 0; }
 <p>If a file still looks wrong, File, Reopen with Encoding reads it again in the encoding you pick.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f3.webp" srcset="img/f3-1440.webp 1440w, img/f3.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The File menu with Reopen with Encoding open on a Windows-1252 file" loading="lazy" decoding="async"></picture></div>
-<div class="detail" style="width: 34%"><picture><img src="img/c3.webp" width="900" height="710" alt="" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><source srcset="img/f3-dark-1440.webp 1440w, img/f3-dark.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" media="(prefers-color-scheme: dark)"><img src="img/f3-light.webp" srcset="img/f3-light-1440.webp 1440w, img/f3-light.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The File menu with Reopen with Encoding open" loading="lazy" decoding="async"></picture></div>
+<div class="detail" style="width: 34%"><picture><source srcset="img/c3-dark.webp" media="(prefers-color-scheme: dark)"><img src="img/c3-light.webp" width="920" height="690" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
 </div>
 <div class="feature">
@@ -415,18 +416,29 @@ footer p { margin: 0.3rem 0; }
 <p>The Format menu switches a tab between Windows, Unix and old Mac line endings, and between UTF-8, UTF-8 with BOM and UTF-16. Word wrap, auto indent and the font sit in the same menu.</p>
 </div>
 <div class="stage">
-<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><img src="img/f4.webp" srcset="img/f4-1440.webp 1440w, img/f4.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The Format menu with Line Endings open and Windows (CRLF) ticked" loading="lazy" decoding="async"></picture></div>
-<div class="detail" style="width: 34%"><picture><img src="img/c4.webp" width="680" height="460" alt="" loading="lazy" decoding="async"></picture></div>
+<div class="main" style="--pos: 0 0; --zoom: 1; --ar: 2560 / 1600"><picture><source srcset="img/f4-dark-1440.webp 1440w, img/f4-dark.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" media="(prefers-color-scheme: dark)"><img src="img/f4-light.webp" srcset="img/f4-light-1440.webp 1440w, img/f4-light.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="The Format menu with Line Endings open and Windows (CRLF) ticked" loading="lazy" decoding="async"></picture></div>
+<div class="detail" style="width: 40%"><picture><source srcset="img/c4-dark.webp" media="(prefers-color-scheme: dark)"><img src="img/c4-light.webp" width="890" height="446" alt="" loading="lazy" decoding="async"></picture></div>
 </div>
+</div>
+</section>
+<section class="pair" aria-labelledby="pair-h">
+<div class="head">
+<p class="label">Themes</p>
+<h2 id="pair-h">A dark and a light theme</h2>
+<p class="lead">Jester follows the Windows app mode and switches as soon as it changes.</p>
+</div>
+<div class="shots">
+<div class="shot one"><picture><img src="img/hero-light.webp" srcset="img/hero-light-1440.webp 1440w, img/hero-light.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Jester in its light theme" loading="lazy" decoding="async"></picture></div>
+<div class="shot two"><picture><img src="img/f1-dark.webp" srcset="img/f1-dark-1440.webp 1440w, img/f1-dark.webp 2560w" sizes="(max-width: 900px) 100vw, 60vw" width="2560" height="1600" alt="Jester in its dark theme" loading="lazy" decoding="async"></picture></div>
 </div>
 </section>
 <section id="new" aria-labelledby="new-h">
 <h2 id="new-h" class="vh">Details</h2>
 <div class="grid2">
 <div class="card">
-<div class="num">Built 10 October 2026</div>
+<div class="num">Built 17 October 2026</div>
 <h3>What's new</h3>
-<ul><li>File, Reopen with Encoding reads the open file again in the encoding you pick.</li><li>Time and date (<kbd>F5</kbd>) writes them in the short formats set in Windows.</li><li>Settings are saved a moment after each change, so a crash keeps them.</li><li>The Replace dialog always shows all of its options.</li></ul>
+<ul><li>A dark and a light theme that follow the Windows app mode and switch as soon as it changes.</li><li>Find and replace in a panel over the text: <kbd>Enter</kbd> finds the next match, <kbd>Shift</kbd>+<kbd>Enter</kbd> the previous one.</li><li>Export to PDF works again and uses the fonts installed on the PC.</li><li>The editor starts in Cascadia Mono, with Consolas where it is missing.</li><li>Roomier dialogs with a themed font preview.</li></ul>
 </div>
 <div class="card">
 <div class="num">Requirements</div>

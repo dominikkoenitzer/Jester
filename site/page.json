@@ -35,8 +35,7 @@
       "name": "hero",
       "w": 2560,
       "h": 1600,
-      "dark": false,
-      "alt": "Jester with five tabs open, a C# file in the editor with line numbers and the status bar showing line, column and encoding"
+      "alt": "Jester with three tabs open, release notes in the editor with line numbers and the status bar showing line, column, line ending and encoding"
     }
   },
   "features": [
@@ -44,43 +43,40 @@
       "label": "Tabs",
       "title": "Unsaved tabs survive a restart",
       "body": [
-        "Close Jester with unsaved or Untitled tabs and they come back with their text on the next start, marked with an asterisk.",
+        "Close Jester with unsaved or Untitled tabs and they come back with their text on the next start, marked with a dot.",
         "The session is written as you type, so a crash or a shutdown keeps them too."
       ],
       "main": {
         "name": "f5",
-        "w": 2560,
-        "h": 1600,
-        "dark": false,
+        "w": 2200,
+        "h": 1400,
         "pos": "0 0",
-        "alt": "Jester after a restart with the unsaved Untitled and recipe tabs back"
+        "alt": "Jester with three tabs, the edited todo list marked unsaved with a dot"
       },
       "detail": {
         "name": "c5",
         "w": 1180,
-        "h": 295,
-        "dark": false
+        "h": 294
       }
     },
     {
       "label": "Replace",
-      "title": "Find and replace in one dialog",
+      "title": "Find and replace over the text",
       "body": [
-        "Find Next, Replace and Replace All, with match case, wrap around and a search direction. Replace All is one step that Undo takes back."
+        "Find and replace sit in a panel at the top right of the editor, so the text stays in view. <kbd>Enter</kbd> finds the next match and <kbd>Shift+Enter</kbd> the previous one, with match case and wrap around.",
+        "Replace All is one step that Undo takes back."
       ],
       "main": {
         "name": "f1",
         "w": 2560,
         "h": 1600,
-        "dark": false,
         "pos": "70% 0",
-        "alt": "The Replace dialog over a recipe, replacing sugar with honey"
+        "alt": "The find and replace panel over the release notes, with undo history found"
       },
       "detail": {
         "name": "c1",
-        "w": 1112,
-        "h": 398,
-        "dark": false
+        "w": 980,
+        "h": 264
       }
     },
     {
@@ -93,15 +89,13 @@
         "name": "f2",
         "w": 2560,
         "h": 1600,
-        "dark": false,
         "pos": "0 100%",
-        "alt": "Find in Files results: nine matches in three files"
+        "alt": "Find in Files results: six matches in three files"
       },
       "detail": {
         "name": "c2",
         "w": 1700,
-        "h": 382,
-        "dark": false
+        "h": 370
       }
     },
     {
@@ -115,15 +109,13 @@
         "name": "f3",
         "w": 2560,
         "h": 1600,
-        "dark": false,
         "pos": "0 0",
-        "alt": "The File menu with Reopen with Encoding open on a Windows-1252 file"
+        "alt": "The File menu with Reopen with Encoding open"
       },
       "detail": {
         "name": "c3",
-        "w": 900,
-        "h": 710,
-        "dark": false,
+        "w": 920,
+        "h": 690,
         "style": "width: 34%"
       }
     },
@@ -137,27 +129,47 @@
         "name": "f4",
         "w": 2560,
         "h": 1600,
-        "dark": false,
         "pos": "0 0",
         "alt": "The Format menu with Line Endings open and Windows (CRLF) ticked"
       },
       "detail": {
         "name": "c4",
-        "w": 680,
-        "h": 460,
-        "dark": false,
-        "style": "width: 34%"
+        "w": 890,
+        "h": 446,
+        "style": "width: 40%"
       }
     }
   ],
+  "pair": {
+    "label": "Themes",
+    "title": "A dark and a light theme",
+    "body": [
+      "Jester follows the Windows app mode and switches as soon as it changes."
+    ],
+    "one": {
+      "name": "hero-light",
+      "w": 2560,
+      "h": 1600,
+      "dark": false,
+      "alt": "Jester in its light theme"
+    },
+    "two": {
+      "name": "f1-dark",
+      "w": 2560,
+      "h": 1600,
+      "dark": false,
+      "alt": "Jester in its dark theme"
+    }
+  },
   "new": {
-    "label": "Built 10 October 2026",
+    "label": "Built 17 October 2026",
     "version": "",
     "items": [
-      "File, Reopen with Encoding reads the open file again in the encoding you pick.",
-      "Time and date (<kbd>F5</kbd>) writes them in the short formats set in Windows.",
-      "Settings are saved a moment after each change, so a crash keeps them.",
-      "The Replace dialog always shows all of its options."
+      "A dark and a light theme that follow the Windows app mode and switch as soon as it changes.",
+      "Find and replace in a panel over the text: <kbd>Enter</kbd> finds the next match, <kbd>Shift</kbd>+<kbd>Enter</kbd> the previous one.",
+      "Export to PDF works again and uses the fonts installed on the PC.",
+      "The editor starts in Cascadia Mono, with Consolas where it is missing.",
+      "Roomier dialogs with a themed font preview."
     ]
   },
   "requirements": [

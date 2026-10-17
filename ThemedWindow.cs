@@ -7,9 +7,9 @@ using System.Windows.Media;
 namespace Jester;
 
 /// <summary>
-/// Base window that hosts the custom Jester chrome (purple title bar + caption
-/// buttons defined in Theme.xaml). It wires the standard window commands to the
-/// templated caption buttons and, because a borderless WindowChrome window overhangs
+/// Base window that hosts the custom Jester chrome (the title row and caption buttons
+/// defined in Theme.xaml). It wires the standard window commands to the templated
+/// caption buttons and, because a borderless WindowChrome window overhangs
 /// the monitor when maximized, insets its content by the measured overhang so the
 /// chrome lines up cleanly with the screen and never clips its own title bar.
 /// </summary>
@@ -26,6 +26,17 @@ public class ThemedWindow : Window
         private set => SetValue(ChromeMarginProperty, value);
     }
 
+    /// <summary>Content shown at the left of the title row, such as the main window's menu.</summary>
+    public static readonly DependencyProperty TitleBarContentProperty =
+        DependencyProperty.Register(nameof(TitleBarContent), typeof(object), typeof(ThemedWindow),
+            new PropertyMetadata(null));
+
+    public object? TitleBarContent
+    {
+        get => GetValue(TitleBarContentProperty);
+        set => SetValue(TitleBarContentProperty, value);
+    }
+
     public ThemedWindow()
     {
         CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, (_, _) => SystemCommands.MinimizeWindow(this)));
@@ -39,6 +50,7 @@ public class ThemedWindow : Window
         base.OnSourceInitialized(e);
         var handle = new WindowInteropHelper(this).Handle;
         HwndSource.FromHwnd(handle)?.AddHook(WindowProc);
+        ThemeManager.ApplyFrame(this);
         UpdateChromeMargin();
     }
 

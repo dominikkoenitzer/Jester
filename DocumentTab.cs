@@ -7,8 +7,8 @@ namespace Jester;
 
 /// <summary>
 /// Model for one open document/tab: its editor view plus the per-file state (path,
-/// encoding, dirty flag). The tab header binds to <see cref="Header"/> and
-/// <see cref="ToolTip"/>, which update automatically as the file is saved or edited.
+/// encoding, dirty flag). The tab header binds to <see cref="Header"/>, <see cref="IsDirty"/>
+/// and <see cref="ToolTip"/>, which update automatically as the file is saved or edited.
 /// </summary>
 internal sealed class DocumentTab : INotifyPropertyChanged
 {
@@ -37,6 +37,7 @@ internal sealed class DocumentTab : INotifyPropertyChanged
         {
             _filePath = value;
             Notify(nameof(Header));
+            Notify(nameof(AutomationName));
             Notify(nameof(ToolTip));
             Notify(nameof(Name));
         }
@@ -55,7 +56,8 @@ internal sealed class DocumentTab : INotifyPropertyChanged
             if (_isDirty == value)
                 return;
             _isDirty = value;
-            Notify(nameof(Header));
+            Notify(nameof(IsDirty));
+            Notify(nameof(AutomationName));
         }
     }
 
@@ -72,6 +74,7 @@ internal sealed class DocumentTab : INotifyPropertyChanged
                 return;
             _changedOnDisk = value;
             Notify(nameof(Header));
+            Notify(nameof(AutomationName));
             Notify(nameof(ToolTip));
         }
     }
@@ -79,8 +82,12 @@ internal sealed class DocumentTab : INotifyPropertyChanged
     /// <summary>File name (or the assigned "Untitled" name) with no dirty marker.</summary>
     public string Name => FilePath is null ? UntitledName : Path.GetFileName(FilePath);
 
-    /// <summary>Tab caption: the name, prefixed with "*" while there are unsaved edits.</summary>
-    public string Header => (IsDirty ? "*" : "") + Name + (ChangedOnDisk ? " (changed on disk)" : "");
+    /// <summary>Tab caption: the name. Unsaved edits show as a dot beside it.</summary>
+    public string Header => Name + (ChangedOnDisk ? " (changed on disk)" : "");
+
+    /// <summary>What a screen reader announces for the tab: the caption, prefixed with "*"
+    /// while there are unsaved edits, as the title bar shows it.</summary>
+    public string AutomationName => (IsDirty ? "*" : "") + Header;
 
     /// <summary>Hover tooltip: the full path, or the placeholder name for new buffers.</summary>
     public string ToolTip => (FilePath ?? UntitledName) +
