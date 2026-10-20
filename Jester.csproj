@@ -26,6 +26,11 @@
     <Resource Include="Assets\jester.ico" />
   </ItemGroup>
 
+  <!-- The syntax definitions, read by name: Jester.Syntax.Rust.xshd and so on. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Syntax\*.xshd" LogicalName="Jester.Syntax.%(Filename).xshd" />
+  </ItemGroup>
+
   <!-- Jester.csproj sits at the repository root, so the SDK's default glob would
        otherwise pull the test project's sources into the app assembly. -->
   <ItemGroup>
