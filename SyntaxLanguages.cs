@@ -21,6 +21,7 @@ internal static class SyntaxLanguages
         new("TypeScript", [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"], []),
         new("CSS", [".css", ".scss", ".less"], []),
         new("HTML", [".html", ".htm", ".xhtml"], []),
+        new("Python", [".py", ".pyw", ".pyi"], []),
     ];
 
     private static readonly Dictionary<string, IHighlightingDefinition> Loaded = new(StringComparer.OrdinalIgnoreCase);

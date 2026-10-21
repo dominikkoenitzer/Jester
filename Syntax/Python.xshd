@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Python. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="Python" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="Keyword" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Number" />
+  <Color name="Constant" />
+  <Color name="Type" />
+  <Color name="Function" />
+  <Color name="Variable" />
+  <Color name="Operator" />
+  <Color name="Decorator" />
+
+  <!-- An escape is a span of its own, so the quote it escapes cannot end the string. -->
+  <RuleSet name="Escapes">
+    <Span color="Escape" begin="\\" end="x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|N\{[^}\r\n]{1,64}\}|[0-7]{1,3}|.|$" />
+  </RuleSet>
+
+  <!-- In a raw string a backslash only keeps the quote after it from ending the string. -->
+  <RuleSet name="Raw">
+    <Span begin="\\" end=".|$" />
+  </RuleSet>
+
+  <!-- An f-string's fields are code; a doubled brace stands for a brace. -->
+  <RuleSet name="Format">
+    <Span color="Escape" begin="\{(?=\{)" end="\{" />
+    <Rule color="Escape">\}\}</Rule>
+    <Span ruleSet="Field">
+      <Begin color="Escape">\{</Begin>
+      <End color="Escape">\}</End>
+    </Span>
+    <Import ruleSet="Escapes" />
+  </RuleSet>
+
+  <RuleSet name="RawFormat">
+    <Span color="Escape" begin="\{(?=\{)" end="\{" />
+    <Rule color="Escape">\}\}</Rule>
+    <Span ruleSet="Field">
+      <Begin color="Escape">\{</Begin>
+      <End color="Escape">\}</End>
+    </Span>
+    <Import ruleSet="Raw" />
+  </RuleSet>
+
+  <RuleSet name="Field">
+    <Span begin="[(\[{]" end="[)\]}]" ruleSet="Field" />
+    <Import ruleSet="Code" />
+  </RuleSet>
+
+  <RuleSet name="Code">
+    <Span color="Comment" begin="\#" />
+
+    <!-- Triple quotes first, so they are not read as an empty string and a quote. -->
+    <Span color="String" multiline="true" begin="\b(?:[rR][fF]|[fF][rR])&quot;&quot;&quot;" end="&quot;&quot;&quot;" ruleSet="RawFormat" />
+    <Span color="String" multiline="true" begin="\b(?:[rR][fF]|[fF][rR])'''" end="'''" ruleSet="RawFormat" />
+    <Span color="String" multiline="true" begin="\b[fF]&quot;&quot;&quot;" end="&quot;&quot;&quot;" ruleSet="Format" />
+    <Span color="String" multiline="true" begin="\b[fF]'''" end="'''" ruleSet="Format" />
+    <Span color="String" multiline="true" begin="\b(?:[rR][bB]?|[bB][rR])&quot;&quot;&quot;" end="&quot;&quot;&quot;" ruleSet="Raw" />
+    <Span color="String" multiline="true" begin="\b(?:[rR][bB]?|[bB][rR])'''" end="'''" ruleSet="Raw" />
+    <Span color="String" multiline="true" begin="(?:\b[bBuU])?&quot;&quot;&quot;" end="&quot;&quot;&quot;" ruleSet="Escapes" />
+    <Span color="String" multiline="true" begin="(?:\b[bBuU])?'''" end="'''" ruleSet="Escapes" />
+
+    <Span color="String" begin="\b(?:[rR][fF]|[fF][rR])&quot;" end="&quot;" ruleSet="RawFormat" />
+    <Span color="String" begin="\b(?:[rR][fF]|[fF][rR])'" end="'" ruleSet="RawFormat" />
+    <Span color="String" begin="\b[fF]&quot;" end="&quot;" ruleSet="Format" />
+    <Span color="String" begin="\b[fF]'" end="'" ruleSet="Format" />
+    <Span color="String" begin="\b(?:[rR][bB]?|[bB][rR])&quot;" end="&quot;" ruleSet="Raw" />
+    <Span color="String" begin="\b(?:[rR][bB]?|[bB][rR])'" end="'" ruleSet="Raw" />
+    <Span color="String" begin="(?:\b[bBuU])?&quot;" end="&quot;" ruleSet="Escapes" />
+    <Span color="String" begin="(?:\b[bBuU])?'" end="'" ruleSet="Escapes" />
+
+    <Rule color="Decorator">(?&lt;=^\s*)@\s*[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*</Rule>
+
+    <!-- A member name after a dot is left plain, even when it is also a keyword. -->
+    <Rule>(?&lt;=\.)\s*[A-Za-z_][A-Za-z0-9_]*\b(?!\s*\()</Rule>
+
+    <Keywords color="Keyword">
+      <Word>and</Word>
+      <Word>as</Word>
+      <Word>assert</Word>
+      <Word>async</Word>
+      <Word>await</Word>
+      <Word>break</Word>
+      <Word>class</Word>
+      <Word>continue</Word>
+      <Word>def</Word>
+      <Word>del</Word>
+      <Word>elif</Word>
+      <Word>else</Word>
+      <Word>except</Word>
+      <Word>finally</Word>
+      <Word>for</Word>
+      <Word>from</Word>
+      <Word>global</Word>
+      <Word>if</Word>
+      <Word>import</Word>
+      <Word>in</Word>
+      <Word>is</Word>
+      <Word>lambda</Word>
+      <Word>nonlocal</Word>
+      <Word>not</Word>
+      <Word>or</Word>
+      <Word>pass</Word>
+      <Word>raise</Word>
+      <Word>return</Word>
+      <Word>try</Word>
+      <Word>while</Word>
+      <Word>with</Word>
+      <Word>yield</Word>
+    </Keywords>
+
+    <!-- The soft keywords only where they start a statement. -->
+    <Rule color="Keyword">(?&lt;=^\s*)(?:match|case|type)\b(?=\s+[^\s=:,.)\]])</Rule>
+
+    <Keywords color="Variable">
+      <Word>self</Word>
+      <Word>cls</Word>
+    </Keywords>
+
+    <Keywords color="Constant">
+      <Word>True</Word>
+      <Word>False</Word>
+      <Word>None</Word>
+      <Word>NotImplemented</Word>
+      <Word>Ellipsis</Word>
+      <Word>__name__</Word>
+      <Word>__file__</Word>
+    </Keywords>
+
+    <Keywords color="Type">
+      <Word>bool</Word>
+      <Word>bytearray</Word>
+      <Word>bytes</Word>
+      <Word>complex</Word>
+      <Word>dict</Word>
+      <Word>float</Word>
+      <Word>frozenset</Word>
+      <Word>int</Word>
+      <Word>list</Word>
+      <Word>object</Word>
+      <Word>set</Word>
+      <Word>str</Word>
+      <Word>tuple</Word>
+      <Word>type</Word>
+    </Keywords>
+
+    <!-- SCREAMING_CASE is a constant, any other capitalised name a class. -->
+    <Rule color="Constant">\b[A-Z][A-Z0-9_]*[A-Z0-9]\b(?![a-z])</Rule>
+    <Rule color="Type">\b[A-Z][A-Za-z0-9_]*</Rule>
+    <Rule color="Function">\b[A-Za-z_][A-Za-z0-9_]*(?=\s*\()</Rule>
+
+    <Rule color="Number">\b(?:0[xX][0-9a-fA-F_]+|0[oO][0-7_]+|0[bB][01_]+|[0-9][0-9_]*(?:\.[0-9_]*)?(?:[eE][+-]?[0-9_]+)?[jJ]?)\b|(?&lt;![\w.])\.[0-9][0-9_]*(?:[eE][+-]?[0-9_]+)?[jJ]?\b</Rule>
+
+    <Rule color="Operator">-&gt;|:=|\*\*=?|//=?|&lt;&lt;=?|&gt;&gt;=?|[-+*/%@&amp;|^~=!&lt;&gt;]=?</Rule>
+  </RuleSet>
+
+  <RuleSet>
+    <Import ruleSet="Code" />
+  </RuleSet>
+</SyntaxDefinition>
