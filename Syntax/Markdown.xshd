@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Markdown. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="Markdown" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="Escape" />
+  <Color name="Operator" />
+  <Color name="Tag" />
+  <Color name="Heading" fontWeight="bold" />
+  <Color name="Emphasis" fontStyle="italic" />
+  <Color name="Strong" fontWeight="bold" />
+  <Color name="Link" />
+  <Color name="Code" />
+
+  <!-- Emphasis, code and links, wherever text runs. -->
+  <RuleSet name="Inline">
+    <Span color="Escape" begin="\\(?=[!-/:-@\[-`{-~])" end="." />
+    <Span color="Code" begin="``" end="``" />
+    <Span color="Code" begin="`" end="`" />
+    <Span color="Comment" multiline="true" begin="&lt;!--" end="--&gt;" />
+
+    <!-- Only where the closing mark is on the same line, so a lone star stays a star. -->
+    <Span color="Strong" ruleSet="Inline" begin="\*\*(?=[^\s*](?:[^\r\n]*?[^\s\\*])?\*\*)" end="\*\*" />
+    <Span color="Strong" ruleSet="Inline" begin="(?&lt;![\w\\])__(?=[^\s_](?:[^\r\n]*?[^\s\\_])?__(?!\w))" end="__(?!\w)" />
+    <Span color="Emphasis" ruleSet="Inline" begin="(?&lt;![\\*])\*(?=[^\s*](?:[^\r\n]*?[^\s\\*])?\*(?!\*))" end="\*" />
+    <Span color="Emphasis" ruleSet="Inline" begin="(?&lt;![\w\\])_(?=[^\s_](?:[^\r\n]*?[^\s\\_])?_(?!\w))" end="_(?!\w)" />
+    <Span color="Emphasis" ruleSet="Inline" begin="~~(?=[^\s~](?:[^\r\n]*?[^\s\\~])?~~)" end="~~" />
+
+    <Rule color="Link">!?\[(?:[^\[\]\r\n]|\[[^\[\]\r\n]*\])*\](?:\([^()\s]*(?:\s+&quot;[^&quot;\r\n]*&quot;)?\)|\[[^\[\]\r\n]*\])</Rule>
+    <Rule color="Link">&lt;(?:https?|ftp|mailto):[^\s&lt;&gt;]*&gt;|\bhttps?://[^\s&lt;&gt;()\[\]]*[^\s&lt;&gt;()\[\].,;:!?'&quot;*_~]</Rule>
+    <Rule color="Tag">&lt;/?[A-Za-z][\w-]*(?:\s+[^&lt;&gt;\r\n]*)?/?&gt;</Rule>
+  </RuleSet>
+
+  <RuleSet>
+    <!-- A fenced block in a language Jester knows is coloured as that language. -->
+    <Span ruleSet="TypeScript/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:ts|typescript|tsx|js|javascript|jsx|mjs|cjs)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="Python/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:py|python|python3)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="Rust/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:rs|rust)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="CSS/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:css|scss|less)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="HTML/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:html|htm|xhtml)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="JSON/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:json|jsonc|json5)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="YAML/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:yaml|yml)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="TOML/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:toml)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span ruleSet="PowerShell/" multiline="true">
+      <Begin color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*(?i:ps1|powershell|pwsh)(?=[\s{,]|$)[^\r\n]*$</Begin>
+      <End color="Code">^[ ]{0,3}(?:```|~~~)[ \t]*$</End>
+    </Span>
+    <Span color="Code" multiline="true" begin="^[ ]{0,3}(?:```|~~~)[^\r\n]*$" end="^[ ]{0,3}(?:```|~~~)[ \t]*$" />
+
+    <Span color="Comment" multiline="true" begin="&lt;!--" end="--&gt;" />
+    <Span color="Heading" begin="^[ ]{0,3}\#{1,6}(?=[ \t]|$)" end="$" />
+    <Span color="Comment" begin="^[ ]{0,3}&gt;" end="$" ruleSet="Inline" />
+
+    <!-- The line under a heading, a rule across the page, and a table's header line. -->
+    <Rule color="Heading">^[ ]{0,3}=+[ \t]*$</Rule>
+    <Rule color="Operator">^[ ]{0,3}(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,})$</Rule>
+    <Rule color="Operator">^[ \t]*\|?[ \t]*:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)+\|?[ \t]*$</Rule>
+
+    <Rule color="Link">^[ ]{0,3}\[[^\]\r\n]+\]:[ \t]*\S.*$</Rule>
+
+    <!-- List markers, with a task's box. -->
+    <Rule color="Operator">(?&lt;=^[ \t]*)(?:[-*+]|[0-9]{1,9}[.)])(?=[ \t])(?:[ \t]+\[[ xX]\](?=[ \t]))?</Rule>
+
+    <Import ruleSet="Inline" />
+  </RuleSet>
+</SyntaxDefinition>

@@ -26,6 +26,7 @@ internal static class SyntaxLanguages
         new("TOML", [".toml"], ["Cargo.lock", "Pipfile", "poetry.lock"]),
         new("YAML", [".yml", ".yaml"], []),
         new("PowerShell", [".ps1", ".psm1", ".psd1"], []),
+        new("Markdown", [".md", ".markdown", ".mdown", ".mkd"], []),
     ];
 
     private static readonly Dictionary<string, IHighlightingDefinition> Loaded = new(StringComparer.OrdinalIgnoreCase);
