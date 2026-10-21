@@ -12,6 +12,8 @@ public class SyntaxLanguagesTests
     [Theory]
     [InlineData(@"C:\src\main.rs", "Rust")]
     [InlineData(@"C:\src\LIB.RS", "Rust")]
+    [InlineData(@"C:\src\App.tsx", "TypeScript")]
+    [InlineData(@"C:\src\index.MJS", "TypeScript")]
     public void AFileGetsItsLanguageFromItsNameOrExtension(string path, string language) =>
         Assert.Equal(language, SyntaxLanguages.ForPath(path)?.Name);
 

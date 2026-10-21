@@ -18,6 +18,7 @@ internal static class SyntaxLanguages
     internal static readonly Language[] All =
     [
         new("Rust", [".rs"], []),
+        new("TypeScript", [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"], []),
     ];
 
     private static readonly Dictionary<string, IHighlightingDefinition> Loaded = new(StringComparer.OrdinalIgnoreCase);
