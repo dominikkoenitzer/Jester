@@ -22,6 +22,8 @@ public class SyntaxLanguagesTests
     [InlineData(@"C:\src\.eslintrc", "JSON")]
     [InlineData(@"C:\src\Cargo.toml", "TOML")]
     [InlineData(@"C:\src\Cargo.lock", "TOML")]
+    [InlineData(@"C:\src\.github\workflows\build.yml", "YAML")]
+    [InlineData(@"C:\src\docker-compose.yaml", "YAML")]
     public void AFileGetsItsLanguageFromItsNameOrExtension(string path, string language) =>
         Assert.Equal(language, SyntaxLanguages.ForPath(path)?.Name);
 

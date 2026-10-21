@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YAML. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="YAML" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Number" />
+  <Color name="Constant" />
+  <Color name="Property" />
+  <Color name="Operator" />
+  <Color name="Decorator" />
+
+  <RuleSet name="Escapes">
+    <Span color="Escape" begin="\\" end="x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|.|$" />
+  </RuleSet>
+
+  <!-- In single quotes a doubled quote stands for a quote. -->
+  <RuleSet name="Quotes">
+    <Span color="Escape" begin="'(?=')" end="'" />
+  </RuleSet>
+
+  <!-- The line with the | or > may end in a comment; the text below it has none. -->
+  <RuleSet name="Block">
+    <Span color="Comment" begin="(?&lt;=(?::|^[ \t]*-)[ \t]+[|&gt;][-+1-9]{0,2}[ \t]+)\#" />
+  </RuleSet>
+
+  <RuleSet>
+    <Span color="Comment" begin="(?&lt;=^|[ \t])\#" />
+
+    <!-- A block of text after | or > ends at the first line indented no deeper than its key,
+         so there is one span for each indentation. -->
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,0}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{0}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,1}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{1}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,2}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{2}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,3}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{3}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,4}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{4}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,5}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{5}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,6}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{6}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,7}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{7}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,8}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{8}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,9}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{9}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,10}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{10}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,11}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{11}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,12}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{12}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,13}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{13}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,14}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{14}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,15}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{15}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,16}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{16}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,17}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{17}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,18}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{18}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,19}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{19}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,20}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{20}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,21}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{21}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,22}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{22}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,23}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{23}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <Span color="String" multiline="true" ruleSet="Block" end="^(?=[ ]{0,24}[^ \r\n])">
+      <Begin color="Operator">[|&gt;](?&lt;=^[ -]{24}(?:[^ \-\#][^\r\n]*:|-)[ \t]+[|&gt;])[-+1-9]{0,2}(?=[ \t]*(?:\#.*)?$)</Begin>
+    </Span>
+    <!-- Keys, quoted or plain, up to the colon. A scalar starts a line, follows a dash, a colon
+         or a comma, or opens a bracket. -->
+    <Span color="Property" begin="(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)&quot;(?=(?:[^&quot;\\\r\n]|\\.){0,4096}&quot;[ \t]*:(?:[ \t]|$))" end="&quot;" ruleSet="Escapes" />
+    <Span color="Property" begin="(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)'(?=(?:[^'\r\n]|''){0,4096}'[ \t]*:(?:[ \t]|$))" end="'(?!')" ruleSet="Quotes" />
+    <Span color="Property" end="(?=[ \t]*:)">
+      <Begin>(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)(?:[^\s\#'&quot;?:,\[\]{}&amp;*!|&gt;%@`-]|[-?:](?=\S))(?:[^\r\n\#:]|:(?![ \t]|$)|(?&lt;![ \t])\#){0,4096}?(?=[ \t]*:(?:[ \t]|$))</Begin>
+    </Span>
+
+    <Span color="String" begin="(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)&quot;" end="&quot;" ruleSet="Escapes" />
+    <Span color="String" begin="(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)'" end="'(?!')" ruleSet="Quotes" />
+
+    <Rule color="Operator">^(?:---|\.\.\.)(?=[ \t]|$)</Rule>
+    <Rule color="Decorator">^%.*</Rule>
+    <Rule color="Operator">(?&lt;=^[ \t]*(?:-[ \t]+)*)[-?](?=[ \t]|$)</Rule>
+
+    <!-- Anchors, aliases and tags. -->
+    <Rule color="Decorator">(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)(?:[&amp;*][^\s,\[\]{}]+|!&lt;[^&gt;\s]*&gt;|![^\s,\[\]{}]*)</Rule>
+
+    <!-- Constants and numbers only when they are the whole value. -->
+    <Rule color="Constant">(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)(?:true|True|TRUE|false|False|FALSE|null|Null|NULL|~)(?=[ \t]*(?:\#|[,\]}]|$))</Rule>
+    <Rule color="Number">(?&lt;=^[ \t]*|(?:^|[ \t])-[ \t]+|:[ \t]+|[\[{,][ \t]*)(?:[-+]?(?:0x[0-9a-fA-F]+|0o[0-7]+|(?:[0-9][0-9_]*(?:\.[0-9_]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?|\.(?:inf|Inf|INF))|\.(?:nan|NaN|NAN))(?=[ \t]*(?:\#|[,\]}]|$))</Rule>
+  </RuleSet>
+</SyntaxDefinition>
