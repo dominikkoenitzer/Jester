@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PowerShell. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="PowerShell" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="Keyword" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Text" />
+  <Color name="Number" />
+  <Color name="Constant" />
+  <Color name="Type" />
+  <Color name="Function" />
+  <Color name="Variable" />
+  <Color name="Attribute" />
+  <Color name="Operator" />
+  <Color name="Decorator" />
+
+  <RuleSet name="Variables" ignoreCase="true">
+    <Rule color="Constant">\$(?:true|false|null)\b</Rule>
+    <Rule color="Variable">\$\{[^}\r\n]*\}|\$(?:[A-Za-z_][\w]*:)?[A-Za-z_][\w]*|\$[$?^_]</Rule>
+  </RuleSet>
+
+  <!-- In double quotes a backtick escapes, a doubled quote stands for a quote, and variables and
+       $( ) are worked out. -->
+  <RuleSet name="Expandable">
+    <Span color="Escape" begin="`" end=".|$" />
+    <Span color="Escape" begin="&quot;(?=&quot;)" end="&quot;" />
+    <Span color="Text" ruleSet="Subexpression">
+      <Begin color="Escape">\$\(</Begin>
+      <End color="Escape">\)</End>
+    </Span>
+    <Import ruleSet="Variables" />
+  </RuleSet>
+
+  <RuleSet name="HereExpandable">
+    <Span color="Escape" begin="`" end=".|$" />
+    <Span color="Text" ruleSet="Subexpression">
+      <Begin color="Escape">\$\(</Begin>
+      <End color="Escape">\)</End>
+    </Span>
+    <Import ruleSet="Variables" />
+  </RuleSet>
+
+  <RuleSet name="Quotes">
+    <Span color="Escape" begin="'(?=')" end="'" />
+  </RuleSet>
+
+  <RuleSet name="Subexpression">
+    <Span begin="\(" end="\)" ruleSet="Subexpression" />
+    <Import ruleSet="Code" />
+  </RuleSet>
+
+  <RuleSet name="Code" ignoreCase="true">
+    <Span color="Comment" multiline="true" begin="&lt;\#" end="\#&gt;" />
+    <Span color="Comment" begin="\#" />
+
+    <Span color="String" multiline="true" begin="@&quot;(?=[ \t]*$)" end="^&quot;@" ruleSet="HereExpandable" />
+    <Span color="String" multiline="true" begin="@'(?=[ \t]*$)" end="^'@" />
+    <Span color="String" multiline="true" begin="&quot;" end="&quot;(?!&quot;)" ruleSet="Expandable" />
+    <Span color="String" multiline="true" begin="'" end="'(?!')" ruleSet="Quotes" />
+
+    <Import ruleSet="Variables" />
+    <Rule color="Variable">(?&lt;![\w@])@[A-Za-z_]\w*</Rule>
+
+    <!-- [CmdletBinding()] and [Parameter(...)] mark what follows; [int] is a type. -->
+    <Rule color="Decorator">(?&lt;=\[)[A-Za-z_][\w.]*(?=\()</Rule>
+    <Rule color="Type">(?&lt;=\[)[A-Za-z_][\w.]*(?=(?:\[[\w.,\s]*\])?\])</Rule>
+
+    <!-- A member name after a dot is left plain unless it is called. -->
+    <Rule>(?&lt;=\.)[A-Za-z_]\w*\b(?!\()</Rule>
+
+    <Keywords color="Keyword">
+      <Word>begin</Word>
+      <Word>break</Word>
+      <Word>catch</Word>
+      <Word>class</Word>
+      <Word>clean</Word>
+      <Word>continue</Word>
+      <Word>data</Word>
+      <Word>do</Word>
+      <Word>dynamicparam</Word>
+      <Word>else</Word>
+      <Word>elseif</Word>
+      <Word>end</Word>
+      <Word>enum</Word>
+      <Word>exit</Word>
+      <Word>filter</Word>
+      <Word>finally</Word>
+      <Word>for</Word>
+      <Word>foreach</Word>
+      <Word>function</Word>
+      <Word>hidden</Word>
+      <Word>if</Word>
+      <Word>in</Word>
+      <Word>param</Word>
+      <Word>process</Word>
+      <Word>return</Word>
+      <Word>static</Word>
+      <Word>switch</Word>
+      <Word>throw</Word>
+      <Word>trap</Word>
+      <Word>try</Word>
+      <Word>until</Word>
+      <Word>using</Word>
+      <Word>while</Word>
+    </Keywords>
+
+    <Rule color="Operator">(?&lt;![\w-])-(?:[ci]?(?:eq|ne|gt|ge|lt|le|like|notlike|match|notmatch|replace|contains|notcontains|in|notin|split)|is|isnot|as|and|or|xor|not|band|bor|bxor|bnot|shl|shr|join|f)\b(?!-)</Rule>
+
+    <!-- A switch or parameter name, as in -Path or -Recurse. -->
+    <Rule color="Attribute">(?&lt;![\w$-])-[A-Za-z_][\w]*</Rule>
+
+    <!-- Verb-Noun names are commands, as is a name being called or defined. -->
+    <Rule color="Function">(?&lt;=\bfunction\s+)[\w-]+|(?&lt;![\w$-])[A-Za-z]+-[A-Za-z][\w]*(?![\w-])|\b[A-Za-z_]\w*(?=\()</Rule>
+
+    <Rule color="Number">\b(?:0x[0-9a-f]+l?|[0-9]+(?:\.[0-9]+)?(?:e[-+]?[0-9]+)?[dl]?(?:kb|mb|gb|tb|pb)?)\b|(?&lt;![\w.])\.[0-9]+\b</Rule>
+
+    <Rule color="Operator">::|\.\.|[-+*/%]?=|[|!&lt;&gt;]|(?&lt;![\w)\]])[-+](?=[\d$(])</Rule>
+  </RuleSet>
+
+  <RuleSet>
+    <Import ruleSet="Code" />
+  </RuleSet>
+</SyntaxDefinition>

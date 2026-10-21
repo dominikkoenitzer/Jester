@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rust. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="Rust" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="Keyword" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Number" />
+  <Color name="Constant" />
+  <Color name="Type" />
+  <Color name="Function" />
+  <Color name="Variable" />
+  <Color name="Operator" />
+  <Color name="Decorator" />
+
+  <!-- An escape is a span of its own, so the quote it escapes cannot end the string.
+       A backslash at the end of a line carries the string on to the next one. -->
+  <RuleSet name="Escapes">
+    <Span color="Escape" begin="\\" end="x[0-9a-fA-F]{2}|u\{[0-9a-fA-F_]{1,8}\}|.|$" />
+  </RuleSet>
+
+  <!-- Block comments nest in Rust. -->
+  <RuleSet name="BlockComment">
+    <Span color="Comment" multiline="true" begin="/\*" end="\*/" ruleSet="BlockComment" />
+  </RuleSet>
+
+  <RuleSet>
+    <Span color="Comment" begin="//" />
+    <Span color="Comment" multiline="true" begin="/\*" end="\*/" ruleSet="BlockComment" />
+
+    <!-- Raw strings end at a quote with as many # signs as they began with. -->
+    <Span color="String" multiline="true" begin="\bb?r###&quot;" end="&quot;###" />
+    <Span color="String" multiline="true" begin="\bb?r##&quot;" end="&quot;##" />
+    <Span color="String" multiline="true" begin="\bb?r#&quot;" end="&quot;#" />
+    <Span color="String" multiline="true" begin="\bb?r&quot;" end="&quot;" />
+    <Span color="String" multiline="true" begin="\b[bc]?&quot;|&quot;" end="&quot;" ruleSet="Escapes" />
+
+    <!-- A character, or a lifetime when no closing quote follows. -->
+    <Rule color="String">(?:\bb)?'(?:\\(?:[nrt\\0'"]|x[0-9a-fA-F]{2}|u\{[0-9a-fA-F_]{1,8}\})|[^'\\\r\n])'</Rule>
+    <Rule color="Variable">'[A-Za-z_][A-Za-z0-9_]*\b(?!')</Rule>
+
+    <Rule color="Decorator">\#!?\[[^\]\r\n]*\]?</Rule>
+    <Rule color="Decorator">\b[A-Za-z_][A-Za-z0-9_]*!(?=\s*[(\[{])</Rule>
+
+    <Keywords color="Keyword">
+      <Word>as</Word>
+      <Word>async</Word>
+      <Word>await</Word>
+      <Word>break</Word>
+      <Word>const</Word>
+      <Word>continue</Word>
+      <Word>crate</Word>
+      <Word>dyn</Word>
+      <Word>else</Word>
+      <Word>enum</Word>
+      <Word>extern</Word>
+      <Word>fn</Word>
+      <Word>for</Word>
+      <Word>if</Word>
+      <Word>impl</Word>
+      <Word>in</Word>
+      <Word>let</Word>
+      <Word>loop</Word>
+      <Word>match</Word>
+      <Word>mod</Word>
+      <Word>move</Word>
+      <Word>mut</Word>
+      <Word>pub</Word>
+      <Word>ref</Word>
+      <Word>return</Word>
+      <Word>static</Word>
+      <Word>struct</Word>
+      <Word>super</Word>
+      <Word>trait</Word>
+      <Word>type</Word>
+      <Word>union</Word>
+      <Word>unsafe</Word>
+      <Word>use</Word>
+      <Word>where</Word>
+      <Word>while</Word>
+      <Word>yield</Word>
+    </Keywords>
+
+    <Keywords color="Variable">
+      <Word>self</Word>
+    </Keywords>
+
+    <Keywords color="Constant">
+      <Word>true</Word>
+      <Word>false</Word>
+    </Keywords>
+
+    <Keywords color="Type">
+      <Word>Self</Word>
+      <Word>bool</Word>
+      <Word>char</Word>
+      <Word>str</Word>
+      <Word>i8</Word>
+      <Word>i16</Word>
+      <Word>i32</Word>
+      <Word>i64</Word>
+      <Word>i128</Word>
+      <Word>isize</Word>
+      <Word>u8</Word>
+      <Word>u16</Word>
+      <Word>u32</Word>
+      <Word>u64</Word>
+      <Word>u128</Word>
+      <Word>usize</Word>
+      <Word>f32</Word>
+      <Word>f64</Word>
+    </Keywords>
+
+    <!-- SCREAMING_CASE is a constant, any other capitalised name a type or variant. -->
+    <Rule color="Constant">\b[A-Z][A-Z0-9_]*[A-Z0-9]\b(?![a-z])</Rule>
+    <Rule color="Type">\b[A-Z][A-Za-z0-9_]*\b</Rule>
+    <Rule color="Function">\b[a-z_][A-Za-z0-9_]*(?=\s*(?:::\s*&lt;[^&gt;]*&gt;\s*)?\()</Rule>
+
+    <Rule color="Number">\b(?:0x[0-9a-fA-F_]+|0o[0-7_]+|0b[01_]+|[0-9][0-9_]*(?:\.[0-9][0-9_]*)?(?:[eE][+-]?[0-9_]+)?)(?:[iu](?:8|16|32|64|128|size)|f32|f64)?\b</Rule>
+
+    <Rule color="Operator">=&gt;|-&gt;|::|[-+*/%=!&lt;&gt;&amp;|^?]+</Rule>
+  </RuleSet>
+</SyntaxDefinition>

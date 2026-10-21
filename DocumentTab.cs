@@ -36,6 +36,7 @@ internal sealed class DocumentTab : INotifyPropertyChanged
         set
         {
             _filePath = value;
+            View.SyntaxLanguage = SyntaxLanguages.DefinitionFor(value);
             Notify(nameof(Header));
             Notify(nameof(AutomationName));
             Notify(nameof(ToolTip));

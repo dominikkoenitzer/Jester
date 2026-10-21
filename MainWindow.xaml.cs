@@ -35,6 +35,7 @@ public partial class MainWindow : ThemedWindow
     private bool _italic;
     private bool _wordWrap;
     private bool _showLineNumbers = true;
+    private bool _syntaxHighlighting = true;
     private bool _autoIndent = true;
 
     // Last-used search settings, shared between the Find/Replace dialog and F3.
@@ -183,11 +184,14 @@ public partial class MainWindow : ThemedWindow
         _zoom = Math.Clamp(_settings.Zoom, 0.2, 5.0);
         _wordWrap = _settings.WordWrap;
         _showLineNumbers = _settings.ShowLineNumbers;
+        _syntaxHighlighting = _settings.SyntaxHighlighting;
+        SyntaxPalette.Scheme = SyntaxPalette.ParseScheme(_settings.SyntaxColours);
         _autoIndent = _settings.AutoIndent;
 
         WordWrapMenuItem.IsChecked = _wordWrap;
         AutoIndentMenuItem.IsChecked = _autoIndent;
         LineNumbersMenuItem.IsChecked = _showLineNumbers;
+        UpdateSyntaxMenu();
         StatusBarMenuItem.IsChecked = _settings.StatusBarVisible;
         StatusBarControl.Visibility = _settings.StatusBarVisible ? Visibility.Visible : Visibility.Collapsed;
         ZoomInfo.Text = $"{Math.Round(_zoom * 100)}%";
@@ -365,6 +369,8 @@ public partial class MainWindow : ThemedWindow
         _settings.Zoom = _zoom;
         _settings.WordWrap = _wordWrap;
         _settings.ShowLineNumbers = _showLineNumbers;
+        _settings.SyntaxHighlighting = _syntaxHighlighting;
+        _settings.SyntaxColours = SyntaxPalette.Scheme.ToString();
         _settings.AutoIndent = _autoIndent;
         _settings.StatusBarVisible = StatusBarMenuItem.IsChecked;
 
