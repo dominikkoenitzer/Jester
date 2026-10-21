@@ -49,7 +49,9 @@
 
     <Span color="String" begin="&quot;" end="&quot;" ruleSet="Escapes" />
     <Span color="String" begin="'" end="'" ruleSet="Escapes" />
-    <Span color="String" multiline="true" begin="`" end="`" ruleSet="Template" />
+    <!-- Not at the first of three backticks, so the line closing a fenced block in Markdown
+         closes the block rather than opening a template. -->
+    <Span color="String" multiline="true" begin="`(?!``)" end="`" ruleSet="Template" />
 
     <!-- A slash starts a pattern where a value is expected, and divides anywhere else. -->
     <Span color="String" ruleSet="Regex"
