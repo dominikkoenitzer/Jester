@@ -117,7 +117,7 @@ internal sealed class EditorView : Grid
     }
 
     /// <summary>The highlighting for the document's language, or null for plain text.</summary>
-    public IHighlightingDefinition? Language
+    public IHighlightingDefinition? SyntaxLanguage
     {
         get => _language;
         set

@@ -68,6 +68,11 @@ internal static class SyntaxPalette
     /// that it has to draw again when it is shown.</summary>
     public static int Version { get; private set; }
 
+    /// <summary>The scheme a setting names, or Pastel for a name it does not know.</summary>
+    public static SyntaxScheme ParseScheme(string? name) =>
+        Enum.TryParse(name, ignoreCase: true, out SyntaxScheme scheme) && Enum.IsDefined(scheme)
+            && !int.TryParse(name, out _) ? scheme : SyntaxScheme.Pastel;
+
     public static void NotifyChanged()
     {
         Version++;

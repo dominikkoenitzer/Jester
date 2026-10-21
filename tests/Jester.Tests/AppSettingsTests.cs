@@ -38,6 +38,8 @@ public class AppSettingsTests : IDisposable
         Assert.Equal(11, settings.FontSize);
         Assert.Equal(1.0, settings.Zoom);
         Assert.True(settings.ShowLineNumbers);
+        Assert.True(settings.SyntaxHighlighting);
+        Assert.Equal(SyntaxScheme.Pastel, SyntaxPalette.ParseScheme(settings.SyntaxColours));
         Assert.True(settings.AutoIndent);
         Assert.True(settings.StatusBarVisible);
         Assert.False(settings.WordWrap);
@@ -63,6 +65,8 @@ public class AppSettingsTests : IDisposable
             Zoom = 1.25,
             WordWrap = true,
             ShowLineNumbers = false,
+            SyntaxHighlighting = false,
+            SyntaxColours = "Neutral",
             AutoIndent = false,
             StatusBarVisible = false,
             ActiveTab = 2,
@@ -85,12 +89,25 @@ public class AppSettingsTests : IDisposable
         Assert.Equal(1.25, loaded.Zoom);
         Assert.True(loaded.WordWrap);
         Assert.False(loaded.ShowLineNumbers);
+        Assert.False(loaded.SyntaxHighlighting);
+        Assert.Equal("Neutral", loaded.SyntaxColours);
         Assert.False(loaded.AutoIndent);
         Assert.False(loaded.StatusBarVisible);
         Assert.Equal(2, loaded.ActiveTab);
         Assert.Equal(new[] { @"C:\a.txt", @"C:\b.txt" }, loaded.RecentFiles);
         Assert.Equal(new[] { @"C:\a.txt" }, loaded.OpenFiles);
     }
+
+    [Theory]
+    [InlineData("Neutral", SyntaxScheme.Neutral)]
+    [InlineData("neutral", SyntaxScheme.Neutral)]
+    [InlineData("Pastel", SyntaxScheme.Pastel)]
+    [InlineData("Bright", SyntaxScheme.Pastel)]
+    [InlineData("1", SyntaxScheme.Pastel)]
+    [InlineData("", SyntaxScheme.Pastel)]
+    [InlineData(null, SyntaxScheme.Pastel)]
+    public void AnUnknownColourNameFallsBackToTheDefault(string? name, SyntaxScheme scheme) =>
+        Assert.Equal(scheme, SyntaxPalette.ParseScheme(name));
 
     [Fact]
     public void SavingCreatesTheDirectoryItNeeds()

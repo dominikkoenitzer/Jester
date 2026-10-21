@@ -63,6 +63,7 @@ internal static class ThemeManager
             dictionaries.Insert(0, palette);
 
         IsDark = dark;
+        SyntaxPalette.NotifyChanged();
         foreach (Window window in app.Windows)
             ApplyFrame(window);
     }

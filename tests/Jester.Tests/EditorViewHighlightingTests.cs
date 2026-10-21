@@ -19,22 +19,22 @@ public class EditorViewHighlightingTests
         view.Editor.Text = "fn main() {}";
         Assert.False(view.IsHighlighted);
 
-        view.Language = SyntaxLanguages.DefinitionFor("main.rs");
+        view.SyntaxLanguage = SyntaxLanguages.DefinitionFor("main.rs");
         Assert.True(view.IsHighlighted);
 
-        view.Language = SyntaxLanguages.DefinitionFor("notes.txt");
-        Assert.Null(view.Language);
+        view.SyntaxLanguage = SyntaxLanguages.DefinitionFor("notes.txt");
+        Assert.Null(view.SyntaxLanguage);
         Assert.False(view.IsHighlighted);
     });
 
     [Fact]
     public void TheSwitchTurnsTheColoursOffAndOn() => StaThread.Run(() =>
     {
-        var view = new EditorView { Language = SyntaxLanguages.Definition("Rust") };
+        var view = new EditorView { SyntaxLanguage = SyntaxLanguages.Definition("Rust") };
 
         view.HighlightingEnabled = false;
         Assert.False(view.IsHighlighted);
-        Assert.NotNull(view.Language);
+        Assert.NotNull(view.SyntaxLanguage);
 
         view.HighlightingEnabled = true;
         Assert.True(view.IsHighlighted);
@@ -44,7 +44,7 @@ public class EditorViewHighlightingTests
     public void TheSwitchHoldsForALanguageSetLater() => StaThread.Run(() =>
     {
         var view = new EditorView { HighlightingEnabled = false };
-        view.Language = SyntaxLanguages.Definition("Rust");
+        view.SyntaxLanguage = SyntaxLanguages.Definition("Rust");
         Assert.False(view.IsHighlighted);
     });
 
@@ -53,14 +53,14 @@ public class EditorViewHighlightingTests
     {
         var view = new EditorView();
         view.Editor.Text = "fn main() {}\n" + LongLine;
-        view.Language = SyntaxLanguages.Definition("Rust");
+        view.SyntaxLanguage = SyntaxLanguages.Definition("Rust");
         Assert.False(view.IsHighlighted);
     });
 
     [Fact]
     public void TypingALineTooLongTurnsTheColoursOffAndShorteningItBringsThemBack() => StaThread.Run(() =>
     {
-        var view = new EditorView { Language = SyntaxLanguages.Definition("Rust") };
+        var view = new EditorView { SyntaxLanguage = SyntaxLanguages.Definition("Rust") };
         var ed = view.Editor;
         ed.Text = "fn main() {}\nlet x = 1;";
         Assert.True(view.IsHighlighted);
@@ -75,7 +75,7 @@ public class EditorViewHighlightingTests
     [Fact]
     public void OpeningAnotherFileBringsTheColoursBack() => StaThread.Run(() =>
     {
-        var view = new EditorView { Language = SyntaxLanguages.Definition("Rust") };
+        var view = new EditorView { SyntaxLanguage = SyntaxLanguages.Definition("Rust") };
         view.Editor.Text = LongLine;
         Assert.False(view.IsHighlighted);
 
@@ -88,7 +88,7 @@ public class EditorViewHighlightingTests
     {
         var view = new EditorView();
         view.Editor.Text = string.Concat(Enumerable.Repeat("let s = \"a\"; // note\n", 5000));
-        view.Language = SyntaxLanguages.Definition("Rust");
+        view.SyntaxLanguage = SyntaxLanguages.Definition("Rust");
 
         Pump(() => view.WarmedLines >= view.Editor.Document.LineCount);
         Assert.Equal(view.Editor.Document.LineCount, view.WarmedLines);
@@ -99,7 +99,7 @@ public class EditorViewHighlightingTests
     {
         var view = new EditorView();
         view.Editor.Text = string.Concat(Enumerable.Repeat("let x = 1;\n", 3000));
-        view.Language = SyntaxLanguages.Definition("Rust");
+        view.SyntaxLanguage = SyntaxLanguages.Definition("Rust");
         Pump(() => view.WarmedLines >= view.Editor.Document.LineCount);
 
         // Opening a comment near the top changes how every later line starts.
