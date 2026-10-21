@@ -27,6 +27,9 @@ public enum SyntaxKind
     Strong,
     Link,
     Code,
+
+    // Code inside a string, such as a template's ${ } field, in the editor's own text colour.
+    Text,
 }
 
 /// <summary>The two sets of syntax colours to choose from.</summary>
@@ -130,6 +133,7 @@ internal static class SyntaxPalette
         "#EBA0AC", // Strong
         "#89B4FA", // Link
         "#A6E3A1", // Code
+        "#E6E1EE", // Text, as the editor's text
     ];
 
     // The same hues, deep enough to read on the light paper.
@@ -154,6 +158,7 @@ internal static class SyntaxPalette
         "#D63446", // Strong
         "#1E66F5", // Link
         "#218500", // Code
+        "#231E2B", // Text, as the editor's text
     ];
 
     private static readonly string[] NeutralDark =
@@ -177,6 +182,7 @@ internal static class SyntaxPalette
         "#E4E3F1", // Strong
         "#A2CCDD", // Link
         "#AAC8A3", // Code
+        "#E6E1EE", // Text, as the editor's text
     ];
 
     private static readonly string[] NeutralLight =
@@ -200,6 +206,7 @@ internal static class SyntaxPalette
         "#2D2C39", // Strong
         "#326274", // Link
         "#45653E", // Code
+        "#231E2B", // Text, as the editor's text
     ];
 }
 
