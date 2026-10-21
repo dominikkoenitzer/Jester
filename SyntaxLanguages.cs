@@ -25,6 +25,7 @@ internal static class SyntaxLanguages
         new("JSON", [".json", ".jsonc", ".json5", ".geojson", ".webmanifest", ".code-workspace"], [".babelrc", ".eslintrc", ".prettierrc"]),
         new("TOML", [".toml"], ["Cargo.lock", "Pipfile", "poetry.lock"]),
         new("YAML", [".yml", ".yaml"], []),
+        new("PowerShell", [".ps1", ".psm1", ".psd1"], []),
     ];
 
     private static readonly Dictionary<string, IHighlightingDefinition> Loaded = new(StringComparer.OrdinalIgnoreCase);
