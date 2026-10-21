@@ -18,6 +18,10 @@ public class SyntaxLanguagesTests
     [InlineData(@"C:\src\theme.SCSS", "CSS")]
     [InlineData(@"C:\src\index.html", "HTML")]
     [InlineData(@"C:\src\tool.py", "Python")]
+    [InlineData(@"C:\src\package.json", "JSON")]
+    [InlineData(@"C:\src\.eslintrc", "JSON")]
+    [InlineData(@"C:\src\Cargo.toml", "TOML")]
+    [InlineData(@"C:\src\Cargo.lock", "TOML")]
     public void AFileGetsItsLanguageFromItsNameOrExtension(string path, string language) =>
         Assert.Equal(language, SyntaxLanguages.ForPath(path)?.Name);
 
