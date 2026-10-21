@@ -61,4 +61,21 @@ public class RustHighlightingTests
     [Fact]
     public void AKeywordInsideAStringIsPartOfTheString() =>
         Assert.Equal(SyntaxKind.String, Highlight.KindOf("Rust", "let s = \"fn let\";", "fn let"));
+
+    [Fact]
+    public void AnEscapedQuoteDoesNotEndTheString()
+    {
+        const string code = "let s = \"a\\\"b fn\"; let t = 1;";
+        Assert.Equal(SyntaxKind.String, Highlight.KindOf("Rust", code, "b fn"));
+        Assert.Equal(SyntaxKind.Escape, Highlight.KindOf("Rust", code, "\\\""));
+        Assert.Equal(SyntaxKind.Keyword, Highlight.KindOf("Rust", code, "let", occurrence: 1));
+    }
+
+    [Fact]
+    public void AHexEscapeIsColouredWhole() =>
+        Assert.Equal(SyntaxKind.Escape, Highlight.KindOf("Rust", "let s = \"\\x41\\u{1F600}\";", "\\u{1F600}"));
+
+    [Fact]
+    public void ABackslashAtTheEndOfALineKeepsTheStringOpen() =>
+        Assert.Equal(SyntaxKind.String, Highlight.KindOf("Rust", "let s = \"one \\\n    two fn\";", "two fn"));
 }

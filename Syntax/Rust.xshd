@@ -13,8 +13,10 @@
   <Color name="Operator" />
   <Color name="Decorator" />
 
+  <!-- An escape is a span of its own, so the quote it escapes cannot end the string.
+       A backslash at the end of a line carries the string on to the next one. -->
   <RuleSet name="Escapes">
-    <Rule color="Escape">\\(?:[nrt\\0'"]|x[0-9a-fA-F]{2}|u\{[0-9a-fA-F_]{1,8}\}|\r?$)</Rule>
+    <Span color="Escape" begin="\\" end="x[0-9a-fA-F]{2}|u\{[0-9a-fA-F_]{1,8}\}|.|$" />
   </RuleSet>
 
   <!-- Block comments nest in Rust. -->
