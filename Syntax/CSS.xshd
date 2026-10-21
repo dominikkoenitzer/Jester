@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CSS, also good enough for SCSS and Less. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="CSS" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="Keyword" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Number" />
+  <Color name="Constant" />
+  <Color name="Function" />
+  <Color name="Property" />
+  <Color name="Variable" />
+  <Color name="Tag" />
+  <Color name="Attribute" />
+  <Color name="Operator" />
+  <Color name="Decorator" />
+
+  <RuleSet name="Escapes">
+    <Span color="Escape" begin="\\" end="[0-9a-fA-F]{1,6}\s?|.|$" />
+  </RuleSet>
+
+  <RuleSet name="Basics">
+    <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+    <Span color="String" begin="&quot;" end="&quot;" ruleSet="Escapes" />
+    <Span color="String" begin="'" end="'" ruleSet="Escapes" />
+    <!-- An unquoted address, where two slashes are not a comment. -->
+    <Span color="String" begin="(?&lt;=\burl\()\s*(?=[^\s&quot;')])" end="(?=\))" />
+    <!-- Line comments exist only in SCSS and Less; in CSS two slashes appear only in strings and addresses. -->
+    <Span color="Comment" begin="(?&lt;![:\w])//" />
+  </RuleSet>
+
+  <!-- What follows a property's colon, up to its semicolon or the end of the block. -->
+  <RuleSet name="Value">
+    <Import ruleSet="Basics" />
+    <Rule color="Variable">--[A-Za-z0-9_-]+|\$[A-Za-z_][A-Za-z0-9_-]*|@[A-Za-z_][A-Za-z0-9_-]*</Rule>
+    <Rule color="Keyword">!\s*important\b</Rule>
+    <Rule color="Constant">\#[0-9a-fA-F]{3,8}\b</Rule>
+    <Rule color="Function">(?&lt;![\w-])-?[A-Za-z_][A-Za-z0-9_-]*(?=\()</Rule>
+    <Rule color="Number">(?&lt;![\w-])[+-]?(?:[0-9]+(?:\.[0-9]+)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?(?:%|[A-Za-z]+)?</Rule>
+  </RuleSet>
+
+  <RuleSet name="AtRule">
+    <Import ruleSet="Value" />
+    <Keywords color="Keyword">
+      <Word>and</Word>
+      <Word>not</Word>
+      <Word>only</Word>
+      <Word>or</Word>
+    </Keywords>
+  </RuleSet>
+
+  <RuleSet name="Selectors">
+    <!-- An at-rule up to its block or its end: @media, @import, @include and so on. -->
+    <Span ruleSet="AtRule">
+      <Begin color="Decorator">@[A-Za-z-]+</Begin>
+      <End>;|(?=[{}])</End>
+    </Span>
+    <Rule color="Variable">\$[A-Za-z_][A-Za-z0-9_-]*</Rule>
+    <Rule color="Attribute">[.\#][A-Za-z_-][A-Za-z0-9_-]*|::?[A-Za-z-]+|\[[^\]\r\n]*\]</Rule>
+    <Rule color="Tag">(?&lt;![\w$@-])(?:[a-z][a-z0-9-]*|\*)(?=[\s.\#:\[,&gt;+~{)]|$)</Rule>
+    <Rule color="Operator">[&gt;+~&amp;]</Rule>
+  </RuleSet>
+
+  <!-- Inside a rule's braces: declarations, and in SCSS nested rules too. -->
+  <RuleSet name="Block">
+    <Span multiline="true" begin="\{" end="\}" ruleSet="Block" />
+    <Import ruleSet="Basics" />
+
+    <!-- A name and a colon start a value, unless the colon begins a pseudo-class in a nested selector. -->
+    <Span ruleSet="Value" multiline="true">
+      <Begin color="Variable">(?&lt;![\w$@-])(?:--|\$)[A-Za-z0-9_-]+(?=\s*:)</Begin>
+      <End>;|(?=[{}])</End>
+    </Span>
+    <Span ruleSet="Value" multiline="true">
+      <Begin color="Property">(?&lt;![\w$@.\#:-])-?[A-Za-z][A-Za-z0-9-]*(?=\s*:(?!:|[a-z-]+(?:\([^)\r\n]*\))?\s*[,{]))</Begin>
+      <End>;|(?=[{}])</End>
+    </Span>
+
+    <Import ruleSet="Selectors" />
+  </RuleSet>
+
+  <RuleSet>
+    <Span multiline="true" begin="\{" end="\}" ruleSet="Block" />
+    <Import ruleSet="Basics" />
+    <Span ruleSet="Value">
+      <Begin color="Variable">\$[A-Za-z_][A-Za-z0-9_-]*(?=\s*:)</Begin>
+      <End>;</End>
+    </Span>
+    <Import ruleSet="Selectors" />
+  </RuleSet>
+</SyntaxDefinition>
