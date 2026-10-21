@@ -24,6 +24,7 @@ internal static class SyntaxLanguages
         new("Python", [".py", ".pyw", ".pyi"], []),
         new("JSON", [".json", ".jsonc", ".json5", ".geojson", ".webmanifest", ".code-workspace"], [".babelrc", ".eslintrc", ".prettierrc"]),
         new("TOML", [".toml"], ["Cargo.lock", "Pipfile", "poetry.lock"]),
+        new("YAML", [".yml", ".yaml"], []),
     ];
 
     private static readonly Dictionary<string, IHighlightingDefinition> Loaded = new(StringComparer.OrdinalIgnoreCase);
