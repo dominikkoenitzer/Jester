@@ -17,6 +17,7 @@ public class SyntaxLanguagesTests
     [InlineData(@"C:\src\site.css", "CSS")]
     [InlineData(@"C:\src\theme.SCSS", "CSS")]
     [InlineData(@"C:\src\index.html", "HTML")]
+    [InlineData(@"C:\src\tool.py", "Python")]
     public void AFileGetsItsLanguageFromItsNameOrExtension(string path, string language) =>
         Assert.Equal(language, SyntaxLanguages.ForPath(path)?.Name);
 
