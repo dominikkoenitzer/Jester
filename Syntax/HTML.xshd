@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- HTML, with the CSS and script inside it. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="HTML" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Tag" />
+  <Color name="Attribute" />
+  <Color name="Decorator" />
+
+  <RuleSet name="Entities">
+    <Rule color="Escape">&amp;(?:[A-Za-z][A-Za-z0-9]{1,31}|\#[0-9]{1,7}|\#[xX][0-9a-fA-F]{1,6});</Rule>
+  </RuleSet>
+
+  <!-- Inside a tag: attribute names and their values. -->
+  <RuleSet name="Tag">
+    <Span color="String" multiline="true" begin="&quot;" end="&quot;" ruleSet="Entities" />
+    <Span color="String" multiline="true" begin="'" end="'" ruleSet="Entities" />
+    <Rule color="Attribute">[^\s&quot;'&gt;/=]+</Rule>
+  </RuleSet>
+
+  <RuleSet>
+    <Span color="Comment" multiline="true" begin="&lt;!--" end="--&gt;" />
+    <Span color="String" multiline="true" begin="&lt;!\[CDATA\[" end="\]\]&gt;" />
+    <Span color="Decorator" multiline="true" begin="&lt;[!?][A-Za-z]" end="&gt;" />
+
+    <!-- A style or script element's text is coloured in its own language, up to the closing tag. -->
+    <Span multiline="true" ruleSet="StyleTag">
+      <Begin color="Tag">&lt;style\b</Begin>
+      <End color="Tag">&lt;/style\s*&gt;</End>
+    </Span>
+    <Span multiline="true" ruleSet="ScriptTag">
+      <Begin color="Tag">&lt;script\b(?![^&gt;]*\btype\s*=\s*[&quot;']?(?!(?:text|application)/(?:javascript|ecmascript|typescript|babel)|module)[\w/+-])</Begin>
+      <End color="Tag">&lt;/script\s*&gt;</End>
+    </Span>
+
+    <Span multiline="true" ruleSet="Tag">
+      <Begin color="Tag">&lt;/?[A-Za-z][A-Za-z0-9:._-]*</Begin>
+      <End color="Tag">/?&gt;</End>
+    </Span>
+
+    <Import ruleSet="Entities" />
+  </RuleSet>
+
+  <!-- The opening tag's attributes first, then the CSS after its closing angle. -->
+  <RuleSet name="StyleTag">
+    <Span multiline="true" ruleSet="CSS/">
+      <Begin color="Tag">&gt;</Begin>
+      <End>(?=&lt;/style\s*&gt;)</End>
+    </Span>
+    <Import ruleSet="Tag" />
+  </RuleSet>
+
+  <RuleSet name="ScriptTag">
+    <Span multiline="true" ruleSet="TypeScript/">
+      <Begin color="Tag">&gt;</Begin>
+      <End>(?=&lt;/script\s*&gt;)</End>
+    </Span>
+    <Import ruleSet="Tag" />
+  </RuleSet>
+</SyntaxDefinition>
