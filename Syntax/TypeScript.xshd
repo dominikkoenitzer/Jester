@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TypeScript, and JavaScript with it. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="TypeScript" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="Keyword" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Number" />
+  <Color name="Constant" />
+  <Color name="Type" />
+  <Color name="Function" />
+  <Color name="Variable" />
+  <Color name="Tag" />
+  <Color name="Operator" />
+  <Color name="Decorator" />
+
+  <!-- An escape is a span of its own, so the quote it escapes cannot end the string. -->
+  <RuleSet name="Escapes">
+    <Span color="Escape" begin="\\" end="x[0-9a-fA-F]{2}|u\{[0-9a-fA-F]{1,6}\}|u[0-9a-fA-F]{4}|.|$" />
+  </RuleSet>
+
+  <RuleSet name="Template">
+    <Span color="Escape" begin="\\" end="x[0-9a-fA-F]{2}|u\{[0-9a-fA-F]{1,6}\}|u[0-9a-fA-F]{4}|.|$" />
+    <Span ruleSet="Interpolation" multiline="true">
+      <Begin color="Escape">\$\{</Begin>
+      <End color="Escape">\}</End>
+    </Span>
+  </RuleSet>
+
+  <!-- Braces inside an interpolation pair up, so an object in it does not end it. -->
+  <RuleSet name="Interpolation">
+    <Span begin="\{" end="\}" multiline="true" ruleSet="Interpolation" />
+    <Import ruleSet="Code" />
+  </RuleSet>
+
+  <RuleSet name="Regex">
+    <Span begin="\\" end="." />
+    <Span begin="\[" end="\]">
+      <RuleSet>
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+  </RuleSet>
+
+  <RuleSet name="Code">
+    <Span color="Comment" begin="//" />
+    <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+
+    <Span color="String" begin="&quot;" end="&quot;" ruleSet="Escapes" />
+    <Span color="String" begin="'" end="'" ruleSet="Escapes" />
+    <Span color="String" multiline="true" begin="`" end="`" ruleSet="Template" />
+
+    <!-- A slash starts a pattern where a value is expected, and divides anywhere else. -->
+    <Span color="String" ruleSet="Regex"
+          begin="(?&lt;=(?:^|[=(,:;!&amp;|?{\[])\s*|\b(?:return|typeof|case|do|else|in|of|yield|await|void|throw|delete)\s+)/(?![/*])"
+          end="/[dgimsuyv]*" />
+
+    <!-- An element in markup; components are capitalised and coloured as types. -->
+    <Rule color="Tag">(?&lt;=(?:^|[(=,?:&amp;|&gt;{])\s*|\breturn\s+)&lt;/?[a-z][\w.:-]*(?=[\s/&gt;])|&lt;/[a-z][\w.:-]*&gt;|&lt;/?&gt;</Rule>
+
+    <Rule color="Decorator">@[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*</Rule>
+
+    <!-- A member name after a dot is left plain, even when it is also a keyword. -->
+    <Rule>(?&lt;=\.)\s*[A-Za-z_$][\w$]*\b(?!\s*(?:&lt;[^&lt;&gt;()]*&gt;\s*)?\()</Rule>
+
+    <Keywords color="Keyword">
+      <Word>abstract</Word>
+      <Word>as</Word>
+      <Word>asserts</Word>
+      <Word>async</Word>
+      <Word>await</Word>
+      <Word>break</Word>
+      <Word>case</Word>
+      <Word>catch</Word>
+      <Word>class</Word>
+      <Word>const</Word>
+      <Word>continue</Word>
+      <Word>debugger</Word>
+      <Word>declare</Word>
+      <Word>default</Word>
+      <Word>delete</Word>
+      <Word>do</Word>
+      <Word>else</Word>
+      <Word>enum</Word>
+      <Word>export</Word>
+      <Word>extends</Word>
+      <Word>finally</Word>
+      <Word>for</Word>
+      <Word>from</Word>
+      <Word>function</Word>
+      <Word>get</Word>
+      <Word>if</Word>
+      <Word>implements</Word>
+      <Word>import</Word>
+      <Word>in</Word>
+      <Word>infer</Word>
+      <Word>instanceof</Word>
+      <Word>interface</Word>
+      <Word>is</Word>
+      <Word>keyof</Word>
+      <Word>let</Word>
+      <Word>namespace</Word>
+      <Word>new</Word>
+      <Word>of</Word>
+      <Word>override</Word>
+      <Word>private</Word>
+      <Word>protected</Word>
+      <Word>public</Word>
+      <Word>readonly</Word>
+      <Word>return</Word>
+      <Word>satisfies</Word>
+      <Word>set</Word>
+      <Word>static</Word>
+      <Word>super</Word>
+      <Word>switch</Word>
+      <Word>throw</Word>
+      <Word>try</Word>
+      <Word>type</Word>
+      <Word>typeof</Word>
+      <Word>var</Word>
+      <Word>void</Word>
+      <Word>while</Word>
+      <Word>with</Word>
+      <Word>yield</Word>
+    </Keywords>
+
+    <Keywords color="Variable">
+      <Word>this</Word>
+    </Keywords>
+
+    <Keywords color="Constant">
+      <Word>true</Word>
+      <Word>false</Word>
+      <Word>null</Word>
+      <Word>undefined</Word>
+      <Word>NaN</Word>
+      <Word>Infinity</Word>
+    </Keywords>
+
+    <Keywords color="Type">
+      <Word>any</Word>
+      <Word>bigint</Word>
+      <Word>boolean</Word>
+      <Word>never</Word>
+      <Word>number</Word>
+      <Word>object</Word>
+      <Word>string</Word>
+      <Word>symbol</Word>
+      <Word>unknown</Word>
+    </Keywords>
+
+    <!-- SCREAMING_CASE is a constant, any other capitalised name a type or class. -->
+    <Rule color="Constant">\b[A-Z][A-Z0-9_]*[A-Z0-9]\b(?![a-z$])</Rule>
+    <Rule color="Type">\b[A-Z][\w$]*</Rule>
+    <Rule color="Function">\b[A-Za-z_$][\w$]*(?=\s*(?:&lt;[^&lt;&gt;()]*&gt;\s*)?\()</Rule>
+
+    <Rule color="Number">\b(?:0[xX][0-9a-fA-F_]+|0[oO][0-7_]+|0[bB][01_]+|[0-9][0-9_]*(?:\.[0-9][0-9_]*)?(?:[eE][+-]?[0-9_]+)?)n?\b|(?&lt;![\w$])\.[0-9][0-9_]*(?:[eE][+-]?[0-9_]+)?\b</Rule>
+
+    <Rule color="Operator">=&gt;|\.\.\.|[-+*/%=!&lt;&gt;&amp;|^~?]+</Rule>
+  </RuleSet>
+
+  <RuleSet>
+    <Import ruleSet="Code" />
+  </RuleSet>
+</SyntaxDefinition>
