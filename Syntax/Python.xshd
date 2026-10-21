@@ -5,6 +5,7 @@
   <Color name="Keyword" />
   <Color name="String" />
   <Color name="Escape" />
+  <Color name="Text" />
   <Color name="Number" />
   <Color name="Constant" />
   <Color name="Type" />
@@ -27,7 +28,7 @@
   <RuleSet name="Format">
     <Span color="Escape" begin="\{(?=\{)" end="\{" />
     <Rule color="Escape">\}\}</Rule>
-    <Span ruleSet="Field">
+    <Span color="Text" ruleSet="Field">
       <Begin color="Escape">\{</Begin>
       <End color="Escape">\}</End>
     </Span>
@@ -37,7 +38,7 @@
   <RuleSet name="RawFormat">
     <Span color="Escape" begin="\{(?=\{)" end="\{" />
     <Rule color="Escape">\}\}</Rule>
-    <Span ruleSet="Field">
+    <Span color="Text" ruleSet="Field">
       <Begin color="Escape">\{</Begin>
       <End color="Escape">\}</End>
     </Span>

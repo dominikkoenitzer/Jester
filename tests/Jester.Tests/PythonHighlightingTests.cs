@@ -74,6 +74,7 @@ public class PythonHighlightingTests
         Assert.Equal(SyntaxKind.Escape, Highlight.KindOf("Python", Sample, "{"));
         Assert.Equal(SyntaxKind.Variable, Highlight.KindOf("Python", Sample, "self", occurrence: 1));
         Assert.Equal(SyntaxKind.Number, Highlight.KindOf("Python", Sample, "2", occurrence: 1));
+        Assert.Equal(SyntaxKind.Text, Highlight.KindOf("Python", Sample, "width", occurrence: 1));
     }
 
     [Fact]

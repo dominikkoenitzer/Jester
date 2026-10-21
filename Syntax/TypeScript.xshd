@@ -5,6 +5,7 @@
   <Color name="Keyword" />
   <Color name="String" />
   <Color name="Escape" />
+  <Color name="Text" />
   <Color name="Number" />
   <Color name="Constant" />
   <Color name="Type" />
@@ -21,7 +22,7 @@
 
   <RuleSet name="Template">
     <Span color="Escape" begin="\\" end="x[0-9a-fA-F]{2}|u\{[0-9a-fA-F]{1,6}\}|u[0-9a-fA-F]{4}|.|$" />
-    <Span ruleSet="Interpolation" multiline="true">
+    <Span color="Text" ruleSet="Interpolation" multiline="true">
       <Begin color="Escape">\$\{</Begin>
       <End color="Escape">\}</End>
     </Span>

@@ -93,6 +93,10 @@ public class TypeScriptHighlightingTests
     }
 
     [Fact]
+    public void CodeInATemplateIsInTheTextColour() =>
+        Assert.Equal(SyntaxKind.Text, Highlight.KindOf("TypeScript", Sample, "path", occurrence: 3));
+
+    [Fact]
     public void ABlockCommentRunsOverLines() =>
         Assert.Equal(SyntaxKind.Comment, Highlight.KindOf("TypeScript", "/* one\n const two\n */ let x;", "const two"));
 
