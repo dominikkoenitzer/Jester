@@ -15,9 +15,10 @@ Jester is a plain-text notepad for 64-bit Windows 10 and 11. It is one file, `Je
 - Finds and replaces in the current tab, and searches every file in a folder (Find in Files).
 - Exports the current tab to an A4 PDF.
 - Shows line numbers, highlights the current line, auto-indents and wraps words.
+- Colours the syntax of TypeScript and JavaScript, Python, Rust, HTML, CSS, SCSS, Less, JSON, TOML, YAML, PowerShell and Markdown, chosen by the file's extension; fenced code blocks in Markdown are coloured in their own language. Other files, and new tabs until they are saved with one of those extensions, stay plain.
 - Reads files with a byte-order mark as UTF-8, UTF-16 or UTF-32. A file without one is read as UTF-8 when it is valid UTF-8, otherwise in the Windows ANSI code page, and it is saved back the same way.
 
-It has no syntax highlighting, no regular-expression or whole-word search, no spell check, and no printing (export a PDF and print that). It has a dark and a light theme, which follow the Windows app mode.
+It has no language picker (the extension decides), no regular-expression or whole-word search, no spell check, and no printing (export a PDF and print that). It has a dark and a light theme, which follow the Windows app mode.
 
 ## Keyboard shortcuts
 
@@ -57,7 +58,7 @@ The menus open with Alt+F (File), Alt+E (Edit), Alt+O (Format) and Alt+V (View).
 - File: New Tab, Open, Open Recent (last 10 files, plus Clear Recent Files), Reopen with Encoding (UTF-8, UTF-8 with BOM, UTF-16 LE, UTF-16 BE, Windows-1252, ANSI), Save, Save As, Save All, Export to PDF, Close Tab, Exit.
 - Edit: Undo, Redo, Cut, Copy, Paste, Delete, Find, Find Next, Find Previous, Replace, Find in Files, Go To, Select All, Time/Date.
 - Format: Word Wrap, Auto Indent, Font, Line Endings (Windows CRLF, Unix LF, Macintosh CR), Encoding (UTF-8, UTF-8 with BOM, UTF-16 LE, UTF-16 BE).
-- View: Zoom (In, Out, Restore Default Zoom), Line Numbers, Status Bar.
+- View: Zoom (In, Out, Restore Default Zoom), Line Numbers, Syntax Highlighting, Syntax Colours (Pastel, Neutral), Status Bar.
 - Right-click in the text: Cut, Copy, Paste, Delete, Select All.
 
 ## Details that answer common questions
@@ -69,6 +70,7 @@ The menus open with Alt+F (File), Alt+E (Edit), Alt+O (Format) and Alt+V (View).
 - Font and zoom apply to every tab. Font sizes from 1 to 512 points; zoom from 20% to 500% in steps of 10%.
 - Changing the encoding in Format, Encoding marks the tab as unsaved; the file changes only when the user saves. File, Reopen with Encoding reads the file from disk again in the chosen encoding; it is available only for a tab with a file, and when the tab has unsaved changes it asks first, because reopening discards them. Converting line endings is an edit that Undo takes back. Enter always inserts the line ending the tab already uses.
 - Tab names: an unsaved tab shows a dot after its name (screen readers hear a leading `*`). New tabs are called Untitled, Untitled 2 and so on. A restored tab whose file changed on disk since the unsaved edits shows `(changed on disk)`; saving it replaces the version on disk.
+- Syntax colours: View, Syntax Highlighting turns them on and off for every tab; View, Syntax Colours picks the pastel set (the default) or a quieter neutral one, each in the dark and the light theme. A file with a line longer than 10,000 characters is shown plain to keep typing quick, and gets its colours back once no line is that long.
 - The status bar shows characters, lines, line and column (plus the selection size), zoom, line ending and encoding.
 - PDF export: A4 page, 2 cm margins, the file name as a heading, page numbers as "Page N of M" at the bottom, the editor's font at 6 to 24 points. Long lines wrap. Jester offers to open the PDF afterwards.
 

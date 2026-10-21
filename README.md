@@ -24,6 +24,7 @@ If Windows shows "Windows protected your PC", click More info, then Run anyway. 
 
 - Tabs, each with its own undo history and encoding. Close one with `Ctrl+W` or a middle-click, switch with `Ctrl+Tab`.
 - Line numbers in a gutter you can hide from View, with the current line highlighted in the gutter and the editor.
+- Syntax colours for TypeScript and JavaScript, Python, Rust, HTML, CSS, SCSS and Less, JSON, TOML, YAML, PowerShell and Markdown, in a pastel or a neutral set. View, Syntax Highlighting turns them off, and a file with a line over 10,000 characters opens plain so it stays quick.
 - Find and replace in a panel over the text, with Replace All, match case and wrap-around. Enter finds the next match, Shift+Enter the previous one.
 - Find in Files (`Ctrl+Shift+F`) searches a whole folder, with file filters and subfolders; double-click a result to jump straight to it.
 - Open several files at once, reopen one from Open Recent, drop files on the editor, or open a file with Jester from Explorer.
@@ -56,7 +57,7 @@ If Windows shows "Windows protected your PC", click More info, then Run anyway. 
 
 Jester keeps everything it remembers in `%APPDATA%\Jester`:
 
-- `settings.json`: font, zoom, word wrap and the other Format and View choices, the window's size and position, and the recent and open files.
+- `settings.json`: font, zoom, word wrap, syntax colours and the other Format and View choices, the window's size and position, and the recent and open files.
 - `sessions\`: one `.json` file per window with its tabs, including the text of unsaved and Untitled tabs, plus a `.lock` file while that window is open.
 - `crash.log`: only there if Jester ever hit an unexpected error.
 
