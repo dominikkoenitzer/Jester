@@ -5,7 +5,7 @@ using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
-/// <summary>Word wrap, line numbers, font, encoding, line endings and zoom.</summary>
+/// <summary>Word wrap, line numbers, syntax colours, font, encoding, line endings and zoom.</summary>
 public partial class MainWindow
 {
     // ----------------------------------------------------------- Format / View
@@ -34,6 +34,32 @@ public partial class MainWindow
         foreach (var tab in _docs)
             tab.View.ShowLineNumbers = _showLineNumbers;
         ScheduleSettingsSave();
+    }
+
+    private void SyntaxHighlighting_Click(object sender, RoutedEventArgs e)
+    {
+        _syntaxHighlighting = SyntaxHighlightingMenuItem.IsChecked;
+        foreach (var tab in _docs)
+            tab.View.HighlightingEnabled = _syntaxHighlighting;
+        UpdateSyntaxMenu();
+        ScheduleSettingsSave();
+    }
+
+    private void SyntaxColours_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { Tag: SyntaxScheme scheme })
+            SyntaxPalette.Scheme = scheme;
+        UpdateSyntaxMenu();
+        ScheduleSettingsSave();
+    }
+
+    // The colours can be picked only while there are colours to see.
+    private void UpdateSyntaxMenu()
+    {
+        SyntaxHighlightingMenuItem.IsChecked = _syntaxHighlighting;
+        SyntaxColoursMenuItem.IsEnabled = _syntaxHighlighting;
+        PastelColoursMenuItem.IsChecked = SyntaxPalette.Scheme == SyntaxScheme.Pastel;
+        NeutralColoursMenuItem.IsChecked = SyntaxPalette.Scheme == SyntaxScheme.Neutral;
     }
 
     private void StatusBar_Click(object sender, RoutedEventArgs e)
@@ -129,6 +155,7 @@ public partial class MainWindow
         ed.FontStyle = _italic ? FontStyles.Italic : FontStyles.Normal;
         ed.FontSize = _baseFontSizePoints * PointsToDip * _zoom;
         tab.View.ShowLineNumbers = _showLineNumbers;
+        tab.View.HighlightingEnabled = _syntaxHighlighting;
         ApplyWordWrap(tab);
         tab.View.RefreshGutter();
     }

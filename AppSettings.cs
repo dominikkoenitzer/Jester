@@ -24,6 +24,11 @@ internal sealed class AppSettings
 
     public bool WordWrap { get; set; }
     public bool ShowLineNumbers { get; set; } = true;
+    public bool SyntaxHighlighting { get; set; } = true;
+
+    /// <summary>The colours' name; read leniently, so an unknown one only falls back to
+    /// the default instead of resetting every setting.</summary>
+    public string SyntaxColours { get; set; } = nameof(SyntaxScheme.Pastel);
     public bool AutoIndent { get; set; } = true;
     public bool StatusBarVisible { get; set; } = true;
 

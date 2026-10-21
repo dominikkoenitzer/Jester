@@ -83,6 +83,14 @@
                 </MenuItem>
                 <MenuItem x:Name="LineNumbersMenuItem" Header="Line _Numbers"
                           IsCheckable="True" IsChecked="True" Click="LineNumbers_Click" />
+                <MenuItem x:Name="SyntaxHighlightingMenuItem" Header="Syntax _Highlighting"
+                          IsCheckable="True" IsChecked="True" Click="SyntaxHighlighting_Click" />
+                <MenuItem x:Name="SyntaxColoursMenuItem" Header="Syntax _Colours">
+                    <MenuItem x:Name="PastelColoursMenuItem" Header="_Pastel" IsCheckable="True"
+                              Tag="{x:Static local:SyntaxScheme.Pastel}" Click="SyntaxColours_Click" />
+                    <MenuItem x:Name="NeutralColoursMenuItem" Header="_Neutral" IsCheckable="True"
+                              Tag="{x:Static local:SyntaxScheme.Neutral}" Click="SyntaxColours_Click" />
+                </MenuItem>
                 <MenuItem x:Name="StatusBarMenuItem" Header="_Status Bar"
                           IsCheckable="True" IsChecked="True" Click="StatusBar_Click" />
             </MenuItem>
