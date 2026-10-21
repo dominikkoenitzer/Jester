@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -6,6 +7,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Rendering;
 
 namespace Jester;
@@ -23,6 +25,21 @@ internal sealed class EditorView : Grid
     private readonly Rectangle _currentLineHighlight;
     private bool _showLineNumbers = true;
     private int? _pendingScroll;
+    private IHighlightingDefinition? _language;
+    private bool _highlightingEnabled = true;
+    private bool _lineTooLong;
+    private int _paletteVersion = SyntaxPalette.Version;
+    private int _warmedLine;
+    private bool _warming;
+
+    /// <summary>Lines longer than this leave the whole document uncoloured: matching a
+    /// line that long on every keystroke in it would lag, and such a file is most likely
+    /// minified anyway.</summary>
+    internal const int MaxHighlightedLineLength = 10_000;
+
+    // How long one idle step of reading ahead may take, so a key pressed meanwhile waits
+    // no longer than that.
+    private static readonly TimeSpan WarmUpSlice = TimeSpan.FromMilliseconds(4);
 
     /// <summary>The caret's colour, from the theme. The caret itself is not an element, so
     /// the brush comes through this property.</summary>
@@ -88,6 +105,148 @@ internal sealed class EditorView : Grid
         textView.ScrollOffsetChanged += (_, _) => UpdateCurrentLine();
         _textArea.SizeChanged += (_, _) => UpdateCurrentLine();
         Loaded += (_, _) => UpdateCurrentLine();
+
+        Editor.Document.Changed += (_, e) => CheckLineLengths(e.Offset, e.InsertionLength);
+        Loaded += (_, _) =>
+        {
+            SyntaxPalette.Changed += OnPaletteChanged;
+            if (_paletteVersion != SyntaxPalette.Version)
+                OnPaletteChanged();
+        };
+        Unloaded += (_, _) => SyntaxPalette.Changed -= OnPaletteChanged;
+    }
+
+    /// <summary>The highlighting for the document's language, or null for plain text.</summary>
+    public IHighlightingDefinition? Language
+    {
+        get => _language;
+        set
+        {
+            if (ReferenceEquals(_language, value))
+                return;
+            _language = value;
+            _lineTooLong = value is not null && HasLineLongerThan(MaxHighlightedLineLength);
+            ApplyHighlighting();
+        }
+    }
+
+    /// <summary>The View menu's switch: whether to colour the text at all.</summary>
+    public bool HighlightingEnabled
+    {
+        get => _highlightingEnabled;
+        set
+        {
+            if (_highlightingEnabled == value)
+                return;
+            _highlightingEnabled = value;
+            ApplyHighlighting();
+        }
+    }
+
+    /// <summary>Whether the text is drawn coloured right now.</summary>
+    public bool IsHighlighted => Editor.SyntaxHighlighting is not null;
+
+    /// <summary>How many lines the idle reading ahead has got through.</summary>
+    internal int WarmedLines => _warmedLine;
+
+    private void ApplyHighlighting()
+    {
+        var wanted = _highlightingEnabled && !_lineTooLong ? _language : null;
+        if (ReferenceEquals(Editor.SyntaxHighlighting, wanted))
+            return;
+        Editor.SyntaxHighlighting = wanted;
+        _warmedLine = 0;
+        if (wanted is not null)
+            WarmUp();
+    }
+
+    private void OnPaletteChanged()
+    {
+        _paletteVersion = SyntaxPalette.Version;
+        if (IsHighlighted)
+            Editor.TextArea.TextView.Redraw();
+    }
+
+    // An edit that makes a line too long turns the colours off; opening a file is one
+    // edit over the whole text, so that is checked here too.
+    private void CheckLineLengths(int offset, int length)
+    {
+        if (_language is null)
+            return;
+
+        if (_lineTooLong)
+        {
+            // Shortening the long line, or opening another file, brings the colours back.
+            // Only the line lengths are read, so this stays quick on a large file.
+            if (!HasLineLongerThan(MaxHighlightedLineLength))
+            {
+                _lineTooLong = false;
+                ApplyHighlighting();
+            }
+            return;
+        }
+
+        var document = Editor.Document;
+        var line = document.GetLineByOffset(offset);
+        int end = Math.Min(document.TextLength, offset + length);
+        while (line is not null && line.Offset <= end)
+        {
+            if (line.Length > MaxHighlightedLineLength)
+            {
+                _lineTooLong = true;
+                ApplyHighlighting();
+                return;
+            }
+            line = line.NextLine;
+        }
+
+        // The edit may change how every later line starts, an opened comment for one;
+        // those are read ahead again from here.
+        int changedLine = document.GetLineByOffset(offset).LineNumber;
+        if (changedLine <= _warmedLine)
+        {
+            _warmedLine = changedLine - 1;
+            WarmUp();
+        }
+    }
+
+    private bool HasLineLongerThan(int limit)
+    {
+        foreach (var line in Editor.Document.Lines)
+            if (line.Length > limit)
+                return true;
+        return false;
+    }
+
+    /// <summary>
+    /// Works out, in idle moments, how each line of the document starts: inside a comment,
+    /// a string and so on. The editor otherwise does that on demand, so jumping to the end
+    /// of a large file would read all of it at once. Done here in small slices, a key
+    /// pressed meanwhile is handled first.
+    /// </summary>
+    private void WarmUp()
+    {
+        if (_warming)
+            return;
+        _warming = true;
+        Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, WarmUpStep);
+    }
+
+    private void WarmUpStep()
+    {
+        _warming = false;
+        if (Editor.TextArea.TextView.GetService(typeof(IHighlighter)) is not IHighlighter highlighter)
+            return;
+
+        int lines = Editor.Document.LineCount;
+        var watch = Stopwatch.StartNew();
+        while (_warmedLine < lines && watch.Elapsed < WarmUpSlice)
+        {
+            _warmedLine = Math.Min(lines, _warmedLine + 256);
+            highlighter.UpdateHighlightingState(_warmedLine);
+        }
+        if (_warmedLine < lines)
+            WarmUp();
     }
 
     public bool ShowLineNumbers
