@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JSON, with the comments and trailing commas of JSONC and JSON5. Each colour is named after a SyntaxKind; the palette gives it its colour. -->
+<SyntaxDefinition name="JSON" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" fontStyle="italic" />
+  <Color name="String" />
+  <Color name="Escape" />
+  <Color name="Number" />
+  <Color name="Constant" />
+  <Color name="Property" />
+
+  <RuleSet name="Escapes">
+    <Span color="Escape" begin="\\" end="u[0-9a-fA-F]{4}|.|$" />
+  </RuleSet>
+
+  <RuleSet>
+    <Span color="Comment" begin="//" />
+    <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+
+    <!-- A string followed by a colon is a key. -->
+    <Span color="Property" begin="&quot;(?=(?:[^&quot;\\\r\n]|\\.){0,4096}&quot;\s*:)" end="&quot;" ruleSet="Escapes" />
+    <Span color="Property" begin="'(?=(?:[^'\\\r\n]|\\.){0,4096}'\s*:)" end="'" ruleSet="Escapes" />
+    <Span color="String" begin="&quot;" end="&quot;" ruleSet="Escapes" />
+    <Span color="String" begin="'" end="'" ruleSet="Escapes" />
+
+    <Rule color="Property">[A-Za-z_$][\w$]*(?=\s*:)</Rule>
+
+    <Keywords color="Constant">
+      <Word>true</Word>
+      <Word>false</Word>
+      <Word>null</Word>
+      <Word>Infinity</Word>
+      <Word>NaN</Word>
+    </Keywords>
+
+    <Rule color="Number">[-+]?(?:0[xX][0-9a-fA-F]+|(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][-+]?[0-9]+)?)\b</Rule>
+  </RuleSet>
+</SyntaxDefinition>
