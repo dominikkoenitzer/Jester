@@ -17,13 +17,15 @@ Key names are case-sensitive and must match exactly. Unknown keys are ignored. A
   "WindowWidth": 950,
   "WindowHeight": 640,
   "WindowMaximized": false,
-  "FontFamily": "Consolas",
+  "FontFamily": "Cascadia Mono",
   "FontSize": 11,
   "Bold": false,
   "Italic": false,
   "Zoom": 1,
   "WordWrap": false,
   "ShowLineNumbers": true,
+  "SyntaxHighlighting": true,
+  "SyntaxColours": "Pastel",
   "AutoIndent": true,
   "StatusBarVisible": true,
   "RecentFiles": [],
@@ -44,6 +46,8 @@ Key names are case-sensitive and must match exactly. Unknown keys are ignored. A
 | `WordWrap` | Format, Word Wrap. |
 | `ShowLineNumbers` | View, Line Numbers. |
 | `AutoIndent` | Format, Auto Indent: Enter repeats the leading spaces and tabs of the current line. |
+| `SyntaxHighlighting` | View, Syntax Highlighting. |
+| `SyntaxColours` | View, Syntax Colours: `"Pastel"` or `"Neutral"`. |
 | `StatusBarVisible` | View, Status Bar. |
 | `RecentFiles` | Full paths for File, Open Recent, newest first, at most 10. |
 | `OpenFiles`, `ActiveTab` | The saved files open at the last close. Jester reads them only when the `sessions` folder does not exist yet; after that the session files below decide which tabs open. |
