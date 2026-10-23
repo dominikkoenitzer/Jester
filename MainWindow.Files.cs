@@ -98,7 +98,8 @@ public partial class MainWindow
     {
         try
         {
-            WriteTab(tab, path, FileOps.Real);
+            foreach (var other in WriteTab(_docs, tab, path, FileOps.Real))
+                CloseTab(other);
             AddRecentFile(path);
             if (ReferenceEquals(tab, Active))
                 UpdateTitle();
@@ -112,14 +113,27 @@ public partial class MainWindow
         }
     }
 
-    /// <summary>Writes the tab's text to the path and marks the tab saved there.</summary>
-    internal static void WriteTab(DocumentTab tab, string path, FileOps files)
+    /// <summary>Writes the tab's text to the path and makes it the one tab on that file, as
+    /// <see cref="OpenFile"/> expects. Another tab on the file is returned to be closed, or,
+    /// when it has unsaved edits, keeps them as an untitled tab.</summary>
+    internal static List<DocumentTab> WriteTab(IEnumerable<DocumentTab> docs, DocumentTab tab, string path, FileOps files)
     {
         SafeWrite(path, tab.Editor.Text, tab.Encoding, files);
         tab.FilePath = path;
         tab.Disk = DiskStamp.Of(path);
         tab.ChangedOnDisk = false;
         tab.IsDirty = false;
+
+        string full = Path.GetFullPath(path);
+        var others = docs.Where(d => !ReferenceEquals(d, tab) &&
+            d.FilePath is not null && string.Equals(d.FilePath, full, StringComparison.OrdinalIgnoreCase)).ToList();
+        foreach (var other in others.Where(d => d.IsDirty))
+        {
+            other.FilePath = null;
+            other.Disk = null;
+            other.ChangedOnDisk = false;
+        }
+        return others.Where(d => !d.IsDirty).ToList();
     }
 
     /// <summary>Writes to a temp file in the same directory then atomically swaps it in,
