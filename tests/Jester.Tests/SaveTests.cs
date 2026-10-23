@@ -124,6 +124,71 @@ public class SaveTests : IDisposable
         Assert.Equal("new", File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "*.tmp"))));
     }
 
+    [Fact]
+    public void SavingOverAFileAnotherTabHoldsClosesThatTab()
+    {
+        string path = Path.Combine(_dir, "a.txt");
+        File.WriteAllText(path, "old");
+
+        StaThread.Run(() =>
+        {
+            var held = Tab("old", path, dirty: false);
+            var saved = Tab("new", null, dirty: true);
+            var docs = new List<DocumentTab> { held, saved };
+
+            docs.RemoveAll(MainWindow.WriteTab(docs, saved, path, FileOps.Real).Contains);
+
+            Assert.Same(saved, Assert.Single(docs));
+            Assert.Equal(path, saved.FilePath);
+            Assert.Equal("new", File.ReadAllText(path));
+        });
+    }
+
+    [Fact]
+    public void SavingOverAFileAnotherTabHoldsWithUnsavedEditsKeepsThemUntitled()
+    {
+        string path = Path.Combine(_dir, "a.txt");
+        File.WriteAllText(path, "old");
+
+        StaThread.Run(() =>
+        {
+            var held = Tab("edits", path.ToUpperInvariant(), dirty: true);
+            var saved = Tab("new", null, dirty: true);
+            var docs = new List<DocumentTab> { held, saved };
+
+            Assert.Empty(MainWindow.WriteTab(docs, saved, path, FileOps.Real));
+
+            Assert.Null(held.FilePath);
+            Assert.True(held.IsDirty);
+            Assert.Equal("edits", held.Editor.Text);
+            Assert.Equal(path, saved.FilePath);
+        });
+    }
+
+    [Fact]
+    public void SavingATabToItsOwnFileClosesNothing()
+    {
+        string path = Path.Combine(_dir, "a.txt");
+        File.WriteAllText(path, "old");
+
+        StaThread.Run(() =>
+        {
+            var saved = Tab("new", path, dirty: true);
+
+            Assert.Empty(MainWindow.WriteTab([saved], saved, path, FileOps.Real));
+            Assert.Equal(path, saved.FilePath);
+            Assert.False(saved.IsDirty);
+        });
+    }
+
+    private static DocumentTab Tab(string text, string? path, bool dirty)
+    {
+        var tab = new DocumentTab { FilePath = path };
+        tab.Editor.Text = text;
+        tab.IsDirty = dirty;
+        return tab;
+    }
+
     /// <summary>A replace that fails the way ReplaceFile does with ERROR_UNABLE_TO_MOVE_REPLACEMENT
     /// and no backup name: the file is gone and the new text is still under the temp name.</summary>
     private sealed class HalfReplaceOps(bool moveFails) : FileOps
