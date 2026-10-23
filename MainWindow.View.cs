@@ -94,17 +94,32 @@ public partial class MainWindow
         if (Active is not { } tab || sender is not MenuItem { Tag: string kind })
             return;
 
-        tab.Encoding = kind switch
+        if (SetEncoding(tab, kind))
+        {
+            ScheduleSessionSave();
+            UpdateEncodingInfo();
+            UpdateTitle();
+        }
+        // A checkable item unchecks itself when clicked, so the menu is put right either way.
+        SyncFormatMenus();
+    }
+
+    /// <summary>Gives the tab the encoding a menu item names; false when it already has it.</summary>
+    internal static bool SetEncoding(DocumentTab tab, string kind)
+    {
+        Encoding encoding = kind switch
         {
             "utf-8-bom" => new UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
             "utf-16le" => Encoding.Unicode,
             "utf-16be" => Encoding.BigEndianUnicode,
             _ => new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
         };
+        if (EncodingKey(encoding) == EncodingKey(tab.Encoding))
+            return false;
+
+        tab.Encoding = encoding;
         tab.IsDirty = true;
-        ScheduleSessionSave();
-        UpdateEncodingInfo();
-        SyncFormatMenus();
+        return true;
     }
 
     private void StepZoom(double delta) => ApplyZoom(Math.Round(_zoom + delta, 2));
