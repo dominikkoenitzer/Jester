@@ -170,7 +170,7 @@ public partial class MainWindow
                 : $"{results.Count:N0} match(es) in {files:N0} file(s) for \"{search}\""
                   + (results.Count >= MaxFindResults ? " (showing first " + MaxFindResults.ToString("N0") + ")" : "");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // async void: an escaping exception would take the whole app down, so the
             // search must always end gracefully even if the folder misbehaves.
