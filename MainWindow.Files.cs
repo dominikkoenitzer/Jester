@@ -98,7 +98,19 @@ public partial class MainWindow
     {
         try
         {
-            SafeWrite(path, tab.Editor.Text, tab.Encoding);
+            try
+            {
+                SafeWrite(path, tab.Editor.Text, tab.Encoding);
+            }
+            catch (EncoderFallbackException)
+            {
+                if (MessageBox.Show(this,
+                        $"Some characters in {tab.Name} do not exist in {DescribeEncoding(tab.Encoding)}, so saving replaces them.\n\nSave it anyway?",
+                        AppName, MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
+                    return false;
+                SafeWrite(path, tab.Editor.Text, tab.Encoding, replaceUnmappable: true);
+            }
+
             tab.FilePath = path;
             tab.Disk = DiskStamp.Of(path);
             tab.ChangedOnDisk = false;
@@ -117,8 +129,10 @@ public partial class MainWindow
     }
 
     /// <summary>Writes to a temp file in the same directory then atomically swaps it in,
-    /// so an interrupted or failed write can never truncate the existing file.</summary>
-    private static void SafeWrite(string path, string text, Encoding encoding)
+    /// so an interrupted or failed write can never truncate the existing file. A code page
+    /// that cannot hold a character throws <see cref="EncoderFallbackException"/> and leaves
+    /// the file as it was, unless the caller allows the replacement.</summary>
+    internal static void SafeWrite(string path, string text, Encoding encoding, bool replaceUnmappable = false)
     {
         string full = Path.GetFullPath(path);
         string directory = Path.GetDirectoryName(full) ?? Directory.GetCurrentDirectory();
@@ -127,7 +141,7 @@ public partial class MainWindow
 
         try
         {
-            File.WriteAllText(temp, text, encoding);
+            File.WriteAllText(temp, text, replaceUnmappable ? encoding : Strict(encoding));
             if (File.Exists(full))
                 File.Replace(temp, full, destinationBackupFileName: null);
             else
@@ -141,6 +155,17 @@ public partial class MainWindow
                 catch { /* best-effort cleanup of the temp file */ }
             }
         }
+    }
+
+    private static Encoding Strict(Encoding encoding)
+    {
+        // A UTF encoding holds every character; a code page would write "?" or a look-alike instead.
+        if (encoding is UTF8Encoding or UnicodeEncoding or UTF32Encoding)
+            return encoding;
+
+        var strict = (Encoding)encoding.Clone();
+        strict.EncoderFallback = EncoderFallback.ExceptionFallback;
+        return strict;
     }
 
     /// <summary>Reads a text file, honouring a byte-order mark if present. Without one the
