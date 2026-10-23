@@ -98,9 +98,10 @@ public partial class MainWindow
     {
         try
         {
+            List<DocumentTab> others;
             try
             {
-                SafeWrite(path, tab.Editor.Text, tab.Encoding);
+                others = WriteTab(_docs, tab, path, FileOps.Real);
             }
             catch (EncoderFallbackException)
             {
@@ -108,13 +109,11 @@ public partial class MainWindow
                         $"Some characters in {tab.Name} do not exist in {DescribeEncoding(tab.Encoding)}, so saving replaces them.\n\nSave it anyway?",
                         AppName, MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) != MessageBoxResult.Yes)
                     return false;
-                SafeWrite(path, tab.Editor.Text, tab.Encoding, replaceUnmappable: true);
+                others = WriteTab(_docs, tab, path, FileOps.Real, replaceUnmappable: true);
             }
 
-            tab.FilePath = path;
-            tab.Disk = DiskStamp.Of(path);
-            tab.ChangedOnDisk = false;
-            tab.IsDirty = false;
+            foreach (var other in others)
+                CloseTab(other);
             AddRecentFile(path);
             if (ReferenceEquals(tab, Active))
                 UpdateTitle();
@@ -128,28 +127,67 @@ public partial class MainWindow
         }
     }
 
+    /// <summary>Writes the tab's text to the path and makes it the one tab on that file, as
+    /// <see cref="OpenFile"/> expects. Another tab on the file is returned to be closed, or,
+    /// when it has unsaved edits, keeps them as an untitled tab.</summary>
+    internal static List<DocumentTab> WriteTab(IEnumerable<DocumentTab> docs, DocumentTab tab, string path, FileOps files,
+        bool replaceUnmappable = false)
+    {
+        SafeWrite(path, tab.Editor.Text, tab.Encoding, files, replaceUnmappable);
+        tab.FilePath = path;
+        tab.Disk = DiskStamp.Of(path);
+        tab.ChangedOnDisk = false;
+        tab.IsDirty = false;
+
+        string full = Path.GetFullPath(path);
+        var others = docs.Where(d => !ReferenceEquals(d, tab) &&
+            d.FilePath is not null && string.Equals(d.FilePath, full, StringComparison.OrdinalIgnoreCase)).ToList();
+        foreach (var other in others.Where(d => d.IsDirty))
+        {
+            other.FilePath = null;
+            other.Disk = null;
+            other.ChangedOnDisk = false;
+        }
+        return others.Where(d => !d.IsDirty).ToList();
+    }
+
     /// <summary>Writes to a temp file in the same directory then atomically swaps it in,
     /// so an interrupted or failed write can never truncate the existing file. A code page
     /// that cannot hold a character throws <see cref="EncoderFallbackException"/> and leaves
     /// the file as it was, unless the caller allows the replacement.</summary>
-    internal static void SafeWrite(string path, string text, Encoding encoding, bool replaceUnmappable = false)
+    internal static void SafeWrite(string path, string text, Encoding encoding, FileOps files,
+        bool replaceUnmappable = false)
     {
         string full = Path.GetFullPath(path);
         string directory = Path.GetDirectoryName(full) ?? Directory.GetCurrentDirectory();
         string temp = Path.Combine(directory,
             "." + Path.GetFileName(full) + "." + Guid.NewGuid().ToString("N") + ".tmp");
 
+        bool onlyCopy = false;
         try
         {
-            File.WriteAllText(temp, text, replaceUnmappable ? encoding : Strict(encoding));
-            if (File.Exists(full))
-                File.Replace(temp, full, destinationBackupFileName: null);
+            files.WriteText(temp, text, replaceUnmappable ? encoding : Strict(encoding));
+            if (!File.Exists(full))
+            {
+                files.Move(temp, full, overwrite: false);
+            }
             else
-                File.Move(temp, full);
+            {
+                try
+                {
+                    files.Replace(temp, full);
+                }
+                catch when (!File.Exists(full) && File.Exists(temp))
+                {
+                    // ReplaceFile can fail after it took the file away (ERROR_UNABLE_TO_MOVE_REPLACEMENT).
+                    onlyCopy = true;
+                    files.Move(temp, full, overwrite: false);
+                }
+            }
         }
         finally
         {
-            if (File.Exists(temp))
+            if (!onlyCopy && File.Exists(temp))
             {
                 try { File.Delete(temp); }
                 catch { /* best-effort cleanup of the temp file */ }

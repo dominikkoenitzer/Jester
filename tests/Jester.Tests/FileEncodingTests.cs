@@ -188,7 +188,7 @@ public class FileEncodingTests : IDisposable
 
         try
         {
-            MainWindow.SafeWrite(path, text, ansi);
+            MainWindow.SafeWrite(path, text, ansi, FileOps.Real);
         }
         catch (EncoderFallbackException)
         {
@@ -207,7 +207,7 @@ public class FileEncodingTests : IDisposable
 
         // U+0100 has no slot in Windows-1252; best fit would write a plain "A".
         Assert.Throws<EncoderFallbackException>(
-            () => MainWindow.SafeWrite(path, "Ā", MainWindow.ReopenEncoding("windows-1252")));
+            () => MainWindow.SafeWrite(path, "Ā", MainWindow.ReopenEncoding("windows-1252"), FileOps.Real));
         Assert.False(File.Exists(path));
     }
 
@@ -216,7 +216,7 @@ public class FileEncodingTests : IDisposable
     {
         string path = Path.Combine(_dir, "a.txt");
 
-        MainWindow.SafeWrite(path, "a→b", MainWindow.ReopenEncoding("windows-1252"), replaceUnmappable: true);
+        MainWindow.SafeWrite(path, "a→b", MainWindow.ReopenEncoding("windows-1252"), FileOps.Real, replaceUnmappable: true);
 
         Assert.Equal(new byte[] { 0x61, 0x3F, 0x62 }, File.ReadAllBytes(path));
     }
@@ -227,7 +227,7 @@ public class FileEncodingTests : IDisposable
         string path = Write(AnsiGruesse);
         var (text, encoding) = WithCulture("de-CH", () => MainWindow.ReadFile(path));
 
-        MainWindow.SafeWrite(path, text, encoding);
+        MainWindow.SafeWrite(path, text, encoding, FileOps.Real);
 
         Assert.Equal(AnsiGruesse, File.ReadAllBytes(path));
     }
