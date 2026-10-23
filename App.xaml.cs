@@ -33,8 +33,7 @@ public partial class App : Application
     {
         LogCrash("Dispatcher", e.Exception);
         MessageBox.Show(
-            "Jester hit an unexpected error, but your other tabs are still open.\n\n" +
-            "Details were saved to:\n" + CrashLogPath + "\n\n" + e.Exception.Message,
+            "Jester hit an unexpected error, but your other tabs are still open.",
             "Jester", MessageBoxButton.OK, MessageBoxImage.Warning);
         e.Handled = true;
     }
