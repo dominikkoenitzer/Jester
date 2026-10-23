@@ -25,11 +25,14 @@ internal class FileOps
         WriteText(path, text, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 
     /// <summary>Writes the text to a new file, with the encoding's byte-order mark as
-    /// <see cref="File.WriteAllText(string, string, Encoding)"/> writes it.</summary>
+    /// <see cref="File.WriteAllText(string, string, Encoding)"/> writes it, and flushes it
+    /// to the disk. NTFS journals the rename but not the data, so without the flush a power
+    /// cut after the replace or move can leave the file empty.</summary>
     public void WriteText(string path, string text, Encoding encoding)
     {
         using var stream = Create(path);
-        using var writer = new StreamWriter(stream, encoding, bufferSize: -1, leaveOpen: true);
-        writer.Write(text);
+        using (var writer = new StreamWriter(stream, encoding, bufferSize: -1, leaveOpen: true))
+            writer.Write(text);
+        stream.Flush(flushToDisk: true);
     }
 }
