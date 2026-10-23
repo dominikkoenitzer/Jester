@@ -64,10 +64,10 @@ public partial class MainWindow : ThemedWindow
         };
 
         FindBar.Owner = this;
-        // Esc in the text closes the find panel too.
+        // Esc in the text closes the find panel too; in the Find in Files results it closes those.
         PreviewKeyDown += (_, e) =>
         {
-            if (e.Key == Key.Escape && FindBar.IsVisible)
+            if (e.Key == Key.Escape && FindBar.IsVisible && !FindResultsPanel.IsKeyboardFocusWithin)
             {
                 e.Handled = true;
                 CloseFindPanel();
