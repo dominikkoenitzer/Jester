@@ -100,6 +100,48 @@ public class SaveTests : IDisposable
         Assert.Equal(14, AppSettings.LoadFrom(path).FontSize);
     }
 
+    [Fact]
+    public void AReplaceThatFailsAfterRemovingTheFileStillLeavesTheNewText()
+    {
+        string path = Path.Combine(_dir, "a.txt");
+        File.WriteAllText(path, "old");
+
+        MainWindow.SafeWrite(path, "new", new UTF8Encoding(false), new HalfReplaceOps(moveFails: false));
+
+        Assert.Equal("new", File.ReadAllText(path));
+        Assert.Empty(Directory.GetFiles(_dir, "*.tmp"));
+    }
+
+    [Fact]
+    public void AReplaceThatFailsAfterRemovingTheFileNeverDeletesTheNewText()
+    {
+        string path = Path.Combine(_dir, "a.txt");
+        File.WriteAllText(path, "old");
+
+        Assert.Throws<IOException>(() =>
+            MainWindow.SafeWrite(path, "new", new UTF8Encoding(false), new HalfReplaceOps(moveFails: true)));
+
+        Assert.Equal("new", File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "*.tmp"))));
+    }
+
+    /// <summary>A replace that fails the way ReplaceFile does with ERROR_UNABLE_TO_MOVE_REPLACEMENT
+    /// and no backup name: the file is gone and the new text is still under the temp name.</summary>
+    private sealed class HalfReplaceOps(bool moveFails) : FileOps
+    {
+        public override void Replace(string source, string target)
+        {
+            File.Delete(target);
+            throw new IOException("Unable to move the replacement file to the file to be replaced.", unchecked((int)0x80070498));
+        }
+
+        public override void Move(string source, string target, bool overwrite)
+        {
+            if (moveFails)
+                throw new IOException("The process cannot access the file because it is being used by another process.");
+            base.Move(source, target, overwrite);
+        }
+    }
+
     /// <summary>Notes each flush to disk and each replace or move, in order.</summary>
     private sealed class RecordingOps : FileOps
     {
