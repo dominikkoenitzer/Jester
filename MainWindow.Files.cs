@@ -131,17 +131,31 @@ public partial class MainWindow
         string temp = Path.Combine(directory,
             "." + Path.GetFileName(full) + "." + Guid.NewGuid().ToString("N") + ".tmp");
 
+        bool onlyCopy = false;
         try
         {
             files.WriteText(temp, text, encoding);
-            if (File.Exists(full))
-                files.Replace(temp, full);
-            else
+            if (!File.Exists(full))
+            {
                 files.Move(temp, full, overwrite: false);
+            }
+            else
+            {
+                try
+                {
+                    files.Replace(temp, full);
+                }
+                catch when (!File.Exists(full) && File.Exists(temp))
+                {
+                    // ReplaceFile can fail after it took the file away (ERROR_UNABLE_TO_MOVE_REPLACEMENT).
+                    onlyCopy = true;
+                    files.Move(temp, full, overwrite: false);
+                }
+            }
         }
         finally
         {
-            if (File.Exists(temp))
+            if (!onlyCopy && File.Exists(temp))
             {
                 try { File.Delete(temp); }
                 catch { /* best-effort cleanup of the temp file */ }
