@@ -95,7 +95,7 @@ The executable lands in `bin/Release/net10.0-windows/win-x64/publish/Jester.exe`
 dotnet test Jester.sln
 ```
 
-201 xunit tests cover the parts that work without a window: find/replace,
+247 xunit tests cover the parts that work without a window: find/replace,
 settings persistence, the command table, file encodings and line endings, the
 session that keeps unsaved tabs, the line index behind the status bar, and the
 editor's own edits, gutter and current-line highlight, laid out with no window.
@@ -124,6 +124,7 @@ documents. It is not part of the solution, so CI leaves it out.
 | `MainWindow.Status.cs` | Title bar and status bar updates. |
 | `SessionState.cs` | What the session keeps of each tab and how stored sessions come back. |
 | `SessionStore.cs` | One session file per window, with its lock file. |
+| `FileOps.cs` | The file calls behind every save: the temp file and the replace or move that puts it in place. |
 | `EditorView.cs` | One document's editor surface (AvalonEdit editor + gutter + current-line highlight). |
 | `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
 | `LineIndex.cs` | Line lookups and the line ending, kept per edit for the status bar and gutter. |
