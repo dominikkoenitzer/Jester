@@ -15,6 +15,7 @@ internal sealed class SessionStore : IDisposable
 {
     private readonly string _directory;
     private readonly string _path;
+    private readonly FileOps _files;
     private readonly FileStream? _lock;
     private readonly object _writeGate = new();
     private readonly List<(string Path, FileStream Claim)> _adopted = new();
@@ -24,9 +25,14 @@ internal sealed class SessionStore : IDisposable
     public static string DefaultDirectory => System.IO.Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Jester", "sessions");
 
-    public SessionStore(string directory)
+    public SessionStore(string directory) : this(directory, FileOps.Real)
+    {
+    }
+
+    internal SessionStore(string directory, FileOps files)
     {
         _directory = directory;
+        _files = files;
         HadSessions = Directory.Exists(directory);
 
         string id = Guid.NewGuid().ToString("N");
@@ -108,8 +114,8 @@ internal sealed class SessionStore : IDisposable
             string temp = _path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
-                File.WriteAllText(temp, JsonSerializer.Serialize(snapshot));
-                File.Move(temp, _path, overwrite: true);
+                _files.WriteText(temp, JsonSerializer.Serialize(snapshot));
+                _files.Move(temp, _path, overwrite: true);
                 _written = sequence;
             }
             catch

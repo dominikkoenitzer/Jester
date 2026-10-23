@@ -123,6 +123,7 @@ documents. It is not part of the solution, so CI leaves it out.
 | `MainWindow.Status.cs` | Title bar and status bar updates. |
 | `SessionState.cs` | What the session keeps of each tab and how stored sessions come back. |
 | `SessionStore.cs` | One session file per window, with its lock file. |
+| `FileOps.cs` | The file calls behind every save: the temp file and the replace or move that puts it in place. |
 | `EditorView.cs` | One document's editor surface (AvalonEdit editor + gutter + current-line highlight). |
 | `LineNumberMargin.cs` | The line-number gutter drawn beside each editor. |
 | `LineIndex.cs` | Line lookups and the line ending, kept per edit for the status bar and gutter. |

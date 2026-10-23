@@ -65,14 +65,16 @@ internal sealed class AppSettings
     /// <summary>Writes settings to an explicit path. See <see cref="LoadFrom"/>. The JSON
     /// goes to a temp file beside it that then replaces the old file, so a crash mid-write
     /// leaves the previous settings whole.</summary>
-    internal void SaveTo(string path)
+    internal void SaveTo(string path) => SaveTo(path, FileOps.Real);
+
+    internal void SaveTo(string path, FileOps files)
     {
         string temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            File.WriteAllText(temp, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
-            File.Move(temp, path, overwrite: true);
+            files.WriteText(temp, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+            files.Move(temp, path, overwrite: true);
         }
         catch
         {
