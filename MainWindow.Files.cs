@@ -75,17 +75,20 @@ public partial class MainWindow
 
     private bool SaveAs(DocumentTab tab)
     {
-        var dialog = new SaveFileDialog
-        {
-            Title = "Save As",
-            Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*",
-            FileName = tab.FilePath is null ? tab.UntitledName + ".txt" : Path.GetFileName(tab.FilePath),
-            DefaultExt = ".txt",
-            AddExtension = true,
-        };
-
+        var dialog = SaveAsDialog(tab);
         return dialog.ShowDialog(this) == true && WriteToFile(tab, dialog.FileName);
     }
+
+    internal static SaveFileDialog SaveAsDialog(DocumentTab tab) => new()
+    {
+        Title = "Save As",
+        Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*",
+        FileName = tab.FilePath is null ? tab.UntitledName + ".txt" : Path.GetFileName(tab.FilePath),
+        // Empty for a new tab, which leaves the dialog in the folder it last used.
+        InitialDirectory = tab.FilePath is null ? "" : Path.GetDirectoryName(tab.FilePath) ?? "",
+        DefaultExt = ".txt",
+        AddExtension = true,
+    };
 
     private void SaveAll()
     {
