@@ -222,6 +222,27 @@ public class FileEncodingTests : IDisposable
     }
 
     [Fact]
+    public void SavingATabReplacesCharactersOnlyAfterTheUserAllowedIt()
+    {
+        string path = Write(AnsiGruesse);
+
+        StaThread.Run(() =>
+        {
+            var tab = new DocumentTab { FilePath = path, Encoding = MainWindow.ReopenEncoding("windows-1252") };
+            tab.Editor.Text = "a→b";
+            tab.IsDirty = true;
+
+            Assert.Throws<EncoderFallbackException>(() => MainWindow.WriteTab([tab], tab, path, FileOps.Real));
+            Assert.True(tab.IsDirty);
+            Assert.Equal(AnsiGruesse, File.ReadAllBytes(path));
+
+            MainWindow.WriteTab([tab], tab, path, FileOps.Real, replaceUnmappable: true);
+            Assert.False(tab.IsDirty);
+            Assert.Equal(new byte[] { 0x61, 0x3F, 0x62 }, File.ReadAllBytes(path));
+        });
+    }
+
+    [Fact]
     public void SafeWriteSavesAnAnsiFileBackToTheSameBytes()
     {
         string path = Write(AnsiGruesse);
