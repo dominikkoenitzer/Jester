@@ -180,6 +180,19 @@ public class FileEncodingTests : IDisposable
     }
 
     [Fact]
+    public void FindInFilesFindsAnUmlautInAnAnsiFile()
+    {
+        File.WriteAllBytes(Path.Combine(_dir, "b.txt"), new byte[] { 0x61, 0x0D, 0x0A, 0x47, 0x72, 0xFC, 0x73, 0x73, 0x65 });
+
+        var results = WithCulture("de-CH", () => MainWindow.SearchFolder(_dir, "Grüsse", new[] { "*" }, false, false));
+
+        var result = Assert.Single(results);
+        Assert.Equal(2, result.Line);
+        Assert.Equal(1, result.Column);
+        Assert.Equal("Grüsse", result.Preview);
+    }
+
+    [Fact]
     public void DoesNotTickUtf8InTheMenuForAnAnsiFile()
     {
         string path = Write(AnsiGruesse);
