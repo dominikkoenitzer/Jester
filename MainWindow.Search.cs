@@ -176,7 +176,7 @@ public partial class MainWindow
         }
     }
 
-    private static List<FindResult> SearchFolder(
+    internal static List<FindResult> SearchFolder(
         string folder, string search, string[] patterns, bool matchCase, bool recursive)
     {
         var results = new List<FindResult>();
@@ -210,8 +210,13 @@ public partial class MainWindow
                 if (new FileInfo(file).Length > 4 * 1024 * 1024)
                     continue;
 
-                string[] lines = File.ReadAllLines(file);
-                for (int i = 0; i < lines.Length; i++)
+                // Decoded as the editor reads it, so an ANSI file is not searched as broken UTF-8.
+                var lines = new List<string>();
+                using (var reader = new StringReader(ReadFile(file).Text))
+                    for (string? line; (line = reader.ReadLine()) is not null;)
+                        lines.Add(line);
+
+                for (int i = 0; i < lines.Count; i++)
                 {
                     int col = lines[i].IndexOf(search, comparison);
                     if (col < 0)

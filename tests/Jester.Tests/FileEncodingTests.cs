@@ -180,6 +180,72 @@ public class FileEncodingTests : IDisposable
     }
 
     [Fact]
+    public void AnsiSaveKeepsEveryCharacterOrRefuses()
+    {
+        string path = Write(AnsiGruesse);
+        string text = "Grüsse → ✓ \U0001F600";
+        var ansi = MainWindow.ReopenEncoding("windows-1252");
+
+        try
+        {
+            MainWindow.SafeWrite(path, text, ansi);
+        }
+        catch (EncoderFallbackException)
+        {
+            Assert.Equal(AnsiGruesse, File.ReadAllBytes(path));
+            Assert.Single(Directory.GetFiles(_dir));
+            return;
+        }
+
+        Assert.Equal(text, MainWindow.ReadFile(path, ansi).Text);
+    }
+
+    [Fact]
+    public void AnsiSaveRefusesABestFitReplacement()
+    {
+        string path = Path.Combine(_dir, "a.txt");
+
+        // U+0100 has no slot in Windows-1252; best fit would write a plain "A".
+        Assert.Throws<EncoderFallbackException>(
+            () => MainWindow.SafeWrite(path, "Ā", MainWindow.ReopenEncoding("windows-1252")));
+        Assert.False(File.Exists(path));
+    }
+
+    [Fact]
+    public void AnsiSaveReplacesOnlyWhenAllowed()
+    {
+        string path = Path.Combine(_dir, "a.txt");
+
+        MainWindow.SafeWrite(path, "a→b", MainWindow.ReopenEncoding("windows-1252"), replaceUnmappable: true);
+
+        Assert.Equal(new byte[] { 0x61, 0x3F, 0x62 }, File.ReadAllBytes(path));
+    }
+
+    [Fact]
+    public void SafeWriteSavesAnAnsiFileBackToTheSameBytes()
+    {
+        string path = Write(AnsiGruesse);
+        var (text, encoding) = WithCulture("de-CH", () => MainWindow.ReadFile(path));
+
+        MainWindow.SafeWrite(path, text, encoding);
+
+        Assert.Equal(AnsiGruesse, File.ReadAllBytes(path));
+    }
+
+    [Fact]
+    public void FindInFilesFindsAnUmlautInAnAnsiFile()
+    {
+        File.WriteAllBytes(Path.Combine(_dir, "b.txt"), new byte[] { 0x61, 0x0D, 0x0A, 0x47, 0x72, 0xFC, 0x73, 0x73, 0x65 });
+
+        var results = WithCulture("de-CH", () => MainWindow.SearchFolder(_dir, "Grüsse", new[] { "*" }, false, false));
+
+        var result = Assert.Single(results);
+        Assert.Equal(2, result.Line);
+        Assert.Equal(1, result.Column);
+        Assert.Equal("Grüsse", result.Preview);
+    }
+
+    [Fact]
     public void DoesNotTickUtf8InTheMenuForAnAnsiFile()
     {
         string path = Write(AnsiGruesse);
