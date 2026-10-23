@@ -104,7 +104,7 @@
         </Border>
 
         <!-- Find in Files results, shown above the status bar on demand -->
-        <Border x:Name="FindResultsPanel" DockPanel.Dock="Bottom" Visibility="Collapsed"
+        <Border x:Name="FindResultsPanel" DockPanel.Dock="Bottom" Visibility="Collapsed" KeyDown="FindResultsPanel_KeyDown"
                 Height="190" Background="{DynamicResource EditorBackgroundBrush}"
                 BorderBrush="{DynamicResource GoldBrush}" BorderThickness="0,2,0,0">
             <DockPanel>

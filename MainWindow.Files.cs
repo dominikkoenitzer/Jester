@@ -54,7 +54,7 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Could not open the file.\n\n{ex.Message}",
+            MessageBox.Show(this, OpenFailure(full, ex),
                 AppName, MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -75,17 +75,20 @@ public partial class MainWindow
 
     private bool SaveAs(DocumentTab tab)
     {
-        var dialog = new SaveFileDialog
-        {
-            Title = "Save As",
-            Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*",
-            FileName = tab.FilePath is null ? tab.UntitledName + ".txt" : Path.GetFileName(tab.FilePath),
-            DefaultExt = ".txt",
-            AddExtension = true,
-        };
-
+        var dialog = SaveAsDialog(tab);
         return dialog.ShowDialog(this) == true && WriteToFile(tab, dialog.FileName);
     }
+
+    internal static SaveFileDialog SaveAsDialog(DocumentTab tab) => new()
+    {
+        Title = "Save As",
+        Filter = "Text Documents (*.txt)|*.txt|All Files (*.*)|*.*",
+        FileName = tab.FilePath is null ? tab.UntitledName + ".txt" : Path.GetFileName(tab.FilePath),
+        // Empty for a new tab, which leaves the dialog in the folder it last used.
+        InitialDirectory = tab.FilePath is null ? "" : Path.GetDirectoryName(tab.FilePath) ?? "",
+        DefaultExt = ".txt",
+        AddExtension = true,
+    };
 
     private void SaveAll()
     {
@@ -121,7 +124,7 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Could not save the file.\n\n{ex.Message}",
+            MessageBox.Show(this, SaveFailure(path, ex),
                 AppName, MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
@@ -286,7 +289,7 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Could not open the file.\n\n{ex.Message}",
+            MessageBox.Show(this, OpenFailure(path, ex),
                 AppName, MessageBoxButton.OK, MessageBoxImage.Warning);
             return;
         }
@@ -304,6 +307,51 @@ public partial class MainWindow
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         try { return Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.ANSICodePage); }
         catch { return Encoding.GetEncoding(1252); }
+    }
+
+    /// <summary>One plain sentence for a file that could not be read; the exception's own text stays out.</summary>
+    internal static string OpenFailure(string path, Exception ex)
+    {
+        string name = DisplayName(path);
+        // Reading a folder fails as access denied, which would send the user looking for a permission problem.
+        if (Directory.Exists(path))
+            return $"{name} is a folder, not a file.";
+
+        return ex switch
+        {
+            FileNotFoundException or DirectoryNotFoundException => $"Could not find {name}.",
+            UnauthorizedAccessException => $"You do not have permission to open {name}.",
+            IOException io when IsInUse(io) => $"{name} is in use by another program.",
+            _ => $"Could not open {name}.",
+        };
+    }
+
+    internal static string SaveFailure(string path, Exception ex) =>
+        WriteFailure(path, ex) ?? $"Could not save {DisplayName(path)}.";
+
+    internal static string ExportFailure(string path, Exception ex) =>
+        WriteFailure(path, ex) ?? $"Could not export {DisplayName(path)}.";
+
+    private static string? WriteFailure(string path, Exception ex)
+    {
+        string name = DisplayName(path);
+        return ex switch
+        {
+            DirectoryNotFoundException => $"The folder for {name} no longer exists.",
+            UnauthorizedAccessException => $"You do not have permission to save {name} there.",
+            IOException io when IsInUse(io) => $"{name} is in use by another program.",
+            IOException io when (io.HResult & 0xFFFF) is 39 or 112 => $"There is not enough disk space to save {name}.",
+            _ => null,
+        };
+    }
+
+    // ERROR_SHARING_VIOLATION and ERROR_LOCK_VIOLATION.
+    private static bool IsInUse(IOException ex) => (ex.HResult & 0xFFFF) is 32 or 33;
+
+    private static string DisplayName(string path)
+    {
+        string name = Path.GetFileName(path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar));
+        return name.Length > 0 ? name : path;
     }
 
     /// <summary>Returns true if it is safe to discard the given document.</summary>
@@ -357,7 +405,7 @@ public partial class MainWindow
         }
         catch (Exception ex)
         {
-            MessageBox.Show(this, $"Could not export the PDF.\n\n{ex.Message}",
+            MessageBox.Show(this, ExportFailure(dialog.FileName, ex),
                 AppName, MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
