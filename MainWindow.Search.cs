@@ -172,7 +172,7 @@ public partial class MainWindow
         {
             // async void: an escaping exception would take the whole app down, so the
             // search must always end gracefully even if the folder misbehaves.
-            FindResultsHeader.Text = $"Search failed: {ex.Message}";
+            FindResultsHeader.Text = "The search could not be completed.";
         }
     }
 
