@@ -98,11 +98,7 @@ public partial class MainWindow
     {
         try
         {
-            SafeWrite(path, tab.Editor.Text, tab.Encoding);
-            tab.FilePath = path;
-            tab.Disk = DiskStamp.Of(path);
-            tab.ChangedOnDisk = false;
-            tab.IsDirty = false;
+            WriteTab(tab, path, FileOps.Real);
             AddRecentFile(path);
             if (ReferenceEquals(tab, Active))
                 UpdateTitle();
@@ -116,9 +112,19 @@ public partial class MainWindow
         }
     }
 
+    /// <summary>Writes the tab's text to the path and marks the tab saved there.</summary>
+    internal static void WriteTab(DocumentTab tab, string path, FileOps files)
+    {
+        SafeWrite(path, tab.Editor.Text, tab.Encoding, files);
+        tab.FilePath = path;
+        tab.Disk = DiskStamp.Of(path);
+        tab.ChangedOnDisk = false;
+        tab.IsDirty = false;
+    }
+
     /// <summary>Writes to a temp file in the same directory then atomically swaps it in,
     /// so an interrupted or failed write can never truncate the existing file.</summary>
-    private static void SafeWrite(string path, string text, Encoding encoding)
+    internal static void SafeWrite(string path, string text, Encoding encoding, FileOps files)
     {
         string full = Path.GetFullPath(path);
         string directory = Path.GetDirectoryName(full) ?? Directory.GetCurrentDirectory();
@@ -127,11 +133,11 @@ public partial class MainWindow
 
         try
         {
-            File.WriteAllText(temp, text, encoding);
+            files.WriteText(temp, text, encoding);
             if (File.Exists(full))
-                File.Replace(temp, full, destinationBackupFileName: null);
+                files.Replace(temp, full);
             else
-                File.Move(temp, full);
+                files.Move(temp, full, overwrite: false);
         }
         finally
         {
