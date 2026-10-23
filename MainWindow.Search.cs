@@ -1,7 +1,9 @@
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
 
 namespace Jester;
@@ -174,6 +176,32 @@ public partial class MainWindow
             // search must always end gracefully even if the folder misbehaves.
             FindResultsHeader.Text = "The search could not be completed.";
         }
+
+        FocusFindResults();
+    }
+
+    // The editor keeps Tab for indenting, so the list takes focus itself, or the keyboard could never reach it.
+    private void FocusFindResults()
+    {
+        if (!IsActive || FindResultsPanel.Visibility != Visibility.Visible)
+            return;
+
+        if (FindResultsList.Items.Count == 0)
+        {
+            FindResultsList.Focus();
+            return;
+        }
+
+        FindResultsList.SelectedIndex = 0;
+        FindResultsList.ScrollIntoView(FindResultsList.SelectedItem);
+        // The first item exists after the next layout pass; focus on it lets the arrows move from there.
+        Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+        {
+            if (FindResultsList.ItemContainerGenerator.ContainerFromIndex(0) is ListBoxItem item)
+                item.Focus();
+            else
+                FindResultsList.Focus();
+        });
     }
 
     private static List<FindResult> SearchFolder(
@@ -281,8 +309,25 @@ public partial class MainWindow
         return Math.Min(index + (column - 1), text.Length);
     }
 
-    private void CloseFindResults_Click(object sender, RoutedEventArgs e) =>
+    private void CloseFindResults_Click(object sender, RoutedEventArgs e) => CloseFindResults();
+
+    private void FindResultsPanel_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            e.Handled = true;
+            CloseFindResults();
+        }
+    }
+
+    private void CloseFindResults()
+    {
+        // Focus inside a collapsed panel would leave the keyboard nowhere, so it goes back to the document.
+        bool hadFocus = FindResultsPanel.IsKeyboardFocusWithin;
         FindResultsPanel.Visibility = Visibility.Collapsed;
+        if (hadFocus)
+            ActiveEditor?.Focus();
+    }
 
     // ------------------------------------------------------------------- Go To
 
