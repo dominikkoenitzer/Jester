@@ -112,19 +112,29 @@ public partial class MainWindow
         if (ActiveEditor is not { } ed)
             return;
 
-        string selected = ed.SelectedText;
-        if (ed.SelectionLength > 0 && !selected.Contains('\n') && !selected.Contains('\r'))
-            FindBar.SearchText = selected;
-        else if (_searchText.Length > 0 && FindBar.SearchText.Length == 0)
-            FindBar.SearchText = _searchText;
-
-        FindBar.ShowReplace(replaceMode);
-        FindBar.MatchCase = _matchCase;
-        FindBar.WrapAround = _wrapAround;
-        FindBar.ShowStatus("");
+        PrepareFindPanel(FindBar, ed, replaceMode, _searchText, _matchCase, _wrapAround);
         FindBar.Visibility = Visibility.Visible;
         // The panel is laid out on the next pass; its box takes the focus once it is there.
         Dispatcher.BeginInvoke(FindBar.FocusSearchBox, DispatcherPriority.Input);
+    }
+
+    /// <summary>Fills the find panel for Ctrl+F and Ctrl+H; a panel already open keeps the options ticked there.</summary>
+    internal static void PrepareFindPanel(
+        FindPanel bar, TextEditor ed, bool replaceMode, string lastSearch, bool matchCase, bool wrapAround)
+    {
+        string selected = ed.SelectedText;
+        if (ed.SelectionLength > 0 && !selected.Contains('\n') && !selected.Contains('\r'))
+            bar.SearchText = selected;
+        else if (lastSearch.Length > 0 && bar.SearchText.Length == 0)
+            bar.SearchText = lastSearch;
+
+        bar.ShowReplace(replaceMode);
+        if (bar.Visibility != Visibility.Visible)
+        {
+            bar.MatchCase = matchCase;
+            bar.WrapAround = wrapAround;
+        }
+        bar.ShowStatus("");
     }
 
     /// <summary>Hides the find panel and puts the focus back in the text.</summary>
