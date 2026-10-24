@@ -37,7 +37,7 @@ public partial class MainWindow : ThemedWindow
     private bool _showLineNumbers = true;
     private bool _autoIndent = true;
 
-    // Last-used search settings, shared between the Find/Replace dialog and F3.
+    // Last-used search settings, shared between the find panel and F3.
     private string _searchText = "";
     private bool _matchCase;
     private bool _wrapAround = true;
