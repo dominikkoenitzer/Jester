@@ -85,6 +85,9 @@ public partial class MainWindow
 
     private void FindNextFromMenu(bool searchDown)
     {
+        var panel = FindBar.IsVisible ? (FindBar.SearchText, FindBar.MatchCase, FindBar.WrapAround) : ((string, bool, bool)?)null;
+        (_searchText, _matchCase, _wrapAround) = RepeatSearch(panel, (_searchText, _matchCase, _wrapAround));
+
         if (string.IsNullOrEmpty(_searchText))
         {
             ShowFindReplace(replaceMode: false);
@@ -94,6 +97,11 @@ public partial class MainWindow
         if (!DoFind(searchDown))
             ReportNotFound(_searchText);
     }
+
+    /// <summary>What F3 looks for: the text and options in the open panel, else the last search.</summary>
+    internal static (string Text, bool MatchCase, bool WrapAround) RepeatSearch(
+        (string Text, bool MatchCase, bool WrapAround)? panel, (string Text, bool MatchCase, bool WrapAround) last) =>
+        panel is { Text.Length: > 0 } open ? open : last;
 
     private void ReportNotFound(string search)
     {
