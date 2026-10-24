@@ -91,20 +91,19 @@ public partial class MainWindow
             return;
         }
 
-        if (!DoFind(searchDown))
-            ReportNotFound(_searchText);
+        bool found = DoFind(searchDown);
+        if (!ReportInFindPanel(FindBar, found) && !found)
+            MessageBox.Show(this, $"Cannot find \"{_searchText}\".",
+                AppName, MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
-    private void ReportNotFound(string search)
+    /// <summary>With the panel open the note goes there, as it does for its own buttons; false when it is closed.</summary>
+    internal static bool ReportInFindPanel(FindPanel bar, bool found)
     {
-        // With the panel open the note goes there, as it does for its own buttons.
-        if (FindBar.IsVisible)
-        {
-            FindBar.ShowStatus("No results");
-            return;
-        }
-        MessageBox.Show(this, $"Cannot find \"{search}\".",
-            AppName, MessageBoxButton.OK, MessageBoxImage.Information);
+        if (bar.Visibility != Visibility.Visible)
+            return false;
+        bar.ShowStatus(found ? "" : "No results");
+        return true;
     }
 
     private void ShowFindReplace(bool replaceMode)

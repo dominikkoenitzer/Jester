@@ -5,7 +5,7 @@ using Xunit;
 namespace Jester.Tests;
 
 /// <summary>
-/// The find panel as Ctrl+F and Ctrl+H leave it. The panel is built without the
+/// The find panel as Ctrl+F, Ctrl+H and F3 leave it. The panel is built without the
 /// app's resources, so its close button style is looked up dynamically.
 /// </summary>
 public class FindPanelTests
@@ -33,5 +33,33 @@ public class FindPanelTests
         Assert.Equal("cat", bar.SearchText);
         Assert.True(bar.MatchCase);
         Assert.False(bar.WrapAround);
+    });
+
+    [Fact]
+    public void AMatchFromF3ClearsAnOldNoResults() => StaThread.Run(() =>
+    {
+        var bar = new FindPanel { Visibility = Visibility.Visible };
+        bar.ShowStatus("No results");
+
+        Assert.True(MainWindow.ReportInFindPanel(bar, found: true));
+        Assert.Equal("", bar.StatusText.Text);
+    });
+
+    [Fact]
+    public void AMissFromF3ShowsInTheOpenPanel() => StaThread.Run(() =>
+    {
+        var bar = new FindPanel { Visibility = Visibility.Visible };
+
+        Assert.True(MainWindow.ReportInFindPanel(bar, found: false));
+        Assert.Equal("No results", bar.StatusText.Text);
+    });
+
+    [Fact]
+    public void AMissFromF3WithThePanelClosedIsLeftToTheWindow() => StaThread.Run(() =>
+    {
+        var bar = new FindPanel { Visibility = Visibility.Collapsed };
+
+        Assert.False(MainWindow.ReportInFindPanel(bar, found: false));
+        Assert.Equal("", bar.StatusText.Text);
     });
 }
