@@ -50,7 +50,7 @@
                     ToolTip="Find Previous (Shift+F3)" Click="Previous_Click" />
             <Button Grid.Row="0" Grid.Column="2" x:Name="NextButton" Content="Next"
                     ToolTip="Find Next (F3)" Click="Next_Click" />
-            <Button Grid.Row="0" Grid.Column="3" Style="{StaticResource TabCloseButton}" Width="28" Height="28"
+            <Button Grid.Row="0" Grid.Column="3" Style="{DynamicResource TabCloseButton}" Width="28" Height="28"
                     Margin="6,0,0,0" FontSize="10" Content="&#xE8BB;" Foreground="{DynamicResource ChromeTextBrush}"
                     ToolTip="Close (Esc)" AutomationProperties.Name="Close" Click="Close_Click" />
 
