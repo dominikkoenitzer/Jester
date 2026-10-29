@@ -95,7 +95,7 @@ The executable lands in `bin/Release/net10.0-windows/win-x64/publish/Jester.exe`
 dotnet test Jester.sln
 ```
 
-247 xunit tests cover the parts that work without a window: find/replace,
+252 xunit tests cover the parts that work without a window: find/replace,
 settings persistence, the command table, file encodings and line endings, the
 session that keeps unsaved tabs, the line index behind the status bar, and the
 editor's own edits, gutter and current-line highlight, laid out with no window.
