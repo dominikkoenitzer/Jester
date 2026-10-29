@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -271,14 +272,15 @@ public partial class MainWindow : ThemedWindow
         return RestoredActiveTab(_docs.Select(d => d.FilePath).ToList(), _settings.OpenFiles, _settings.ActiveTab);
     }
 
-    /// <summary>Opens a file in a new tab, or skips it if it has gone or cannot be read.</summary>
-    private DocumentTab? OpenStartupFile(string path)
+    /// <summary>Opens a file in a new tab, or skips it if it has gone or cannot be read. Without
+    /// an encoding, the file's own is detected.</summary>
+    private DocumentTab? OpenStartupFile(string path, Encoding? kept = null)
     {
         if (!File.Exists(path))
             return null;
         try
         {
-            var (text, encoding) = ReadFile(path);
+            var (text, encoding) = kept is null ? ReadFile(path) : ReadFile(path, kept);
             var tab = CreateEmptyTab(select: false);
             LoadInto(tab, text, Path.GetFullPath(path), encoding);
             return tab;

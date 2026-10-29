@@ -99,7 +99,8 @@ public partial class MainWindow
     {
         if (!stored.IsDirty)
         {
-            var saved = stored.Path is null ? null : OpenStartupFile(stored.Path);
+            var saved = stored.Path is null ? null
+                : OpenStartupFile(stored.Path, SessionState.KeptEncoding(stored, DiskStamp.Of(stored.Path)));
             if (saved is not null)
                 RestoreCaret(saved.View, stored.Caret);
             return saved is not null;
