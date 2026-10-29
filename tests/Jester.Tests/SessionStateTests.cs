@@ -274,6 +274,28 @@ public class SessionStateTests
         Assert.False(SessionState.ChangedOnDisk(Edited(null, "x"), Stamp));
     }
 
+    [Fact]
+    public void AnUnchangedSavedFileKeepsTheEncodingItWasReadIn()
+    {
+        var saved = Saved(A);
+        saved.Disk = Stamp;
+        saved.CodePage = 1252;
+
+        Assert.Equal(1252, SessionState.KeptEncoding(saved, Stamp with { })?.CodePage);
+    }
+
+    [Fact]
+    public void ASavedFileThatChangedOrHasNoStampIsDetectedAfresh()
+    {
+        var saved = Saved(A);
+        saved.CodePage = 1252;
+        Assert.Null(SessionState.KeptEncoding(saved, Stamp));
+
+        saved.Disk = Stamp;
+        Assert.Null(SessionState.KeptEncoding(saved, Stamp with { Length = 43 }));
+        Assert.Null(SessionState.KeptEncoding(saved, null));
+    }
+
     // ---------------------------------------------------------- active tab
 
     [Fact]
