@@ -51,44 +51,34 @@ public class PdfExportTests : IDisposable
     public void APdfReachesTheDiskBeforeItReplacesTheOldOne()
     {
         string path = Path.Combine(_dir, "a.pdf");
-        File.WriteAllBytes(path, "%PDF-1.7 old"u8.ToArray());
-        var files = new RecordingOps();
+        byte[] old = "%PDF-1.7 old"u8.ToArray();
+        File.WriteAllBytes(path, old);
+        var files = new FlushRecordingOps(path);
 
         PdfExporter.Export(path, "text", "a.txt", "Consolas", 11, files);
 
-        Assert.Equal(["flush", "replace"], files.Calls);
+        Assert.Equal(old, Assert.Single(files.TargetAtFlush));
         Assert.Equal("%PDF-"u8.ToArray(), File.ReadAllBytes(path)[..5]);
         Assert.Equal([path], Directory.GetFiles(_dir));
     }
 
-    /// <summary>Notes each flush to disk and each replace or move, in order.</summary>
-    private sealed class RecordingOps : FileOps
+    /// <summary>Notes what the target file holds at each flush to disk.</summary>
+    private sealed class FlushRecordingOps(string target) : FileOps
     {
-        public List<string> Calls { get; } = new();
+        public List<byte[]> TargetAtFlush { get; } = new();
 
-        public override FileStream Create(string path) => new RecordingStream(path, Calls);
-
-        public override void Replace(string source, string target)
-        {
-            Calls.Add("replace");
-            base.Replace(source, target);
-        }
-
-        public override void Move(string source, string target, bool overwrite)
-        {
-            Calls.Add("move");
-            base.Move(source, target, overwrite);
-        }
+        public override FileStream Create(string path) =>
+            new RecordingStream(path, () => TargetAtFlush.Add(File.ReadAllBytes(target)));
     }
 
-    private sealed class RecordingStream(string path, List<string> calls)
+    private sealed class RecordingStream(string path, Action flushed)
         : FileStream(path, FileMode.Create, FileAccess.Write, FileShare.Read)
     {
         public override void Flush(bool flushToDisk)
         {
-            if (flushToDisk)
-                calls.Add("flush");
             base.Flush(flushToDisk);
+            if (flushToDisk)
+                flushed();
         }
     }
 }
