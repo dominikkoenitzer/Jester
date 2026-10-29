@@ -292,6 +292,75 @@ public class FileEncodingTests : IDisposable
         Assert.Equal("Grüsse", result.Preview);
     }
 
+    // At most 500 characters of the line, plus an ellipsis at each end that was cut.
+    private const int LongestPreview = 502;
+
+    [Fact]
+    public void FindInFilesKeepsAShortPreviewAroundTheMatchOnAVeryLongLine()
+    {
+        string line = new string('x', 600_000) + "needle" + new string('y', 399_994);
+        File.WriteAllText(Path.Combine(_dir, "min.js"), line);
+
+        var result = Assert.Single(MainWindow.SearchFolder(_dir, "needle", new[] { "*" }, false, false));
+
+        Assert.Equal(600_001, result.Column);
+        Assert.InRange(result.Preview.Length, 1, LongestPreview);
+        Assert.Matches("^…x+needley+…$", result.Preview);
+    }
+
+    [Fact]
+    public void FindInFilesStartsTheLongPreviewAtTheLineWhenTheMatchIsNearIt()
+    {
+        File.WriteAllText(Path.Combine(_dir, "start.js"), "  needle" + new string('y', 1_000_000));
+        File.WriteAllText(Path.Combine(_dir, "end.js"), new string('x', 1_000_000) + "needle  ");
+
+        var results = MainWindow.SearchFolder(_dir, "needle", new[] { "*" }, false, false);
+
+        Assert.Equal(2, results.Count);
+        var start = results.Single(r => r.FilePath.EndsWith("start.js", StringComparison.Ordinal));
+        var end = results.Single(r => r.FilePath.EndsWith("end.js", StringComparison.Ordinal));
+        Assert.InRange(start.Preview.Length, 1, LongestPreview);
+        Assert.Matches("^needley+…$", start.Preview);
+        Assert.InRange(end.Preview.Length, 1, LongestPreview);
+        Assert.Matches("^…x+needle$", end.Preview);
+    }
+
+    [Fact]
+    public void FindInFilesNeverCutsACharacterInHalfForThePreview()
+    {
+        string pairs = string.Concat(Enumerable.Repeat("😀", 50_000));
+        // One more character before or after the match moves each cut by one, onto both halves of a pair.
+        File.WriteAllLines(Path.Combine(_dir, "emoji.txt"), new[]
+        {
+            pairs + "needle" + pairs,
+            pairs + "aneedle" + pairs,
+            pairs + "needleb" + pairs,
+            pairs + "aneedleb" + pairs,
+        });
+
+        var results = MainWindow.SearchFolder(_dir, "needle", new[] { "*" }, false, false);
+
+        Assert.Equal(4, results.Count);
+        var strict = new UTF8Encoding(false, throwOnInvalidBytes: true);
+        foreach (var result in results)
+        {
+            Assert.InRange(result.Preview.Length, 1, LongestPreview);
+            Assert.Contains("needle", result.Preview);
+            strict.GetBytes(result.Preview);
+        }
+    }
+
+    [Fact]
+    public void FindInFilesKeepsTheWholeTrimmedTextOfANormalLine()
+    {
+        string full = new string('z', 494) + "needle";
+        File.WriteAllLines(Path.Combine(_dir, "code.cs"), new[] { "\t  var a = needle(); // note  ", full });
+
+        var results = MainWindow.SearchFolder(_dir, "needle", new[] { "*" }, false, false);
+
+        Assert.Equal(new[] { "var a = needle(); // note", full }, results.Select(r => r.Preview));
+    }
+
     [Fact]
     public void DoesNotTickUtf8InTheMenuForAnAnsiFile()
     {
