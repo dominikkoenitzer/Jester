@@ -199,7 +199,7 @@ public partial class MainWindow : ThemedWindow
 
     /// <summary>The named font, or Consolas when this PC does not have it: Windows 10 has
     /// no Cascadia Mono, and WPF would otherwise draw the text in a proportional font.</summary>
-    private static FontFamily InstalledFont(string name)
+    internal static FontFamily InstalledFont(string name)
     {
         bool installed = Fonts.SystemFontFamilies.Any(f => string.Equals(f.Source, name, StringComparison.OrdinalIgnoreCase));
         try { return new FontFamily(installed ? name : "Consolas"); }
