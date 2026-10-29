@@ -67,7 +67,8 @@ public partial class MainWindow : ThemedWindow
         // Esc in the text closes the find panel too; in the Find in Files results it closes those.
         PreviewKeyDown += (_, e) =>
         {
-            if (e.Key == Key.Escape && FindBar.IsVisible && !FindResultsPanel.IsKeyboardFocusWithin)
+            if (e.Key == Key.Escape
+                && EscapeClosesFindPanel(FindBar.IsVisible, FindResultsPanel.IsKeyboardFocusWithin, e.OriginalSource as DependencyObject))
             {
                 e.Handled = true;
                 CloseFindPanel();
@@ -83,6 +84,10 @@ public partial class MainWindow : ThemedWindow
             StateChanged += (_, _) => ScheduleSettingsSave();
         };
     }
+
+    /// <summary>Whether Esc, pressed with the keyboard focus on <paramref name="focused"/>, closes the find panel.</summary>
+    internal static bool EscapeClosesFindPanel(bool panelVisible, bool resultsHaveFocus, DependencyObject? focused)
+        => panelVisible && !resultsHaveFocus;
 
     private DocumentTab? Active => Tabs.SelectedItem as DocumentTab;
     private TextEditor? ActiveEditor => Active?.Editor;
