@@ -223,6 +223,17 @@ public class SessionStateTests
         Assert.Equal(1, merged.ActiveTab);
     }
 
+    [Fact]
+    public void ANullActiveTabWithATabAfterItPassesTheFocusToThatTab()
+    {
+        var stored = Stored("""{ "ActiveTab": 1, "Tabs": [{ "Text": "before" }, null, { "Text": "after" }] }""");
+
+        var merged = SessionState.Merge(new[] { stored });
+
+        Assert.Equal(new[] { "before", "after" }, merged.Tabs.Select(t => t.Text));
+        Assert.Equal(1, merged.ActiveTab);
+    }
+
     // ------------------------------------------------------ changed on disk
 
     [Fact]
