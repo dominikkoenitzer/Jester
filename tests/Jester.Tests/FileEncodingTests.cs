@@ -162,6 +162,23 @@ public class FileEncodingTests : IDisposable
     }
 
     [Theory]
+    [InlineData("windows-1252")]
+    [InlineData("utf-16le")]
+    public void AReopenedFileComesBackInTheSameEncodingAfterARestart(string kind)
+    {
+        string path = Write(Encoding.UTF8.GetBytes("Grüß"));
+        var (text, encoding) = MainWindow.ReadFile(path, MainWindow.ReopenEncoding(kind));
+        var stored = SessionState.Capture(path, "", isDirty: false, 0, encoding, DiskStamp.Of(path))!;
+
+        var kept = SessionState.KeptEncoding(stored, DiskStamp.Of(path));
+        var (restored, restoredEncoding) = kept is null ? MainWindow.ReadFile(path) : MainWindow.ReadFile(path, kept);
+
+        Assert.NotEqual("Grüß", text);
+        Assert.Equal(text, restored);
+        Assert.Equal(encoding.CodePage, restoredEncoding.CodePage);
+    }
+
+    [Theory]
     [InlineData("utf-8-bom")]
     [InlineData("utf-16le")]
     [InlineData("utf-16be")]

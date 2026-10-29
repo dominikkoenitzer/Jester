@@ -159,6 +159,13 @@ internal static class SessionState
     public static bool ChangedOnDisk(SessionTab tab, DiskStamp? now) =>
         tab.Path is not null && tab.IsDirty && tab.Disk != now;
 
+    /// <summary>The encoding to read a saved file in on start, or null to detect it afresh. A
+    /// file reopened in another encoding keeps it for as long as the file is unchanged on disk.</summary>
+    public static Encoding? KeptEncoding(SessionTab tab, DiskStamp? now) =>
+        tab.Path is not null && !tab.IsDirty && tab.Disk is not null && tab.Disk == now
+            ? ToEncoding(tab.CodePage, tab.Bom)
+            : null;
+
     /// <summary>The tab to select once the restored tabs are open, given which of the
     /// stored tabs could be opened. A tab that failed passes the focus to the next one.</summary>
     public static int RestoredActive(IReadOnlyList<bool> opened, int active)
