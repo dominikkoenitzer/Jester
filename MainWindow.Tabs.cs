@@ -39,6 +39,7 @@ public partial class MainWindow
         _isLoadingFile = true;
         // Also puts the caret at the start and begins a new undo history.
         tab.Editor.Text = text;
+        tab.View.Lines.Chosen = null; // A choice made in the empty tab is not the file's.
         tab.Editor.ScrollToHome();
         _isLoadingFile = false;
 

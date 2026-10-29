@@ -40,8 +40,13 @@ internal sealed class LineIndex
     /// <summary>Number of lines, at least one.</summary>
     public int Count => _document.LineCount;
 
-    /// <summary>"CRLF", "LF" or "CR": CRLF if any pair exists, else LF, else CR, else CRLF.</summary>
-    public string LineEnding => _crlf > 0 ? "CRLF" : _lf > 0 ? "LF" : _cr > 0 ? "CR" : "CRLF";
+    /// <summary>"CRLF", "LF" or "CR": CRLF if any pair exists, else LF, else CR, else the
+    /// chosen ending, else CRLF.</summary>
+    public string LineEnding => _crlf > 0 ? "CRLF" : _lf > 0 ? "LF" : _cr > 0 ? "CR" : Chosen ?? "CRLF";
+
+    /// <summary>The ending last picked from the menu. A text with no break cannot show it, so
+    /// it is kept here and used until the text holds a break of its own.</summary>
+    public string? Chosen { get; set; }
 
     /// <summary>The 1-based line holding a character index; past the end is the last line.</summary>
     public int LineAt(int charIndex) => _document.GetLineByOffset(Math.Clamp(charIndex, 0, Length)).LineNumber;

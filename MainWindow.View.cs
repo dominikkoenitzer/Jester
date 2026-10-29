@@ -1,7 +1,6 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using ICSharpCode.AvalonEdit;
 
 namespace Jester;
 
@@ -60,16 +59,20 @@ public partial class MainWindow
 
     private void LineEnding_Click(object sender, RoutedEventArgs e)
     {
-        if (ActiveEditor is not { } ed || sender is not MenuItem { Tag: string kind })
+        if (Active is not { } tab || sender is not MenuItem { Tag: string kind })
             return;
 
-        ConvertLineEndings(ed, kind);
+        ConvertLineEndings(tab.View, kind);
+        // A text with no break does not change, so nothing else updates the status bar.
+        UpdateLineEndingInfo();
         SyncFormatMenus();
     }
 
     /// <summary>Makes every line break <paramref name="kind"/>: "CRLF", "LF" or "CR".</summary>
-    internal static void ConvertLineEndings(TextEditor ed, string kind)
+    internal static void ConvertLineEndings(EditorView view, string kind)
     {
+        view.Lines.Chosen = kind;
+        var ed = view.Editor;
         string text = ed.Text;
         string normalized = text.Replace("\r\n", "\n").Replace('\r', '\n');
         string converted = kind switch
