@@ -52,9 +52,12 @@ internal sealed class SessionSnapshot : IJsonOnDeserialized
     // A hand-edited or damaged session file can hold null for the tab list or a tab; read those as missing.
     void IJsonOnDeserialized.OnDeserialized()
     {
-        // The active tab is a position in Tabs, so it moves back past each dropped tab.
-        if (Tabs is not null)
-            ActiveTab -= Tabs.Take(Math.Max(0, ActiveTab)).Count(t => t is null);
+        // The active tab is a position in Tabs, so it moves back past each dropped tab; a dropped last tab passes it to the one before.
+        if (Tabs is not null && ActiveTab >= 0 && ActiveTab < Tabs.Count)
+        {
+            int kept = Tabs.Count(t => t is not null);
+            ActiveTab = Math.Clamp(ActiveTab - Tabs.Take(ActiveTab).Count(t => t is null), 0, Math.Max(0, kept - 1));
+        }
         Tabs = Tabs?.Where(t => t is not null).ToList() ?? new();
     }
 }
