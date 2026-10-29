@@ -116,6 +116,48 @@ public class SessionStoreTests : IDisposable
         Assert.True(File.Exists(bad));
     }
 
+    private void WriteSessionFile(string json)
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, Guid.NewGuid().ToString("N") + ".json"), json);
+    }
+
+    [Fact]
+    public void ANullTabListComesBackAsNoTabsAndIsGoneAfterTheNextWrite()
+    {
+        WriteSessionFile("""{ "SavedUtc": "2026-10-01T12:00:00Z", "ActiveTab": 0, "Tabs": null }""");
+
+        using var store = new SessionStore(_dir);
+        var merged = SessionState.Merge(store.ClaimOrphans());
+
+        Assert.Empty(merged.Tabs);
+        Assert.True(Write(store, merged));
+        Assert.Equal(store.Path, Directory.GetFiles(_dir, "*.json").Single());
+    }
+
+    [Fact]
+    public void ANullTabComesBackAsNoTab()
+    {
+        WriteSessionFile("""{ "Tabs": [null] }""");
+
+        using var store = new SessionStore(_dir);
+        var merged = SessionState.Merge(store.ClaimOrphans());
+
+        Assert.Empty(merged.Tabs);
+    }
+
+    [Fact]
+    public void ANullTabBesideARealOneKeepsTheRealTabActive()
+    {
+        WriteSessionFile("""{ "ActiveTab": 2, "Tabs": [{ "Text": "first" }, null, { "Text": "keep me" }] }""");
+
+        using var store = new SessionStore(_dir);
+        var merged = SessionState.Merge(store.ClaimOrphans());
+
+        Assert.Equal(new[] { "first", "keep me" }, merged.Tabs.Select(t => t.Text));
+        Assert.Equal(1, merged.ActiveTab);
+    }
+
     [Fact]
     public void AnOlderSnapshotNeverOverwritesANewerOne()
     {
