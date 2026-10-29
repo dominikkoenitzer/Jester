@@ -294,7 +294,7 @@ public partial class MainWindow
                         Column = col + 1,
                         Length = search.Length,
                         Location = $"{Path.GetFileName(file)}:{i + 1}",
-                        Preview = lines[i].Trim(),
+                        Preview = PreviewOf(lines[i], col),
                     });
 
                     if (results.Count >= MaxFindResults)
@@ -308,6 +308,24 @@ public partial class MainWindow
         }
 
         return results;
+    }
+
+    /// <summary>The trimmed line, or for a long one the part from a little before the match, with "…" where it was cut.</summary>
+    private static string PreviewOf(string line, int col)
+    {
+        string text = line.Trim();
+        if (text.Length <= MaxPreviewLength)
+            return text;
+
+        int at = Math.Clamp(col - (line.Length - line.TrimStart().Length), 0, text.Length);
+        int end = Math.Min(text.Length, Math.Max(0, at - PreviewLead) + MaxPreviewLength);
+        int start = end - MaxPreviewLength;
+        // A cut between the two halves of a surrogate pair would show as a broken character.
+        if (start > 0 && char.IsLowSurrogate(text[start]))
+            start++;
+        if (end < text.Length && char.IsLowSurrogate(text[end]))
+            end--;
+        return (start > 0 ? "…" : "") + text[start..end] + (end < text.Length ? "…" : "");
     }
 
     private void FindResults_DoubleClick(object sender, MouseButtonEventArgs e)
