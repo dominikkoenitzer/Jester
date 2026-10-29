@@ -200,6 +200,29 @@ public class SessionStateTests
         Assert.Equal(1, merged.ActiveTab);
     }
 
+    [Fact]
+    public void ANullTabBeforeTheActiveTabKeepsItActiveWithTabsAfterIt()
+    {
+        var stored = Stored("""{ "ActiveTab": 1, "Tabs": [null, { "Text": "active" }, { "Text": "after" }] }""");
+
+        var merged = SessionState.Merge(new[] { stored });
+
+        Assert.Equal(new[] { "active", "after" }, merged.Tabs.Select(t => t.Text));
+        Assert.Equal(0, merged.ActiveTab);
+    }
+
+    [Fact]
+    public void ANullActiveTabAtTheEndLeavesTheTabBeforeItActive()
+    {
+        var stored = Stored("""{ "SavedUtc": "2026-09-29T12:05:00Z", "ActiveTab": 1, "Tabs": [{ "Text": "draft" }, null] }""");
+
+        var merged = SessionState.Merge(new[] { Session(1, 0, Saved(A)), stored });
+
+        Assert.Equal(new[] { A, null }, merged.Tabs.Select(t => t.Path));
+        Assert.Equal("draft", merged.Tabs[1].Text);
+        Assert.Equal(1, merged.ActiveTab);
+    }
+
     // ------------------------------------------------------ changed on disk
 
     [Fact]
