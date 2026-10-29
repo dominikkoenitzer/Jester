@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -87,7 +88,18 @@ public partial class MainWindow : ThemedWindow
 
     /// <summary>Whether Esc, pressed with the keyboard focus on <paramref name="focused"/>, closes the find panel.</summary>
     internal static bool EscapeClosesFindPanel(bool panelVisible, bool resultsHaveFocus, DependencyObject? focused)
-        => panelVisible && !resultsHaveFocus;
+        => panelVisible && !resultsHaveFocus && !IsInMenu(focused);
+
+    // A menu with the keyboard keeps Esc; logical parents come first, since a submenu's visual tree stops at its popup.
+    private static bool IsInMenu(DependencyObject? element)
+    {
+        for (var node = element; node is not null; node = LogicalTreeHelper.GetParent(node) ?? (node is Visual ? VisualTreeHelper.GetParent(node) : null))
+        {
+            if (node is MenuBase)
+                return true;
+        }
+        return false;
+    }
 
     private DocumentTab? Active => Tabs.SelectedItem as DocumentTab;
     private TextEditor? ActiveEditor => Active?.Editor;
