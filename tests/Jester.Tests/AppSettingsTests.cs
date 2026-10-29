@@ -162,6 +162,53 @@ public class AppSettingsTests : IDisposable
     }
 
     [Fact]
+    public void NullListsAreReadAsEmpty()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(_path, """
+            { "WindowWidth": 1024, "RecentFiles": null, "OpenFiles": null }
+            """);
+
+        var loaded = AppSettings.LoadFrom(_path);
+
+        Assert.Empty(loaded.RecentFiles);
+        Assert.Empty(loaded.OpenFiles);
+        Assert.Equal(1024, loaded.WindowWidth);
+    }
+
+    [Fact]
+    public void NullEntriesAreDroppedAndTheActiveTabKeepsItsFile()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(_path, """
+            {
+              "RecentFiles": [null, "C:\\notes\\a.txt", null],
+              "OpenFiles": [null, "C:\\notes\\b.txt", null, "C:\\notes\\c.txt"],
+              "ActiveTab": 3
+            }
+            """);
+
+        var loaded = AppSettings.LoadFrom(_path);
+
+        Assert.Equal(new[] { @"C:\notes\a.txt" }, loaded.RecentFiles);
+        Assert.Equal(new[] { @"C:\notes\b.txt", @"C:\notes\c.txt" }, loaded.OpenFiles);
+        Assert.Equal(1, loaded.ActiveTab);
+    }
+
+    [Fact]
+    public void ANullFontNameStillGivesTheEditorAFont()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(_path, """
+            { "FontFamily": null }
+            """);
+
+        var loaded = AppSettings.LoadFrom(_path);
+
+        Assert.Equal("Consolas", MainWindow.InstalledFont(loaded.FontFamily).Source);
+    }
+
+    [Fact]
     public void SavingToAnUnwritablePathDoesNotThrow()
     {
         // Shutdown calls Save(). A locked or read-only profile must not turn

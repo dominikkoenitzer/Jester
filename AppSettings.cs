@@ -50,7 +50,7 @@ internal sealed class AppSettings
             {
                 var loaded = JsonSerializer.Deserialize<AppSettings>(File.ReadAllText(path));
                 if (loaded is not null)
-                    return loaded;
+                    return loaded.WithoutNulls();
             }
         }
         catch
@@ -58,6 +58,17 @@ internal sealed class AppSettings
             // Corrupt or unreadable settings: start clean rather than failing to launch.
         }
         return new AppSettings();
+    }
+
+    // A hand-edited file can hold null for a list or an entry; read those as missing.
+    private AppSettings WithoutNulls()
+    {
+        // The active tab is a position in OpenFiles, so it moves back past each dropped entry.
+        if (OpenFiles is not null)
+            ActiveTab -= OpenFiles.Take(Math.Max(0, ActiveTab)).Count(p => p is null);
+        RecentFiles = RecentFiles?.Where(p => p is not null).ToList() ?? new();
+        OpenFiles = OpenFiles?.Where(p => p is not null).ToList() ?? new();
+        return this;
     }
 
     /// <summary>Writes settings to an explicit path. See <see cref="LoadFrom"/>. The JSON
