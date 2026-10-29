@@ -97,7 +97,7 @@ public class EditorEditsTests
         ed.Text = original;
         ed.Select(ed.Document.GetOffset(3, 4), 0); // After "thr".
 
-        MainWindow.ConvertLineEndings(ed, kind);
+        MainWindow.ConvertLineEndings(view, kind);
 
         Assert.Equal(expected, ed.Text);
         Assert.Equal(kind, view.Lines.LineEnding);
@@ -108,15 +108,49 @@ public class EditorEditsTests
         Assert.False(ed.CanUndo);
     });
 
+    [Theory]
+    [InlineData("LF", "\n")]
+    [InlineData("CR", "\r")]
+    [InlineData("CRLF", "\r\n")]
+    public void ALineEndingChosenForTextWithNoBreakIsKept(string kind, string lineBreak) => StaThread.Run(() =>
+    {
+        var view = new EditorView();
+        var ed = view.Editor;
+        ed.Text = "abc";
+
+        MainWindow.ConvertLineEndings(view, kind);
+
+        Assert.Equal("abc", ed.Text);
+        Assert.False(ed.CanUndo);
+        Assert.Equal(kind, view.Lines.LineEnding);
+        Assert.Equal(lineBreak, MainWindow.LineBreakAt(view.Lines.LineEnding, "abc", 3, indent: false));
+    });
+
+    [Fact]
+    public void TheTextsOwnBreaksComeBeforeTheChosenLineEnding() => StaThread.Run(() =>
+    {
+        var view = new EditorView();
+        var document = view.Editor.Document;
+        document.Text = "abc";
+        MainWindow.ConvertLineEndings(view, "LF");
+
+        document.Insert(1, "\r\n");
+        Assert.Equal("CRLF", view.Lines.LineEnding);
+
+        document.Remove(1, 2);
+        Assert.Equal("LF", view.Lines.LineEnding);
+    });
+
     [Fact]
     public void ConvertingToTheSameLineEndingChangesNothing() => StaThread.Run(() =>
     {
-        var ed = new EditorView().Editor;
+        var view = new EditorView();
+        var ed = view.Editor;
         ed.Text = "one\ntwo";
         bool changed = false;
         ed.TextChanged += (_, _) => changed = true;
 
-        MainWindow.ConvertLineEndings(ed, "LF");
+        MainWindow.ConvertLineEndings(view, "LF");
 
         Assert.False(changed);
         Assert.False(ed.CanUndo);
