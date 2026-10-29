@@ -209,15 +209,20 @@ public partial class MainWindow
         return strict;
     }
 
-    /// <summary>Reads a text file, honouring a byte-order mark if present. Without one the
-    /// bytes are UTF-8 only if they are valid UTF-8; otherwise they are read in the ANSI
-    /// code page. The detected encoding is returned so the file round-trips faithfully.</summary>
+    /// <summary>Reads a text file, honouring a byte-order mark if present. With a UTF-8 mark or
+    /// none, the bytes are UTF-8 only if they are valid UTF-8; otherwise they are read in the
+    /// ANSI code page. The detected encoding is returned so the file round-trips faithfully.</summary>
     internal static (string Text, Encoding Encoding) ReadFile(string path)
     {
         byte[] bytes = File.ReadAllBytes(path);
         var strictUtf8 = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
         try
         {
+            // The reader would swap in a UTF-8 decoder that does not throw at a UTF-8 mark, so decode past the mark here.
+            ReadOnlySpan<byte> mark = Encoding.UTF8.Preamble;
+            if (bytes.AsSpan().StartsWith(mark))
+                return (strictUtf8.GetString(bytes, mark.Length, bytes.Length - mark.Length), new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+
             using var reader = new StreamReader(new MemoryStream(bytes), strictUtf8, detectEncodingFromByteOrderMarks: true);
             string text = reader.ReadToEnd();
             // Save with a UTF-8 encoder that does not throw, as before; the strict one is only for reading.
