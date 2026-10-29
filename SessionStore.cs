@@ -124,14 +124,9 @@ internal sealed class SessionStore : IDisposable
                 return false;
             }
 
-            // The adopted tabs are in this session now.
-            foreach (var (path, claim) in _adopted)
-            {
-                try { File.Delete(path); }
-                catch { /* taken over again on the next start, which keeps every word */ }
-                claim.Dispose();
-            }
-            _adopted.Clear();
+            // The adopted tabs are in this session now. A file that cannot be deleted yet stays
+            // claimed, so no other window takes its tabs as well, and is tried again next time.
+            DeleteAdopted();
             return true;
         }
     }
@@ -140,12 +135,22 @@ internal sealed class SessionStore : IDisposable
     {
         lock (_writeGate)
         {
+            if (_written > 0)
+                DeleteAdopted();
             foreach (var (_, claim) in _adopted)
                 claim.Dispose();
             _adopted.Clear();
             _lock?.Dispose();
         }
     }
+
+    private void DeleteAdopted() => _adopted.RemoveAll(adopted =>
+    {
+        try { File.Delete(adopted.Path); }
+        catch { return false; }
+        adopted.Claim.Dispose();
+        return true;
+    });
 
     // Held open with no sharing for as long as a window runs. Windows deletes it when the
     // handle closes, even when the process is killed.

@@ -103,6 +103,54 @@ public class SessionStoreTests : IDisposable
     }
 
     [Fact]
+    public void ATakenSessionThatCannotBeDeletedYetStaysTakenAndGoesOnTheNextWrite()
+    {
+        using (var first = new SessionStore(_dir))
+            Write(first, Session("once"));
+        string oldPath = Directory.GetFiles(_dir, "*.json").Single();
+
+        using var second = new SessionStore(_dir);
+        second.ClaimOrphans();
+        using (new FileStream(oldPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            Assert.True(Write(second, Session("once")));
+
+        using (var third = new SessionStore(_dir))
+            Assert.Empty(third.ClaimOrphans());
+
+        Assert.True(Write(second, Session("once")));
+        Assert.False(File.Exists(oldPath));
+    }
+
+    [Fact]
+    public void ATakenSessionThatCouldNotBeDeletedGoesWhenTheWindowCloses()
+    {
+        using (var first = new SessionStore(_dir))
+            Write(first, Session("once"));
+        string oldPath = Directory.GetFiles(_dir, "*.json").Single();
+
+        var second = new SessionStore(_dir);
+        second.ClaimOrphans();
+        using (new FileStream(oldPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            Assert.True(Write(second, Session("once")));
+        second.Dispose();
+
+        Assert.False(File.Exists(oldPath));
+    }
+
+    [Fact]
+    public void AWindowClosedBeforeItsFirstWriteLeavesTheTakenSessions()
+    {
+        using (var first = new SessionStore(_dir))
+            Write(first, Session("once"));
+
+        using (var second = new SessionStore(_dir))
+            Assert.Single(second.ClaimOrphans());
+
+        using var third = new SessionStore(_dir);
+        Assert.Equal("once", Assert.Single(Assert.Single(third.ClaimOrphans()).Tabs).Text);
+    }
+
+    [Fact]
     public void ASessionThatCannotBeReadIsLeftAlone()
     {
         Directory.CreateDirectory(_dir);
