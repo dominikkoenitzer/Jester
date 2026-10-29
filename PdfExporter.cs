@@ -16,7 +16,11 @@ internal static class PdfExporter
         QuestPDF.Settings.UseSystemFonts = true;
     }
 
-    public static void Export(string path, string text, string documentTitle, string fontFamily, double fontSizePoints)
+    public static void Export(string path, string text, string documentTitle, string fontFamily, double fontSizePoints) =>
+        Export(path, text, documentTitle, fontFamily, fontSizePoints, FileOps.Real);
+
+    internal static void Export(string path, string text, string documentTitle, string fontFamily, double fontSizePoints,
+        FileOps files)
     {
         string family = string.IsNullOrWhiteSpace(fontFamily) ? "Consolas" : fontFamily;
         float size = (float)Math.Clamp(fontSizePoints, 6, 24);
@@ -24,7 +28,7 @@ internal static class PdfExporter
         // Map the editor's logical lines onto PDF lines; long lines wrap to the page.
         string[] lines = text.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
 
-        Document.Create(container =>
+        var document = Document.Create(container =>
         {
             container.Page(page =>
             {
@@ -54,6 +58,14 @@ internal static class PdfExporter
                     t.TotalPages();
                 });
             });
-        }).GeneratePdf(path);
+        });
+
+        // GeneratePdf(path) deletes the old file before it renders, so a failed render would leave an empty one.
+        MainWindow.SafeWrite(path, temp =>
+        {
+            using var stream = files.Create(temp);
+            document.GeneratePdf(stream);
+            stream.Flush(flushToDisk: true);
+        }, files);
     }
 }

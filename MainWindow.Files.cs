@@ -159,7 +159,12 @@ public partial class MainWindow
     /// that cannot hold a character throws <see cref="EncoderFallbackException"/> and leaves
     /// the file as it was, unless the caller allows the replacement.</summary>
     internal static void SafeWrite(string path, string text, Encoding encoding, FileOps files,
-        bool replaceUnmappable = false)
+        bool replaceUnmappable = false) =>
+        SafeWrite(path, temp => files.WriteText(temp, text, replaceUnmappable ? encoding : Strict(encoding)), files);
+
+    /// <summary>Has <paramref name="write"/> fill a temp file in the same directory, then swaps
+    /// it in, so a write that fails part way leaves the existing file as it was.</summary>
+    internal static void SafeWrite(string path, Action<string> write, FileOps files)
     {
         string full = Path.GetFullPath(path);
         string directory = Path.GetDirectoryName(full) ?? Directory.GetCurrentDirectory();
@@ -169,7 +174,7 @@ public partial class MainWindow
         bool onlyCopy = false;
         try
         {
-            files.WriteText(temp, text, replaceUnmappable ? encoding : Strict(encoding));
+            write(temp);
             if (!File.Exists(full))
             {
                 files.Move(temp, full, overwrite: false);
