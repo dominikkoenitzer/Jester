@@ -106,6 +106,32 @@ public class FileEncodingTests : IDisposable
     }
 
     [Fact]
+    public void ReadsValidUtf8AfterAByteOrderMarkAsUtf8WithTheMark()
+    {
+        byte[] bytes = [.. Encoding.UTF8.GetPreamble(), .. Encoding.UTF8.GetBytes("Grüße")];
+        string path = Write(bytes);
+
+        var (text, encoding) = MainWindow.ReadFile(path);
+
+        Assert.Equal("Grüße", text);
+        Assert.Equal("utf-8-bom", MainWindow.EncodingKey(encoding));
+    }
+
+    [Fact]
+    public void AStrayByteAfterAUtf8ByteOrderMarkIsKept()
+    {
+        // The mark claims UTF-8, but 0xE9 between "a" and "b" is not UTF-8, so the file is read as ANSI.
+        byte[] bytes = { 0xEF, 0xBB, 0xBF, 0x61, 0xE9, 0x62 };
+        string path = Write(bytes);
+
+        var (text, _) = WithCulture("de-CH", () => MainWindow.ReadFile(path));
+
+        Assert.DoesNotContain('\uFFFD', text);
+        Assert.Equal("ï»¿aéb", text);
+        Assert.Equal(bytes, WithCulture("de-CH", () => RoundTrip(path)));
+    }
+
+    [Fact]
     public void KeepsUtf16LittleEndian()
     {
         byte[] bytes = [.. Encoding.Unicode.GetPreamble(), .. Encoding.Unicode.GetBytes("Grüße")];
