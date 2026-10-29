@@ -17,6 +17,9 @@ public partial class MainWindow : ThemedWindow
     private const double PointsToDip = 96.0 / 72.0;
     private const int MaxRecentFiles = 10;
     private const int MaxFindResults = 5000;
+    // A Find in Files preview keeps this much of a long line, so a minified file does not lay out megabytes per row.
+    private const int MaxPreviewLength = 500;
+    private const int PreviewLead = 100;
     private static readonly TimeSpan SettingsSaveDelay = TimeSpan.FromMilliseconds(750);
 
     private readonly ObservableCollection<DocumentTab> _docs = new();
