@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -67,7 +68,8 @@ public partial class MainWindow : ThemedWindow
         // Esc in the text closes the find panel too; in the Find in Files results it closes those.
         PreviewKeyDown += (_, e) =>
         {
-            if (e.Key == Key.Escape && FindBar.IsVisible && !FindResultsPanel.IsKeyboardFocusWithin)
+            if (e.Key == Key.Escape
+                && EscapeClosesFindPanel(FindBar.IsVisible, FindResultsPanel.IsKeyboardFocusWithin, e.OriginalSource as DependencyObject))
             {
                 e.Handled = true;
                 CloseFindPanel();
@@ -82,6 +84,21 @@ public partial class MainWindow : ThemedWindow
             SizeChanged += (_, _) => ScheduleSettingsSave();
             StateChanged += (_, _) => ScheduleSettingsSave();
         };
+    }
+
+    /// <summary>Whether Esc, pressed with the keyboard focus on <paramref name="focused"/>, closes the find panel.</summary>
+    internal static bool EscapeClosesFindPanel(bool panelVisible, bool resultsHaveFocus, DependencyObject? focused)
+        => panelVisible && !resultsHaveFocus && !IsInMenu(focused);
+
+    // A menu with the keyboard keeps Esc; logical parents come first, since a submenu's visual tree stops at its popup.
+    private static bool IsInMenu(DependencyObject? element)
+    {
+        for (var node = element; node is not null; node = LogicalTreeHelper.GetParent(node) ?? (node is Visual ? VisualTreeHelper.GetParent(node) : null))
+        {
+            if (node is MenuBase)
+                return true;
+        }
+        return false;
     }
 
     private DocumentTab? Active => Tabs.SelectedItem as DocumentTab;
