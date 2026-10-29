@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.Document;
+using ICSharpCode.AvalonEdit.Editing;
 using Xunit;
 
 namespace Jester.Tests;
@@ -140,6 +141,78 @@ public class EditorEditsTests
         document.Remove(1, 2);
         Assert.Equal("LF", view.Lines.LineEnding);
     });
+
+    [Theory]
+    [InlineData("LF", "")]
+    [InlineData("LF", "abc")]
+    [InlineData("CR", "")]
+    [InlineData("CR", "abc")]
+    [InlineData("CRLF", "")]
+    [InlineData("CRLF", "abc")]
+    public void PastedLinesTakeTheLineEndingChosenForTextWithNoBreak(string kind, string start) => StaThread.Run(() =>
+    {
+        string lineBreak = MainWindow.LineBreakAt(kind, "", 0, indent: false);
+        foreach (string pasted in new[] { "\n", "\r", "\r\n" })
+        {
+            foreach (bool dragDrop in new[] { false, true })
+            {
+                var view = new EditorView();
+                var ed = view.Editor;
+                ed.Text = start;
+                ed.CaretOffset = start.Length;
+                MainWindow.ConvertLineEndings(view, kind);
+
+                Paste(ed.TextArea, "x" + pasted + "y", dragDrop);
+
+                string inserted = "x" + lineBreak + "y";
+                Assert.Equal(start + inserted, ed.Text);
+                Assert.Equal(kind, view.Lines.LineEnding);
+                Assert.Equal(dragDrop ? start.Length : ed.Text.Length, ed.SelectionStart);
+                Assert.Equal(dragDrop ? inserted.Length : 0, ed.SelectionLength);
+
+                Assert.True(ed.Undo());
+                Assert.Equal(start, ed.Text);
+                Assert.Equal(kind, view.Lines.LineEnding);
+                Assert.False(ed.CanUndo);
+            }
+        }
+    });
+
+    [Fact]
+    public void PastedLinesKeepTheBreaksOfATextThatHasThem() => StaThread.Run(() =>
+    {
+        var view = new EditorView();
+        var ed = view.Editor;
+        ed.Text = "a\nb";
+        ed.CaretOffset = 3;
+        MainWindow.ConvertLineEndings(view, "LF");
+
+        Paste(ed.TextArea, "x\r\ny", dragDrop: false);
+
+        Assert.Equal("a\nbx\ny", ed.Text);
+    });
+
+    // The editor's own paste and drop without the clipboard or a mouse: Pasting first, then its insert.
+    private static void Paste(TextArea area, string text, bool dragDrop)
+    {
+        var e = new DataObjectPastingEventArgs(new DataObject(DataFormats.UnicodeText, text), dragDrop, DataFormats.UnicodeText);
+        area.RaiseEvent(e);
+        if (e.CommandCancelled)
+            return;
+
+        var document = area.Document;
+        text = TextUtilities.NormalizeNewLines(text, TextUtilities.GetNewLineFromDocument(document, area.Caret.Line));
+        if (dragDrop)
+        {
+            int offset = area.Caret.Offset;
+            document.Insert(offset, text);
+            area.Selection = Selection.Create(area, offset, offset + text.Length);
+        }
+        else
+        {
+            area.Selection.ReplaceSelectionWithText(text);
+        }
+    }
 
     [Fact]
     public void ConvertingToTheSameLineEndingChangesNothing() => StaThread.Run(() =>
