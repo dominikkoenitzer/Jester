@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Jester;
 
@@ -42,11 +43,23 @@ internal sealed class SessionTab
 }
 
 /// <summary>Every tab of one window, in order, and which one was active.</summary>
-internal sealed class SessionSnapshot
+internal sealed class SessionSnapshot : IJsonOnDeserialized
 {
     public DateTime SavedUtc { get; set; }
     public int ActiveTab { get; set; }
     public List<SessionTab> Tabs { get; set; } = new();
+
+    // A hand-edited or damaged session file can hold null for the tab list or a tab; read those as missing.
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        // The active tab is a position in Tabs, so it moves back past each dropped tab; a dropped last tab passes it to the one before.
+        if (Tabs is not null && ActiveTab >= 0 && ActiveTab < Tabs.Count)
+        {
+            int kept = Tabs.Count(t => t is not null);
+            ActiveTab = Math.Clamp(ActiveTab - Tabs.Take(ActiveTab).Count(t => t is null), 0, Math.Max(0, kept - 1));
+        }
+        Tabs = Tabs?.Where(t => t is not null).ToList() ?? new();
+    }
 }
 
 /// <summary>The rules for what the session keeps and how stored sessions come back.</summary>
