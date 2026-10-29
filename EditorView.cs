@@ -5,6 +5,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using ICSharpCode.AvalonEdit;
+using ICSharpCode.AvalonEdit.Document;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Rendering;
 
@@ -60,6 +61,7 @@ internal sealed class EditorView : Grid
         // that sees the index already updated.
         Lines = new LineIndex(Editor.Document);
         Editor.TextChanged += (_, _) => OnTextChanged();
+        DataObject.AddPastingHandler(Editor.TextArea, OnPasting);
 
         SetResourceReference(BackgroundProperty, "EditorBackgroundBrush");
         SetResourceReference(CaretBrushProperty, "CaretBrush");
@@ -222,6 +224,48 @@ internal sealed class EditorView : Grid
             if (!typing)
                 run = null;
         };
+    }
+
+    // The editor breaks pasted and dropped lines with CRLF in a text with no break, whatever ending was chosen for it.
+    private void OnPasting(object sender, DataObjectPastingEventArgs e)
+    {
+        if (Lines.Count > 1 || Lines.Chosen is not { } chosen)
+            return;
+        if (PastedText(e) is not { } text || text.IndexOfAny(['\r', '\n']) < 0)
+            return;
+
+        e.CancelCommand();
+        var area = Editor.TextArea;
+        text = TextUtilities.NormalizeNewLines(text, MainWindow.LineBreakAt(chosen, "", 0, indent: false));
+        if (e.IsDragDrop)
+        {
+            int offset = area.Caret.Offset;
+            Editor.Document.Insert(offset, text);
+            area.Selection = Selection.Create(area, offset, offset + text.Length);
+        }
+        else
+        {
+            area.Selection.ReplaceSelectionWithText(text);
+            area.Caret.BringCaretToView();
+        }
+    }
+
+    // The text the editor would insert, read from the same formats in the same order.
+    private static string? PastedText(DataObjectPastingEventArgs e)
+    {
+        var data = e.DataObject;
+        try
+        {
+            string? format = e.FormatToApply is { } apply && data.GetDataPresent(apply) ? apply
+                : data.GetDataPresent(DataFormats.UnicodeText) ? DataFormats.UnicodeText
+                : data.GetDataPresent(DataFormats.Text) ? DataFormats.Text
+                : null;
+            return format is null ? null : data.GetData(format) as string;
+        }
+        catch (Exception ex) when (ex is System.Runtime.InteropServices.COMException or OutOfMemoryException)
+        {
+            return null;
+        }
     }
 
     /// <summary>Where a click at <paramref name="point"/>, relative to the text view, puts
