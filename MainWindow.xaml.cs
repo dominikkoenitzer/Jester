@@ -31,6 +31,8 @@ public partial class MainWindow : ThemedWindow
     private bool _isLoadingFile;
     private DocumentTab? _lastActive;
     private DispatcherTimer? _settingsTimer;
+    // The state a minimized window comes back to.
+    private WindowState _shownState = WindowState.Normal;
 
     // Global formatting, shared by every tab so the editor feels like one app.
     private FontFamily _fontFamily = new("Consolas");
@@ -58,6 +60,11 @@ public partial class MainWindow : ThemedWindow
         RegisterCommands();
         ApplySettingsToGlobals();
         RestoreWindowBounds();
+        StateChanged += (_, _) =>
+        {
+            if (WindowState != WindowState.Minimized)
+                _shownState = WindowState;
+        };
         RestoreSession();
         // Now holds the tabs of every session taken over, so those files can go.
         SaveSession();
@@ -240,7 +247,10 @@ public partial class MainWindow : ThemedWindow
         }
 
         if (_settings.WindowMaximized)
+        {
             WindowState = WindowState.Maximized;
+            _shownState = WindowState.Maximized;
+        }
     }
 
     private static bool IsOnScreen(double left, double top)
@@ -330,6 +340,11 @@ public partial class MainWindow : ThemedWindow
     internal static int SessionActiveTab(IReadOnlyList<string?> tabPaths, int selectedIndex) =>
         tabPaths.Take(Math.Max(0, selectedIndex)).Count(p => p is not null);
 
+    /// <summary>Whether the window is saved as maximized. A minimized window is saved in
+    /// the state it comes back to, <paramref name="shownState"/>.</summary>
+    internal static bool SavedMaximized(WindowState state, WindowState shownState) =>
+        (state == WindowState.Minimized ? shownState : state) == WindowState.Maximized;
+
     /// <summary>The files to open at startup: the previous session, then any command-line
     /// files that are not already part of it. Opening only the command-line files would
     /// drop the session tabs, and closing would then save that smaller list over it.</summary>
@@ -378,7 +393,7 @@ public partial class MainWindow : ThemedWindow
             _settings.WindowWidth = RestoreBounds.Width;
             _settings.WindowHeight = RestoreBounds.Height;
         }
-        _settings.WindowMaximized = WindowState == WindowState.Maximized;
+        _settings.WindowMaximized = SavedMaximized(WindowState, _shownState);
 
         _settings.FontFamily = _fontFamily.Source;
         _settings.FontSize = _baseFontSizePoints;
