@@ -1,4 +1,5 @@
 using System.IO;
+using System.Windows;
 using Xunit;
 
 namespace Jester.Tests;
@@ -78,5 +79,29 @@ public class SessionTests
     {
         Assert.Equal(1, MainWindow.RestoredActiveTab(new[] { A, B }, new[] { A, B }, 5));
         Assert.Equal(0, MainWindow.RestoredActiveTab(new[] { A, B }, new[] { A, B }, -3));
+    }
+
+    // ------------------------------------------------------------ window state
+
+    // A window closed from the taskbar is minimized at that moment, so the saved state
+    // has to be the one it would come back to.
+
+    [Fact]
+    public void AMaximizedWindowClosedWhileMinimizedSavesMaximized()
+    {
+        Assert.True(MainWindow.SavedMaximized(WindowState.Minimized, WindowState.Maximized));
+    }
+
+    [Fact]
+    public void ANormalWindowClosedWhileMinimizedSavesNormal()
+    {
+        Assert.False(MainWindow.SavedMaximized(WindowState.Minimized, WindowState.Normal));
+    }
+
+    [Fact]
+    public void AShownWindowSavesItsOwnState()
+    {
+        Assert.True(MainWindow.SavedMaximized(WindowState.Maximized, WindowState.Maximized));
+        Assert.False(MainWindow.SavedMaximized(WindowState.Normal, WindowState.Normal));
     }
 }
