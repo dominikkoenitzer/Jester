@@ -89,6 +89,8 @@ public class EditorViewLayoutTests
     private static EditorView Shown(string text, bool wrap)
     {
         var view = new EditorView();
+        // The layout these tests count rows of must not follow the machine's default font, which doubles at 200% scale.
+        view.Editor.FontSize = 12;
         view.Editor.Text = text;
         view.Editor.WordWrap = wrap;
         var host = new Border { Child = view };
