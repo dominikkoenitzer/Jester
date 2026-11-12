@@ -1,5 +1,20 @@
 {
   "redirects": [
-    { "source": "/download/windows", "destination": "https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe", "permanent": false }
+    {
+      "source": "/download/windows",
+      "destination": "https://github.com/dominikkoenitzer/Jester/releases/latest/download/Jester.exe",
+      "permanent": false
+    }
+  ],
+  "headers": [
+    {
+      "source": "/diag(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
   ]
 }
