@@ -9,7 +9,8 @@ namespace Jester;
 /// over each other. Each window holds a lock file for as long as it runs. On start a
 /// window takes over every session whose lock is free (a window that was closed or
 /// crashed), and deletes those files once its own session, which now holds their tabs,
-/// is safely written.
+/// is safely written. A file named order holds the count that puts the sessions of all
+/// windows in the order they were written.
 /// </summary>
 internal sealed class SessionStore : IDisposable
 {
@@ -21,6 +22,9 @@ internal sealed class SessionStore : IDisposable
     private readonly List<(string Path, FileStream Claim)> _adopted = new();
     private long _sequence;
     private long _written;
+    private long _order;
+
+    private const string OrderFileName = "order";
 
     public static string DefaultDirectory => System.IO.Path.Combine(AppPaths.DataDirectory, "sessions");
 
@@ -80,6 +84,7 @@ internal sealed class SessionStore : IDisposable
                 var snapshot = JsonSerializer.Deserialize<SessionSnapshot>(File.ReadAllText(file));
                 if (snapshot is not null)
                 {
+                    _order = Math.Max(_order, snapshot.Order);
                     snapshots.Add(snapshot);
                     _adopted.Add((file, claim));
                     continue;
@@ -113,6 +118,7 @@ internal sealed class SessionStore : IDisposable
             string temp = _path + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
+                snapshot.Order = NextOrder();
                 _files.WriteText(temp, JsonSerializer.Serialize(snapshot));
                 _files.Move(temp, _path, overwrite: true);
                 _written = sequence;
@@ -129,6 +135,40 @@ internal sealed class SessionStore : IDisposable
             DeleteAdopted();
             return true;
         }
+    }
+
+    /// <summary>
+    /// The next number of the count all windows share. The file is held alone while it is
+    /// read and written; when it cannot be had in time, the count goes on from this
+    /// window's last number.
+    /// </summary>
+    private long NextOrder()
+    {
+        string path = System.IO.Path.Combine(_directory, OrderFileName);
+        for (int attempt = 0; attempt < 7; attempt++)
+        {
+            try
+            {
+                using var file = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                using var reader = new StreamReader(file, leaveOpen: true);
+                long.TryParse(reader.ReadToEnd().Trim(), out long stored);
+                _order = Math.Max(stored, _order) + 1;
+                // Always the same width, so the new number covers the old one whole.
+                byte[] text = System.Text.Encoding.ASCII.GetBytes(_order.ToString("D19", System.Globalization.CultureInfo.InvariantCulture));
+                file.Position = 0;
+                file.Write(text, 0, text.Length);
+                return _order;
+            }
+            catch (IOException)
+            {
+                Thread.Sleep(7); // Another window has it.
+            }
+            catch
+            {
+                break;
+            }
+        }
+        return ++_order;
     }
 
     public void Dispose()

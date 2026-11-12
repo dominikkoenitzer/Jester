@@ -21,7 +21,7 @@ public class SessionStateTests
 
     private static SessionSnapshot Session(int minute, int active, params SessionTab[] tabs) => new()
     {
-        SavedUtc = new DateTime(2026, 9, 29, 12, minute, 0, DateTimeKind.Utc),
+        Order = minute,
         ActiveTab = active,
         Tabs = tabs.ToList(),
     };
@@ -85,7 +85,7 @@ public class SessionStateTests
     public void TheActiveTabCountsOnlyTheTabsKept()
     {
         var kept = Edited(null, "x");
-        var snapshot = SessionState.Snapshot(new SessionTab?[] { null, Saved(A), kept }, 2, DateTime.UtcNow);
+        var snapshot = SessionState.Snapshot(new SessionTab?[] { null, Saved(A), kept }, 2);
 
         Assert.Equal(2, snapshot.Tabs.Count);
         Assert.Equal(1, snapshot.ActiveTab);
@@ -94,7 +94,7 @@ public class SessionStateTests
     [Fact]
     public void ABlankActiveTabPassesTheFocusToTheNextTab()
     {
-        var snapshot = SessionState.Snapshot(new SessionTab?[] { Saved(A), null, Saved(B) }, 1, DateTime.UtcNow);
+        var snapshot = SessionState.Snapshot(new SessionTab?[] { Saved(A), null, Saved(B) }, 1);
 
         Assert.Equal(1, snapshot.ActiveTab);
     }
@@ -102,7 +102,7 @@ public class SessionStateTests
     [Fact]
     public void ABlankLastTabPassesTheFocusBack()
     {
-        var snapshot = SessionState.Snapshot(new SessionTab?[] { Saved(A), null }, 1, DateTime.UtcNow);
+        var snapshot = SessionState.Snapshot(new SessionTab?[] { Saved(A), null }, 1);
 
         Assert.Equal(0, snapshot.ActiveTab);
     }
@@ -174,6 +174,18 @@ public class SessionStateTests
     private static SessionSnapshot Stored(string json) => JsonSerializer.Deserialize<SessionSnapshot>(json)!;
 
     [Fact]
+    public void SessionsFromBeforeTheCountComeFirstInTheirTimeOrder()
+    {
+        var later = Stored("""{ "SavedUtc": "2026-09-29T12:05:00Z", "ActiveTab": 0, "Tabs": [{ "Text": "later" }] }""");
+        var earlier = Stored("""{ "SavedUtc": "2026-09-29T12:01:00Z", "ActiveTab": 0, "Tabs": [{ "Text": "earlier" }] }""");
+
+        var merged = SessionState.Merge(new[] { Session(1, 0, Edited(null, "counted")), later, earlier });
+
+        Assert.Equal(new[] { "earlier", "later", "counted" }, merged.Tabs.Select(t => t.Text));
+        Assert.Equal(2, merged.ActiveTab);
+    }
+
+    [Fact]
     public void AStoredSessionWithANullTabListMergesAsNoTabs()
     {
         var merged = SessionState.Merge(new[] { Stored("""{ "Tabs": null }"""), Session(1, 0, Saved(A)) });
@@ -214,7 +226,7 @@ public class SessionStateTests
     [Fact]
     public void ANullActiveTabAtTheEndLeavesTheTabBeforeItActive()
     {
-        var stored = Stored("""{ "SavedUtc": "2026-09-29T12:05:00Z", "ActiveTab": 1, "Tabs": [{ "Text": "draft" }, null] }""");
+        var stored = Stored("""{ "Order": 5, "ActiveTab": 1, "Tabs": [{ "Text": "draft" }, null] }""");
 
         var merged = SessionState.Merge(new[] { Session(1, 0, Saved(A)), stored });
 

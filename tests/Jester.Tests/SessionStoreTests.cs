@@ -21,7 +21,6 @@ public class SessionStoreTests : IDisposable
 
     private static SessionSnapshot Session(string text) => new()
     {
-        SavedUtc = DateTime.UtcNow,
         Tabs = { new SessionTab { Text = text } },
     };
 

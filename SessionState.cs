@@ -45,6 +45,11 @@ internal sealed class SessionTab
 /// <summary>Every tab of one window, in order, and which one was active.</summary>
 internal sealed class SessionSnapshot : IJsonOnDeserialized
 {
+    /// <summary>Counts up across the writes of every window, so the newest session holds the highest.</summary>
+    public long Order { get; set; }
+
+    /// <summary>When a session from before <see cref="Order"/> was written. Read, never written.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public DateTime SavedUtc { get; set; }
     public int ActiveTab { get; set; }
     public List<SessionTab> Tabs { get; set; } = new();
@@ -85,7 +90,7 @@ internal static class SessionState
     }
 
     /// <summary>A snapshot of the given tabs; the active index counts only the tabs kept.</summary>
-    public static SessionSnapshot Snapshot(IReadOnlyList<SessionTab?> tabs, int selectedIndex, DateTime savedUtc)
+    public static SessionSnapshot Snapshot(IReadOnlyList<SessionTab?> tabs, int selectedIndex)
     {
         var kept = new List<SessionTab>();
         int active = 0;
@@ -98,7 +103,6 @@ internal static class SessionState
         }
         return new SessionSnapshot
         {
-            SavedUtc = savedUtc,
             ActiveTab = Math.Clamp(active, 0, Math.Max(0, kept.Count - 1)),
             Tabs = kept,
         };
@@ -113,7 +117,7 @@ internal static class SessionState
     /// </summary>
     public static SessionSnapshot Merge(IEnumerable<SessionSnapshot> snapshots)
     {
-        var ordered = snapshots.OrderBy(s => s.SavedUtc).ToList();
+        var ordered = snapshots.OrderBy(s => s.Order).ThenBy(s => s.SavedUtc).ToList();
         var newest = ordered.Count > 0 ? ordered[^1] : null;
 
         // The newest unsaved edits for each file, which keep the file's path.
@@ -122,7 +126,7 @@ internal static class SessionState
             if (tab.Path is not null && tab.IsDirty)
                 newestEdit[tab.Path] = tab;
 
-        var merged = new SessionSnapshot { SavedUtc = newest?.SavedUtc ?? default };
+        var merged = new SessionSnapshot { Order = newest?.Order ?? 0 };
         var byPath = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         foreach (var snapshot in ordered)
         {
