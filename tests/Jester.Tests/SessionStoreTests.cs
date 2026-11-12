@@ -257,4 +257,43 @@ public class SessionStoreTests : IDisposable
 
         Assert.Equal(stamp, second.ClaimOrphans().Single().Tabs.Single().Disk);
     }
+
+    [Fact]
+    public void AStoredSessionHoldsNoClockTime()
+    {
+        using var store = new SessionStore(_dir);
+        Assert.True(Write(store, new SessionSnapshot { Tabs = { new SessionTab { Text = "draft" } } }));
+
+        string json = File.ReadAllText(store.Path);
+        Assert.DoesNotContain("SavedUtc", json);
+        Assert.DoesNotMatch(@"\d\d:\d\d", json);
+    }
+
+    [Fact]
+    public void TheLastEditsToAFileWinWhicheverWindowMadeThem()
+    {
+        // The session files list in the order of their random names, so the rounds rule out a lucky one.
+        for (int round = 0; round < 17; round++)
+        {
+            string dir = Path.Combine(_dir, round.ToString());
+            using (var first = new SessionStore(dir))
+            using (var second = new SessionStore(dir))
+            {
+                Assert.True(Write(first, Edits("first")));
+                Assert.True(Write(second, Edits("second")));
+                Assert.True(Write(first, Edits("third")));
+            }
+
+            using var next = new SessionStore(dir);
+            var merged = SessionState.Merge(next.ClaimOrphans());
+
+            Assert.Equal("third", merged.Tabs.Single(t => t.Path is not null).Text);
+            Assert.Equal(new[] { "second" }, merged.Tabs.Where(t => t.Path is null).Select(t => t.Text));
+        }
+    }
+
+    private static SessionSnapshot Edits(string text) => new()
+    {
+        Tabs = { new SessionTab { Path = @"C:\notes.txt", Text = text } },
+    };
 }
