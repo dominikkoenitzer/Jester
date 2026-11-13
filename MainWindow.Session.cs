@@ -35,7 +35,7 @@ public partial class MainWindow
             d.Editor.CaretOffset,
             d.Encoding,
             d.Disk)).ToList();
-        return SessionState.Snapshot(tabs, Tabs.SelectedIndex, DateTime.UtcNow);
+        return SessionState.Snapshot(tabs, Tabs.SelectedIndex);
     }
 
     /// <summary>Writes the session now, on this thread. False when it could not be written.</summary>

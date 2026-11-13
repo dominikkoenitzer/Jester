@@ -47,13 +47,16 @@ public partial class App : Application
 
     private static string CrashLogPath => Path.Combine(AppPaths.DataDirectory, "crash.log");
 
+    /// <summary>One crash as the log keeps it: where it came from and the exception, with no time.</summary>
+    internal static string CrashEntry(string source, Exception ex) => $"({source})\n{ex}\n\n";
+
     private static void LogCrash(string source, Exception ex)
     {
         try
         {
             string path = CrashLogPath;
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            File.AppendAllText(path, $"[{DateTime.Now:O}] ({source})\n{ex}\n\n");
+            File.AppendAllText(path, CrashEntry(source, ex));
         }
         catch
         {
